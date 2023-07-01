@@ -1,15 +1,16 @@
+using FluentValidation.AspNetCore;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseMySQL(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -20,6 +21,9 @@ builder.Services.AddIdentityServer()
 
 builder.Services.AddAuthentication()
     .AddIdentityServerJwt();
+
+builder.Services.AddControllers().AddFluentValidation(fv =>
+fv.RegisterValidatorsFromAssembly(Assembly.Load("HadisIelts.Shared")));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

@@ -1,0 +1,12 @@
+﻿@using HadisIelts.Client.Features.Layout.Models;
+<ol class="breadcrumb">
+    @for (int i = 0; i < Pages.Count-1; i++)
+    {
+        <li class="breadcrumb-item"><a href="@Pages[i].Link">@Pages[i].DisplayName</a></li>
+    }
+    <li class="breadcrumb-item active">@Pages[Pages.Count-1].DisplayName</li>
+</ol>
+@code {
+    [Parameter]
+    public List<WebsitePage> Pages { get; set; }
+}

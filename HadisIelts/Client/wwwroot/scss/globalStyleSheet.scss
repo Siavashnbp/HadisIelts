@@ -1,0 +1,18 @@
+﻿// First override some or all individual color variables
+$primary: #a9233cff;
+$secondary: #e9861fff;
+$success: #8dbe22ff;
+$info: #eae914ff;
+$warning: #c39de5ff;
+$danger: #ff2600ff;
+$light: #e5eeaaff;
+$dark: #4d2707ff;
+
+// Then add them to your custom theme-colors map, together with any additional colors you might need
+$theme-colors: ( primary: $primary, secondary: $secondary, success: $success, info: $info, warning: $warning, danger: $danger, light: $light, dark: $dark,
+// add any additional color below
+);
+
+@import "dist/journal/_variables.scss";
+@import "../bootstrap/bootstrap-5.0.2/scss/bootstrap.scss";
+@import "dist/journal/_bootswatch.scss";

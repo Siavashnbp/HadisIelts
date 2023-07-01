@@ -1,0 +1,12 @@
+﻿<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-header list-group-item list-group-item-action active py-3 lh-sm">
+        <h5 class="offcanvas-title" id="offcanvasExampleLabel" aria-current="true">Sessions</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        @for (int i = 0; i < 10; i++)
+        {
+            <SessionSidebarItem />
+        }
+    </div>
+</div>

@@ -13,6 +13,8 @@ builder.Services.AddHttpClient("HadisIelts.ServerAPI", client => client.BaseAddr
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("HadisIelts.ServerAPI"));
 
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
 builder.Services.AddApiAuthorization();
 
 await builder.Build().RunAsync();

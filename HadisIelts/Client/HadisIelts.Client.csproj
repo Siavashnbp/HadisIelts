@@ -1,12 +1,39 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <NpmLastInstall>node_modules/.last-install</NpmLastInstall>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\CODEOWNERS" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\CONTRIBUTING.md" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\dependabot.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\ISSUE_TEMPLATE\bug_report.md" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\ISSUE_TEMPLATE\config.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\ISSUE_TEMPLATE\feature_request.md" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\release-drafter.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\SUPPORT.md" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\browserstack.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\bundlewatch.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\codeql.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\css.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\docs.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\js.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\lint.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\node-sass.yml" />
+    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\release-notes.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.5" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="7.0.5" />
@@ -16,5 +43,31 @@
   <ItemGroup>
     <ProjectReference Include="..\Shared\HadisIelts.Shared.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Features\Layout\MainLayout.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Watch Include="**/*.scss" />
+    <Watch Remove="Features\Home\HomePage.razor.scss" />
+    <None Update="**/*.css" watch="false" />
+  </ItemGroup>
+  <Target Name="CheckForNpm" BeforeTargets="RunNpmInstall">
+    <Exec Command="npm --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)'!=''" Text="Npm is required to build this project" />
+  </Target>
+  <Target Name="RunNpmInstall" BeforeTargets="ComplieScoped" Inputs="package.json" Outputs="$(NpmLastInstall)">
+    <Exec Command="npm install" />
+  </Target>
+  <Target Name="ComplieScopedScss" BeforeTargets="Complie">
+    <ItemGroup>
+      <ScopedScssFiles Include="Features/**/*.scss" />
+    </ItemGroup>
+    <Exec Command="npm run sass -- %(ScopedScssFiles.Identity) %(relativdir)%(filename.css)" />
+  </Target>
 
 </Project>
