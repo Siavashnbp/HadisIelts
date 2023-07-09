@@ -2,6 +2,7 @@ using FluentValidation.AspNetCore;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -27,6 +28,19 @@ fv.RegisterValidatorsFromAssembly(Assembly.Load("HadisIelts.Shared")));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    //Pasword settings
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 44;
+
+    //User Settings
+    options.User.RequireUniqueEmail = true;
+});
 
 var app = builder.Build();
 
