@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HadisIelts.Server.FeaturesEndPoint.Account
 {
     public class RegisterUserEndPoint : EndpointBaseAsync
-        .WithRequest<SubmitRegisterUserRequest>
+        .WithRequest<RegisterAccountRequest>
         .WithActionResult<int>
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -19,9 +19,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
             _logger = logger;
         }
 
-        [HttpPost(SubmitRegisterUserRequest.EndpointUri)]
+        [HttpPost(RegisterAccountRequest.EndpointUri)]
         public override async Task<ActionResult<int>> HandleAsync
-            (SubmitRegisterUserRequest request, CancellationToken cancellationToken = default)
+            (RegisterAccountRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                 {
                     UserName = request.Request.Email,
                     Email = request.Request.Email,
-                    EmailConfirmed = false
+                    EmailConfirmed = true
                 };
                 var result = await _userManager.CreateAsync(user, request.Request.Password);
                 if (result.Succeeded)

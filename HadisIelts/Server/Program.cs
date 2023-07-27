@@ -36,7 +36,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 44;
+    //options.Password.RequiredLength = 44;
 
     //User Settings
     options.User.RequireUniqueEmail = true;
