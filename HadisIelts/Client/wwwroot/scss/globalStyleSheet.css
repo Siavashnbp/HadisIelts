@@ -9795,3 +9795,7 @@ textarea.form-control-lg {
   box-shadow: 2px 2px 10px 10px silver;
   margin-top: 80px;
 }
+
+.form-control {
+  margin: 5px;
+}

@@ -1,5 +1,5 @@
 using HadisIelts.Client;
-using HadisIelts.Client.RequestHandlers.Account;
+using HadisIelts.Client.RequestHandlers.Account.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

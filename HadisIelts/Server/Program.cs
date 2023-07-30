@@ -15,10 +15,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer()
     .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdministrtorRole",
+        policy => policy.RequireRole("Administrator"));
+});
 
 builder.Services.AddAuthentication()
     .AddIdentityServerJwt();
@@ -41,7 +48,6 @@ builder.Services.Configure<IdentityOptions>(options =>
     //User Settings
     options.User.RequireUniqueEmail = true;
 });
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -63,6 +69,7 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+InitializeUsersRoles.Initialize(app.Services.CreateScope()).Wait();
 
 app.UseIdentityServer();
 app.UseAuthorization();

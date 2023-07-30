@@ -1,0 +1,111 @@
+﻿@page "/profile/{userID}"
+@using HadisIelts.Client.Features.Account.Models;
+@using HadisIelts.Shared.Requests.Account;
+@using System.Security.Claims;
+@inject IMediator Mediator;
+@inject NavigationManager NavMan;
+@inject AuthenticationStateProvider context;
+<AuthorizeView>
+    <Authorized>
+
+        <div class="container main-form col-lg-6">
+            <div class="row">
+                <div class="col-4">
+                    profile image
+                </div>
+                <div class="d-flex col-8" style="flex-direction:column;">
+                    <div class="form-floating">
+                        <InputText class="form-control" @bind-Value="_profileModel.UserName" type="text" id="floatingUsername" />
+                        <label for="floatingUsername">Username</label>
+                    </div>
+                    <div class="form-floating">
+                        <InputText class="form-control" @bind-Value="_profileModel.FirstName" typeof="text" id="floatingFirstName" />
+                        <label for="floatingName">First Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <InputText class="form-control" @bind-Value="_profileModel.LastName" typeof="text" id="floatingLastName" />
+                        <label for="floatingName">Last Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <InputText class="form-control" @bind-Value="_profileModel.Email" typeof="email" id="floatingEmail" />
+                        <label for="floatingEmail">Email</label>
+                    </div>
+                    <div class="form-floating">
+                        <InputText class="form-control" @bind-Value="_profileModel.Skype" typeof="text" id="floatingSkype" />
+                        <label for="floatingSkype">Skype ID</label>
+                    </div>
+                    @if (_authenticationState.User.Claims.First(x => x.Type == "sub").Value == userID)
+                    {
+                        <button>Edit</button>
+                    }
+                </div>
+            </div>
+        </div>
+        @foreach (var item in _authenticationState.User.Identities)
+        {
+            @foreach (var x in item.Claims)
+            {
+                <h3>@(x.Type)</h3>
+                <h3>@(x.Value)</h3>
+            }
+        }
+        @foreach (var item in _authenticationState.User.Claims)
+        {
+            <h3>@(item.Type)</h3>
+            <h3>@(item.Value)</h3>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <NotAuthorizedComponent />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string userID { get; set; }
+    private ProfileModel _profileModel { get; set; } = new();
+    private AuthenticationState? _authenticationState { get; set; }
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetUserInformation();
+        await GetAuthenticationState();
+    }
+    private async Task GetUserInformation()
+    {
+        try
+        {
+
+            var userInfoRequest = new GetUserInformationRequest(userID);
+            var result = await Mediator.Send(userInfoRequest);
+            if (result is not null)
+            {
+                _profileModel = new ProfileModel
+                    {
+                        FirstName = result.userInformation.FirstName,
+                        LastName = result.userInformation.LastName,
+                        Email = result.userInformation.Email,
+                        Skype = result.userInformation.Skype,
+                        UserName = result.userInformation.Username
+                    };
+            }
+            StateHasChanged();
+        }
+        catch (NullReferenceException)
+        {
+            NavMan.NavigateTo("/BadRequest");
+        }
+    }
+    private async Task GetAuthenticationState()
+    {
+        try
+        {
+            _authenticationState = await context.GetAuthenticationStateAsync();
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+}

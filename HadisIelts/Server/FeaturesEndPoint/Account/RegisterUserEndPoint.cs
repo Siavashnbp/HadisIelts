@@ -27,6 +27,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
             {
                 var user = new ApplicationUser
                 {
+                    FirstName = "test",
+                    LastName = "test",
                     UserName = request.Request.Email,
                     Email = request.Request.Email,
                     EmailConfirmed = true
