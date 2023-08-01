@@ -1,5 +1,6 @@
 using HadisIelts.Client;
 using HadisIelts.Client.RequestHandlers.Account.Services;
+using HadisIelts.Client.Services.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -19,7 +20,7 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
-builder.Services.AddApiAuthorization();
+builder.Services.AddApiAuthorization().AddAccountClaimsPrincipalFactory<CustomUserFactory>();
 
 builder.Services.AddScoped<IPasswordService, PasswordServiceProvider>();
 await builder.Build().RunAsync();

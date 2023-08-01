@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 namespace HadisIelts.Client.RequestHandlers.Account
 {
     public class LoginUserHandler
-        : IRequestHandler<AccountLoginRequest, AccountLoginRequest.Response>
+        : IRequestHandler<AccountLoginRequest, AccountLoginRequest.Response?>
     {
         private readonly HttpClient _httpClient;
         private readonly IPasswordService _passwordService;
@@ -15,16 +15,21 @@ namespace HadisIelts.Client.RequestHandlers.Account
             _httpClient = httpClientFactory.CreateClient("HadisIelts.AnonymousAPI");
             _passwordService = passwordService;
         }
-        public async Task<AccountLoginRequest.Response> Handle(AccountLoginRequest request, CancellationToken cancellationToken)
+        public async Task<AccountLoginRequest.Response?> Handle(AccountLoginRequest request, CancellationToken cancellationToken)
         {
             request.Request.Password = _passwordService.HashPassword(request.Request.Password);
             var response = await _httpClient.PostAsJsonAsync
                 (AccountLoginRequest.EndPointUri, request, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                return new AccountLoginRequest.Response(true);
+                var result = await response.Content.ReadFromJsonAsync<AccountLoginRequest.Response>();
+                return result;
             }
-            return new AccountLoginRequest.Response(false);
+            return new AccountLoginRequest.Response(new LoginResponse
+            {
+                LoginSucess = false,
+                Message = "Bad Request!"
+            });
         }
     }
 }

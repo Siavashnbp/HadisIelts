@@ -21,17 +21,47 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         [HttpPost(AccountLoginRequest.EndPointUri)]
         public override async Task<ActionResult<AccountLoginRequest.Response>> HandleAsync(AccountLoginRequest request, CancellationToken cancellationToken = default)
         {
-            var userTest = await _signInManager.UserManager.FindByEmailAsync(request.Request.Email);
-            var result = await _signInManager.PasswordSignInAsync(
-                userName: request.Request.Email,
-                password: request.Request.Password,
-                isPersistent: request.Request.KeepSignedIn,
-                lockoutOnFailure: false);
-            if (result.Succeeded)
+            try
             {
-                return Ok();
+                var user = await _signInManager.UserManager.FindByEmailAsync(request.Request.Email);
+                if (user is not null)
+                {
+                    if (user.LockoutEnd > DateTime.UtcNow)
+                    {
+                        return Ok(new AccountLoginRequest.Response
+                            (new LoginResponse
+                            {
+                                LoginSucess = false,
+                                Message = $"Too many failed attempts. Try in {(user.LockoutEnd - DateTime.UtcNow).Value.Minutes + 1} minutes"
+                            }));
+                    }
+                    var result = await _signInManager.PasswordSignInAsync(
+                    userName: request.Request.Email,
+                    password: request.Request.Password,
+                    isPersistent: request.Request.KeepSignedIn,
+                    lockoutOnFailure: true);
+                    if (result.Succeeded)
+                    {
+                        await _signInManager.UserManager.ResetAccessFailedCountAsync(user);
+                        return Ok(new AccountLoginRequest.Response(
+                            new LoginResponse
+                            {
+                                LoginSucess = true,
+                                Message = string.Empty
+                            }));
+                    }
+                }
+                return Ok(new AccountLoginRequest.Response(
+                    new LoginResponse
+                    {
+                        LoginSucess = false,
+                        Message = "Username or password is incorrect"
+                    }));
             }
-            return BadRequest();
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
     }
 }
