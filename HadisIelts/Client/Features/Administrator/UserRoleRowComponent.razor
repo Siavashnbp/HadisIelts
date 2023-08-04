@@ -1,0 +1,30 @@
+﻿@using HadisIelts.Shared.Requests.Admin;
+<tr class="table-Default">
+    <th>Row</th>
+    <td>@UserRoles.FirstName</td>
+    <td>@UserRoles.LastName</td>
+    <td>@UserRoles.Email</td>
+    <td>
+        <div class="container">
+            <div class="row">
+                @foreach (var role in UserRoles.Roles!)
+                {
+                    <div class="col">    
+                        @if (role.Item2)
+                        {
+                            <button class="btn btn-success">Yes</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-danger">No</button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </td>
+</tr>
+@code {
+    [Parameter, EditorRequired]
+    public UserRoles UserRoles { get; set; }
+}

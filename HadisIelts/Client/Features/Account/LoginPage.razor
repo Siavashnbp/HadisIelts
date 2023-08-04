@@ -5,7 +5,7 @@
 @inject NavigationManager NavMan
 @inject AuthenticationStateProvider AuthProvider;
 
-<div class="main-form container col-lg-4 col-md-6">
+<div class="main-form container col-lg-4 col-md-8">
     <EditForm Model="@loginModel" OnValidSubmit="PostLoginRequest">
         <main class="form-signin w-100 m-auto">
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
@@ -18,7 +18,7 @@
                 <InputText @bind-Value="loginModel.Password" type="password" class="form-control" id="floatingPassword" placeholder="Password" />
                 <label for="floatingPassword">Password</label>
             </div>
-            <div class="checkbox mb-3" style="margin:5px;">
+            <div class="d-flex checkbox mb-3" style="margin:5px; left:0; justify-content:flex-start;">
                 <label>
                     <InputCheckbox @bind-Value="loginModel.KeepSignedIn" type="checkbox" /> Remember me
                 </label>

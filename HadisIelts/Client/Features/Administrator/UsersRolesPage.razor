@@ -1,0 +1,113 @@
+﻿@page "/administrator/usersroles"
+@using HadisIelts.Shared.Requests.Admin;
+@inject AuthenticationStateProvider AuthProvider;
+@inject IMediator Mediator;
+
+<AuthorizeView Roles="Administrator">
+    <Authorized>
+        <div class="container">
+            <table class="table table-hover" style="margin-top:10px;text-align:center;vertical-align:middle;border:solid;border-color:#a9233c;">
+                <thead>
+                    <tr class="table-secondary" style="vertical-align:middle;">
+                        <th colspan="4" scope="col" style="font-family:'Comic Sans MS'; color:#a9233c;">Users Roles</th>
+                        <th scope="col">
+                            <div class="container">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-9">
+                                        <div class="form-floating">
+                                            <InputText class="form-control" @bind-Value="_searchPhrase" id="floatingSearchPhrase" type="Text" placeholder="Search User" />
+                                            <label for="floatingSearchPhrase" style="font-family:'Comic Sans MS'; color:#a9233c;">Search</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <button class="btn btn-secondary" onclick="@(()=>GetRolesAsync(_searchPhrase))">Search</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr rowspan="2" class="table-info" style="text-align:center;vertical-align:middle;">
+                        <th scope="col">row</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">
+                            <div class="container" style="text-align:center;">
+                                <div class="row">
+                                    <div class="col">
+                                        Roles
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">administrator</div>
+                                    <div class="col">teacher</div>
+                                    <div class="col">student</div>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (_usersRoles is not null && _usersRoles.Count > 0)
+                    {
+                        @for (int i = 0; i < _usersRoles.Count; i++)
+                        {
+                            <UserRoleRowComponent UserRoles="_usersRoles[i]" />
+                        }
+                    }
+                    else
+                    {
+                        <tr class="table-warning">
+                            <td rowspan="0" colspan="5">
+                                <h4>No User Was Found</h4>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+
+        @if (_authenticationState.User.Identity!.IsAuthenticated)
+        {
+            <NotAuthorizedComponent />
+        }
+        else
+        {
+            <NotAuthenticatedComponent />
+        }
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+    private AuthenticationState _authenticationState { get; set; }
+    private List<UserRoles>? _usersRoles { get; set; }
+    public string _searchPhrase { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _authenticationState = await AuthProvider.GetAuthenticationStateAsync();
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    private async Task GetRolesAsync(string? searchPhrase)
+    {
+        var request = new GetUsersRolesRequest(new UsersRolesRequest
+            {
+                UserSearchPhrase = _searchPhrase,
+                InRoles = new List<ApplicationRoles> { ApplicationRoles.Admin, ApplicationRoles.Teacher, ApplicationRoles.Student }
+            });
+        var response = await Mediator.Send(request);
+        if (response is not null)
+        {
+            _usersRoles = response.UsersRoles;
+            StateHasChanged();
+        }
+    }
+}

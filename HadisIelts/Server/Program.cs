@@ -1,6 +1,7 @@
 using FluentValidation.AspNetCore;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models;
+using HadisIelts.Server.Services.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,9 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
     options.Lockout.MaxFailedAccessAttempts = 5;
 });
+
+builder.Services.AddScoped<IUserServices, UserServicesProvider>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

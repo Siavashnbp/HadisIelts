@@ -11,10 +11,10 @@ namespace HadisIelts.Shared.Requests.Account
     public class UserInformation
     {
         public string Username { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
         public string Email { get; set; }
-        public string Skype { get; set; }
+        public string? Skype { get; set; }
 
     }
 }

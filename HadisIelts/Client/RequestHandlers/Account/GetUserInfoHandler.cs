@@ -8,9 +8,8 @@ namespace HadisIelts.Client.RequestHandlers.Account
         : IRequestHandler<GetUserInformationRequest, GetUserInformationRequest.Response>
     {
         private readonly HttpClient _httpClient;
-        public GetUserInfoHandler(IHttpClientFactory httpClientFactory, HttpClient httpClient)
+        public GetUserInfoHandler(HttpClient httpClient)
         {
-            //_httpClient = httpClientFactory.CreateClient("HadisIelts.AnonymousAPI");
             _httpClient = httpClient;
         }
         public async Task<GetUserInformationRequest.Response> Handle(GetUserInformationRequest request, CancellationToken cancellationToken)
