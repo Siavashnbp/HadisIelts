@@ -1,0 +1,79 @@
+﻿@page "/Class/{ClassId:int}"
+<main class="d-flex flex-nowrap">
+
+    <div class="container px-4 py-5" style="margin-right:380px;">
+        <h2 class="pb-2 border-bottom">Class Name</h2>
+        <SessionsSidebar/>
+        <button class="btn btn-primary" style="position:absolute; right:20px;" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+            View Sessions
+        </button>
+        <div class="row row-cols-1 row-cols-md-1 row-cols-lg-2  g-5 py-5">
+            <div class="d-flex flex-column align-items-start gap-2">
+                <h3 class="fw-bold" style="top:0;">Ielts Class</h3>
+                <p class="text-muted">Class descripion and goals</p>
+
+                <div class="container row mb-3 text-center ">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col" colspan="2">Contact Info</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="table-secondary">
+                                <td>Siavash Nabipour</td>
+                                <td>siavashnabipour@gmail.com</td>
+                                <td>+989172036054</td>
+                            </tr>
+                            <tr class="table-default">
+                                <td>Column content</td>
+                                <td>Column content</td>
+                                <td>Column content</td>
+                            </tr>
+                            <tr class="table-secondary">
+                                <td>Siavash Nabipour</td>
+                                <td>siavashnabipour@gmail.com</td>
+                                <td>+989172036054</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 g-4" style="">
+                <div class="d-flex flex-column gap-2" style="flex-direction:column;">
+                    <div class="feature-icon-small d-inline-flex align-items-start justify-content-around text-bg-primary bg-gradient fs-4 rounded-3" style="flex-direction:column;">
+                        <img src="/img/icons/icons8-date-64.png" />
+                        <h4 class="fw-semibold mb-0 justify">Class Schedule</h4>
+                    </div>
+                    <p class="text-muted">Saturday / Wednesday<br />17:00 - 18:30</p>
+                    <p class=" text-primary">Next session is cancled!</p>
+                </div>
+                <div class="d-flex flex-column gap-2">
+                    <div class="feature-icon-small d-inline-flex align-items-start justify-content-around text-bg-primary bg-gradient fs-4 rounded-3" style="flex-direction:column;">
+                        <img src="/img/icons/Book.png" width="64" />
+                        <h4 class="fw-semibold mb-0 justify">Books</h4>
+                    </div>
+                    <p class="text-muted">- Cambridge</p>
+                    <p class="text-muted">- Cambridge</p>
+                    <p class="text-muted">- Cambridge</p>
+                </div>
+                <div class="d-flex flex-column gap-2 col-12 text-center">
+                    <div class="feature-icon-small d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-4 rounded-3">
+                        <svg class="bi" width="1em" height="1em">
+                            <use xlink:href="#table"></use>
+                        </svg>
+                    </div>
+                    <h4 class="fw-semibold mb-0">Board</h4>
+                    <p class="text-muted text-center" style="border:solid 2px; min-height:150px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
+                </div>
+            </div>
+        </div>
+    </div>   
+    <div class="b-example-divider b-example-vr"></div>
+
+</main>
+@code {
+    [Parameter]
+    public int ClassId { get; set; }    
+}

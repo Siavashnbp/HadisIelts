@@ -1,0 +1,19 @@
+.sessions-sidbar {
+  overflow-y: scroll;
+  top: 110px;
+  bottom: 0;
+  position: fixed;
+  right: 0;
+}
+
+.sidebar-close-btn {
+  font-size: 20px;
+}
+
+@media (min-width: 900) {
+  .sidebar-close-btn {
+    visibility: hidden;
+  }
+}
+
+/*# sourceMappingURL=SessionsSidebar.razor.css.map */

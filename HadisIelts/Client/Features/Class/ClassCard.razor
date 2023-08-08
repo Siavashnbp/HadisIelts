@@ -1,0 +1,32 @@
+﻿<div class="col">
+    <div class="card shadow-sm">
+        <img class="card-img-top" alt="English Class" src="/img/undraw_book_lover_re_rwjy.svg" />
+        <div class="card-body">
+            <p class="card-text">Ielts 6, Current skill: writing<br /> MC clark </p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-sm btn-outline-primary">View</button>
+                    <button @onclick="()=>OpenDialog()" type="button" class="btn btn-sm btn-outline-secondary">List of students</button>
+                </div>
+                <small class="text-muted">Sun/Mon</small>
+                <small class="text-muted">17:00</small>
+                <small class="text-muted">Session:5</small>
+            </div>
+        </div>
+    </div>
+</div>
+@if (DialogIsOpen)
+{
+    <StudentsListModal OnClose="@OnDialogClose"/>
+}
+@code {
+    private bool DialogIsOpen = false;
+    private void OpenDialog()
+    {
+        DialogIsOpen = true;
+    }
+    private void OnDialogClose()
+    {        
+        DialogIsOpen = false;
+    }
+}

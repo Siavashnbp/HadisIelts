@@ -1,0 +1,41 @@
+﻿// First override some or all individual color variables
+$primary: #a9233cff;
+$secondary: #e9861fff;
+$success: #8dbe22ff;
+$info: #eae914ff;
+$warning: #c39de5ff;
+$danger: #ff2600ff;
+$light: #e5eeaaff;
+$dark: #4d2707ff;
+
+//Vector Colors
+//main:#f03428
+//secondary:#fcc4c7
+
+// Then add them to your custom theme-colors map, together with any additional colors you might need
+$theme-colors: ( primary: $primary, secondary: $secondary, success: $success, info: $info, warning: $warning, danger: $danger, light: $light, dark: $dark,
+// add any additional color below
+);
+
+@import "dist/journal/_variables.scss";
+@import "../bootstrap/bootstrap-5.0.2/scss/bootstrap.scss";
+@import "dist/journal/_bootswatch.scss";
+
+.main-form {
+    margin: auto;
+    flex-direction: column;
+    align-content: space-around;
+    border: solid;
+    border-color: #a9233cff;
+    border-radius: 25px;
+    justify-content: center;
+    padding: 50px;
+    padding-bottom:10px;
+    padding-top:40px;
+    box-shadow: 2px 2px 10px 10px silver;
+    margin-top:35px;
+    text-align:center;
+}
+.form-control{
+    margin:5px;
+}

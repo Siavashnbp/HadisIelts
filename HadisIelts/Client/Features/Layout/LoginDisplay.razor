@@ -1,0 +1,26 @@
+﻿@using HadisIelts.Shared.Requests.Account;
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager NavMan;
+@inject IMediator Mediator;
+
+<AuthorizeView>
+    <Authorized>
+        <a class="nav-link" href="account/profile">Hello, @context.User.Identity?.Name!</a>
+        <button class="nav-link btn btn-link" @onclick="BeginLogOut">Log out</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="container d-flex" style="justify-content:space-between; margin:auto;">
+            <a class="nav-link" href="account/register">Register</a>
+            <a class="nav-link" href="account/login">Log in</a>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private void BeginLogOut()
+    {
+        Mediator.Send(new AccountLogoutRequest());
+        NavMan.NavigateTo("/",true);
+    }   
+}
