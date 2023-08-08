@@ -129,6 +129,7 @@
             {
                 _isFirstPage = true;
             }
+            _isLastPage = response.UsersRolesResponse.IsLastPage;
             StateHasChanged();
         }
     }    
