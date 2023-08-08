@@ -5,6 +5,7 @@ using HadisIelts.Server.Services.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,7 @@ builder.Services.AddIdentityServer()
         options.IdentityResources["openid"].UserClaims.Add("role");
         options.ApiResources.Single().UserClaims.Add("role");
     });
-
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role");
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdministrtorRole",

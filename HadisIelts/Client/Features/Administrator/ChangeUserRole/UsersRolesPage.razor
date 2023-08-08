@@ -1,5 +1,6 @@
 ﻿@page "/administrator/usersroles"
 @using HadisIelts.Shared.Requests.Admin;
+@using static HadisIelts.Shared.Enums.UserRelatedEnums;
 @inject AuthenticationStateProvider AuthProvider;
 @inject IMediator Mediator;
 
@@ -20,7 +21,7 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
-                                        <button class="btn btn-secondary" onclick="@(()=>GetRolesAsync(_searchPhrase))">Search</button>
+                                        <button class="btn btn-secondary" onclick="@(()=>GetRolesAsync(_pageNumber))">Search</button>
                                     </div>
                                 </div>
                             </div>
@@ -52,7 +53,7 @@
                     {
                         @for (int i = 0; i < _usersRoles.Count; i++)
                         {
-                            <UserRoleRowComponent UserRoles="_usersRoles[i]" />
+                            <UserRoleRowComponent UserRoles="_usersRoles[i]" Row="@(((_pageNumber-1)*10)+i+1)" />
                         }
                     }
                     else
@@ -65,6 +66,20 @@
                     }
                 </tbody>
             </table>
+            @if (_usersRoles is not null && _usersRoles.Count > 0)
+            {
+                <div class="row align-items-center justify-content-center">
+                    @if (!_isFirstPage)
+                    {
+                        <button class="btn btn-outline-dark" style="width:80px; margin:5px;" @onclick="(()=>GetRolesAsync(--_pageNumber))"> Previous </button>
+                    }
+                    Page @_pageNumber
+                    @if (!_isLastPage)
+                    {
+                        <button class="btn btn-outline-dark text-center" style="width:80px;margin:5px;" @onclick="(()=>GetRolesAsync(++_pageNumber))"> Next </button>
+                    }
+                </div>
+            }
         </div>
     </Authorized>
     <NotAuthorized>
@@ -82,13 +97,15 @@
 @code {
     private AuthenticationState _authenticationState { get; set; }
     private List<UserRoles>? _usersRoles { get; set; }
+    public int _pageNumber { get; set; } = 1;
+    private bool _isFirstPage { get; set; } = true;
+    private bool _isLastPage { get; set; }
     public string _searchPhrase { get; set; } = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         try
         {
             _authenticationState = await AuthProvider.GetAuthenticationStateAsync();
-
         }
         catch (Exception)
         {
@@ -96,18 +113,23 @@
             throw;
         }
     }
-    private async Task GetRolesAsync(string? searchPhrase)
+    private async Task GetRolesAsync(int pageNumber)
     {
         var request = new GetUsersRolesRequest(new UsersRolesRequest
             {
                 UserSearchPhrase = _searchPhrase,
-                InRoles = new List<ApplicationRoles> { ApplicationRoles.Admin, ApplicationRoles.Teacher, ApplicationRoles.Student }
+                PageNumber = (pageNumber - 1)
             });
         var response = await Mediator.Send(request);
         if (response is not null)
         {
-            _usersRoles = response.UsersRoles;
+            _usersRoles = response.UsersRolesResponse.UsersRoles;
+            _pageNumber = response.UsersRolesResponse.PageNumber + 1;
+            if (_pageNumber ==1)
+            {
+                _isFirstPage = true;
+            }
             StateHasChanged();
         }
-    }
+    }    
 }

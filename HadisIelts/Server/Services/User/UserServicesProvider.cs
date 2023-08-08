@@ -3,6 +3,7 @@ using HadisIelts.Server.Models;
 using HadisIelts.Shared.Requests.Admin;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
+using static HadisIelts.Shared.Enums.UserRelatedEnums;
 
 namespace HadisIelts.Server.Services.User
 {
@@ -27,6 +28,12 @@ namespace HadisIelts.Server.Services.User
             return _dbContext.Users.ToList();
         }
 
+        public async Task<List<Tuple<ApplicationRoles, bool>>> GetUserRolesAsync(ApplicationUser user)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            return ConvertToApplicationRoles(userRoles.ToList());
+        }
+
         public async Task<List<UserRoles>> GetUsersRolesAsync(List<ApplicationUser> users)
         {
             var usersRoles = new List<UserRoles>();
@@ -43,7 +50,6 @@ namespace HadisIelts.Server.Services.User
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         Roles = applicationRoles,
-                        RolesInJson = rolesInJson
                     });
                 }
             }

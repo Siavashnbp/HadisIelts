@@ -1,0 +1,52 @@
+﻿@using HadisIelts.Shared.Requests.Admin;
+@using HadisIelts.Shared.Requests.Administrator;
+@using static HadisIelts.Shared.Enums.UserRelatedEnums;
+@inject IMediator Mediator;
+<button class="btn @(_userRole.Value?"btn-success":"btn-danger")" onclick="@(async ()=>await UpdateUserRole())">
+    @if (_userRole.Value)
+    {
+        <h6>Yes</h6>
+    }
+    else
+    {
+        <h6>No</h6>
+    }
+</button>
+@code {
+    [Parameter, EditorRequired]
+    public Tuple<ApplicationRoles, bool> Role { get; set; }
+    [Parameter, EditorRequired]
+    public string Email { get; set; }
+    //[Parameter,EditorRequired]
+    //public EventCallback<UserRoles> OnRoleChanged { get; set; }
+    private (ApplicationRoles Role, bool Value) _userRole;
+    protected override void OnInitialized()
+    {
+        _userRole = (Role.Item1, Role.Item2);
+        base.OnInitialized();
+    }
+    //private async Task<UserRoles> UpdateUserRole()
+    //{
+    //    var request = new UpdateUserRoleRequest(new UserNewRole
+    //        {
+    //            Email = Email,
+    //            Role = Role.Item1,
+    //            Value = !Role.Item2
+    //        });
+    //    var response = await Mediator.Send(request);
+    //    return response.UpdatedUserRole.UserRoles;
+    //}   
+    private async Task UpdateUserRole()
+    {
+        var request = new UpdateUserRoleRequest(new UserNewRole
+            {
+                Email = Email,
+                Role = _userRole.Role,
+                Value = !_userRole.Value
+            });
+        var response = await Mediator.Send(request);
+        var updatedRole = response.UpdatedUserRole.UserRoles.Roles.FirstOrDefault(x => x.Item1 == _userRole.Role);
+        _userRole= (updatedRole.Item1,updatedRole.Item2);
+        StateHasChanged();
+    }
+}

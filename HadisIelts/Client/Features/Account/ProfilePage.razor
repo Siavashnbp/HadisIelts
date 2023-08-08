@@ -1,4 +1,5 @@
-﻿@page "/profile/{userID}"
+﻿@page "/profile"
+@page "/profile/{userID}"
 @using HadisIelts.Client.Features.Account.Models;
 @using HadisIelts.Shared.Requests.Account;
 @using System.Security.Claims;
@@ -40,14 +41,6 @@
                 </div>
             </div>
         </div>
-        @foreach (var item in _authenticationState.User.Identities)
-        {
-            @foreach (var x in item.Claims)
-            {
-                <h3>@(x.Type)</h3>
-                <h3>@(x.Value)</h3>
-            }
-        }
         @foreach (var item in _authenticationState.User.Claims)
         {
             <h3>@(item.Type)</h3>
@@ -61,13 +54,26 @@
 
 @code {
     [Parameter]
-    public string userID { get; set; }
+    public string userID { get; set; } = string.Empty;
     private ProfileModel _profileModel { get; set; } = new();
     private AuthenticationState? _authenticationState { get; set; }
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        await GetUserInformation();
-        await GetAuthenticationState();
+        try
+        {
+            _authenticationState = await AuthProvider.GetAuthenticationStateAsync();
+            if (userID == string.Empty)
+            {
+                var authenticationState = await AuthProvider.GetAuthenticationStateAsync();
+                userID = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "sub").Value;
+            };
+            await GetUserInformation();
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
     private async Task GetUserInformation()
     {
@@ -92,18 +98,6 @@
         catch (NullReferenceException)
         {
             NavMan.NavigateTo("/BadRequest");
-        }
-    }
-    private async Task GetAuthenticationState()
-    {
-        try
-        {
-            _authenticationState = await AuthProvider.GetAuthenticationStateAsync();
-        }
-        catch (Exception)
-        {
-
-            throw;
         }
     }
 
