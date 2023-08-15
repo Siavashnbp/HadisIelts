@@ -1,6 +1,7 @@
 using HadisIelts.Client;
 using HadisIelts.Client.RequestHandlers.Account.Services;
 using HadisIelts.Client.Services.Authorization;
+using HadisIelts.Client.Services.File;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -17,10 +18,11 @@ builder.Services.AddHttpClient("HadisIelts.AnonymousAPI", client => client.BaseA
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("HadisIelts.ServerAPI"));
 
-
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddApiAuthorization().AddAccountClaimsPrincipalFactory<CustomUserFactory>();
 
 builder.Services.AddScoped<IPasswordService, PasswordServiceProvider>();
+builder.Services.AddScoped<IFileServices, FileServiceProvider>();
+
 await builder.Build().RunAsync();

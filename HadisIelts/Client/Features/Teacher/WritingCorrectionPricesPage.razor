@@ -1,0 +1,131 @@
+﻿@page "/Teacher/WritingCorrectionPrice"
+@using HadisIelts.Client.Features.Teacher.Models;
+@using HadisIelts.Shared.Requests.Teacher;
+@using static HadisIelts.Shared.Enums.FileRelatedEnums;
+@inject IMediator Mediator
+<div class="container">
+    <div class="row">
+        <div class="col">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <WritingCorrectionPriceTable WritingCorrectionPrices="_writingCorrectionPrices" />
+        </div>
+    </div>
+    <EditForm Model="_writingPriceModel" OnValidSubmit="AddWritingCorrectionPrice">
+        <FluentValidationValidator />
+        <div class="container text-center list-group-item-light" style="text-align:center;border:dashed;padding:5px;">
+            <div class="row justify-content-center">
+                <div class="col">
+                    <h5 style="margin-top:10px;">Add Price</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating">
+                        <InputText class="form-control" @bind-Value="_writingPriceModel.Name" style="text-align:center;"
+                                   id="floatingNameInput" placeholder="Name" />
+                        <label for="floatingNameInput">Name</label>
+                    </div>
+                    <ValidationMessage For="(()=>_writingPriceModel.Name)" />
+                </div>
+                <div class="col form-floating">
+                    <InputSelect class="form-select form-control" @bind-Value="_writingPriceModel.WritingType"
+                                 style="text-align:center; min-width:max-content;" id="floatingWritingTypeSelect">
+                        <option selected value="@WritingTypes.NotSelected">Not Selected</option>
+                        <option value="@WritingTypes.IeltsTask1">Ielts Task 1</option>
+                        <option value="@WritingTypes.IeltsTask2">Ielts Task 2</option>
+                    </InputSelect>
+                    <label for="floatingWritingTypeSelect" style="margin-left:10px;">Word Count</label>
+                    <ValidationMessage For="(()=>_writingPriceModel.WritingType)" />
+                </div>
+                <div class="col text-center">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 form-floating">
+                            <InputNumber class="form-control" TValue="int?" @bind-Value="_writingPriceModel.WordCount" style="text-align:center;"
+                                         id="floatingWordCount" placeholder="Word Count" EnableMinMax="true" Min="0" />
+                            <label for="floatingWordCountInput" style="margin-left:10px;">Word Count</label>
+                        </div>
+                        <ValidationMessage For="(()=>_writingPriceModel.WordCount)" />
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 form-floating">
+                            <InputNumber class="form-control" TValue="decimal?" @bind-Value="_writingPriceModel.Price" 
+                            style="text-align:center;" id="floatingPriceInput" placeholder="Price"/>
+                            <label for="floatingPriceInput" style="margin-left:10px;">Price</label>
+                        </div>
+                    </div>
+                    <ValidationMessage For="(()=>_writingPriceModel.Price)" />
+                </div>
+            </div>
+            <div class="row justify-content-center" style="margin-top:10px;">
+                <div class="col-4">
+                    <button type="submit" class="btn btn-secondary">
+                        Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+</div>
+@code {
+    private List<WritingPriceModel> _writingCorrectionPrices = new();
+    private WritingPriceModel _writingPriceModel { get; set; } = new();
+    private async Task AddWritingCorrectionPrice()
+    {
+        var request = new AddWritingCorrectionPriceRequest(new WritingCorrectionPrice
+            {
+                Name = _writingPriceModel.Name,
+                Price = (int)_writingPriceModel.Price!,
+                WordCount = (int)_writingPriceModel.WordCount!,
+                WritingType = _writingPriceModel.WritingType
+            });
+        var result = await Mediator.Send(request);
+        if (result is not null)
+        {
+            _writingCorrectionPrices.Add(new WritingPriceModel
+                {
+                    Name = result.WritingCorrectionPrice.Name,
+                    Price = result.WritingCorrectionPrice.Price,
+                    WordCount = result.WritingCorrectionPrice.WordCount,
+                    WritingType = result.WritingCorrectionPrice.WritingType
+                });
+            StateHasChanged();
+        }
+    }
+    private async Task GetWritingCorrectionPrices()
+    {
+        try
+        {
+            var result = await Mediator.Send(new GetWritingCorrectionPricesRequest());
+            if (result is not null)
+            {
+                int id = 1;
+                foreach (var item in result.WritingCorrectionPrices)
+                {
+                    _writingCorrectionPrices.Add(new WritingPriceModel
+                        {
+                            ID = id++,
+                            Name = item.Name,
+                            Price = item.Price,
+                            WordCount = item.WordCount,
+                            WritingType = item.WritingType
+                        });
+                }
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await GetWritingCorrectionPrices();
+    }
+}

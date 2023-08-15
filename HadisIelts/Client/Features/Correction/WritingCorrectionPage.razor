@@ -1,76 +1,35 @@
 ﻿@page "/Services/Correction/Writing"
 @using HadisIelts.Client.Features.Correction.Models;
+@using HadisIelts.Client.Services.File;
 @using HadisIelts.Shared.Requests.Correction;
+@using HadisIelts.Shared.Requests.Payment;
 @using MediatR;
 @using System.Timers;
+@using static HadisIelts.Shared.Enums.FileRelatedEnums;
 @inject NavigationManager NavigationManager
 @inject IMediator Mediator;
+@inject IFileServices FileServices;
 <BreadCrumb Pages=@BreadCrumbs />
-<EditForm Model="@writingFiles" OnValidSubmit="UploadFiles" style="margin:auto;">
-    <FluentValidationValidator />
-    <div class="col-lg-6 d-flex main-form">
-        <div class="form-group">
-            <label for="formFile" class="form-label mt-4">Upload Files (Choose up to 5 files):</label>
-            <ul class="list-group" style="padding-top:25px;">
-                <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary">
-                    Name
-                    <div>
-                        <span class="badge bg-info rounded-pill" style="color:black;">Size</span>
-                        <span class="btn badge bg-primary rounded-pill" @onclick="()=>RemoveAllItems()">Clear all</span>
-                    </div>
-                </li>
-                @if (writingFiles.SubmitedFiles.Count > 0)
-                {
-                    @foreach (var item in writingFiles.SubmitedFiles)
-                    {
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 main-form">
+            <ProcessWritingFilesTable OnUploadFilesToProcessAsync="HandleOnUploadFilesToProcessAsync" />
 
-                            <div class="container-fluid d-inline">
-                                <div class="row">
-                                    <div class="col-9">
-                                        @item.File.Name
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="col">
-                                            <div class="row justify-content-end" style="right:0;">
-                                                <span class="badge bg-info rounded-pill" style="color:black;width:max-content; ">@(item.File.Size / 1000) KB</span>
-                                                <span class="btn badge bg-primary rounded-pill" style="width:fit-content; min-width:55px;" @onclick="()=>RemoveItem(item.ID)">Clear</span>
-                                            </div>
-                                            <div class="row ">
-                                                <ValidationMessage For="@(()=>item.File)" />
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    }
-                }
-                <li class="list-group-item">
-                    <InputFile class="form-control" type="file" accept=".docx" OnChange="@LoadFile" multiple />
-                    <ValidationMessage For="@(()=> writingFiles.SubmitedFiles)" />
-                </li>
-            </ul>
-        </div>
-        <fieldset class="form-group" style="padding-bottom:15px;">
-            <div class="form-check" style="margin-top:30px">
-                <InputCheckbox @bind-Value="writingFiles.RequiresEmailResponse" />
-                <label class="form-check-label" for="flexCheckDefault">
-                    Email corrected files
-                </label>
-            </div>
-        </fieldset>
-        <span class="badge bg-info" style="color:black;">@(writingFiles.SubmitedFiles.Count * _price)Rials</span>
-        <button type="submit" class="btn btn-primary" style="margin-top:25px; margin-bottom:10px;">Submit</button>
-        @if (_isUploading)
-        {
-            <div class="progress" style="margin-top:10px;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: @(_uploadingProgress)%;"></div>
-            </div>
-        }
-        @if (_submitSuccess)
-        {
+            @if (_isUploading)
+            {
+                <div class="progress" style="margin-top:10px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: @(_uploadingProgress)%;"></div>
+                </div>
+            }
+            @if (_areFilesProcessed)
+            {
+                <div class="alert alert-success container" style="text-align:center;" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                    <span>Your files has been processed successfully! You can now submit your files.</span>
+                </div>
+            }
             <div class="alert alert-success container" style="text-align:center;" role="alert">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
@@ -78,129 +37,51 @@
                 <span>Your files has been submitted successfully! You will be redirected to payment page.</span>
                 <span>@_counter</span>
             </div>
-        }
-        else if (_errorMessage != string.Empty)
-        {
+            else if (_errorMessage != string.Empty)
+            {
             <div class="alert alert-danger" role="alert">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
                 </svg>
                 @_errorMessage
             </div>
-        }
+            }
+        </div>
     </div>
-</EditForm>
-@code {   
+</div>
+
+@code {
     private int _counter;
     private bool _isUploading;
     private int _uploadingProgress = 0;
-    private const decimal _price = 150;
-    private WritingCorrectionFilesSubmited writingFiles { get; set; } = new WritingCorrectionFilesSubmited();
-    private bool _submitSuccess;
+    private bool _areFilesProcessed;
+    private bool _isProcessing = false;
     private string? _errorMessage = string.Empty;
-    private void LoadFile(InputFileChangeEventArgs e)
-    {
-        try
-        {
-            int id = 0;
-            foreach (var file in e.GetMultipleFiles())
-            {
-                writingFiles.SubmitedFiles.Add(
-                    new WritingCorrectionFilesSubmited.WritingFile { ID = id, File = file });
-                id++;
-            }
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
+    private string? _successMessage = string.Empty;
+    private List<ProcessedWritingFile> _processedWritingFiles = new();
 
-        }
-    }
-    private async Task UploadFiles()
+    private async Task HandleOnUploadFilesToProcessAsync(UserWritingCorrectionRequest userWritingCorrectionRequest)
     {
-        try
-        {
-            _isUploading = true;
-            _uploadingProgress = 0;
-            var readFiles = await ReadFilesAsync(writingFiles.SubmitedFiles.Select(x => x.File).ToList());
-            SubmitWritingCorrectionRequest submitWritingCorrection = new SubmitWritingCorrectionRequest
-                (new WritingCorrectionRequest
-                    {
-                        RequestFiles = readFiles,
-                        RespondViaEmail = writingFiles.RequiresEmailResponse
-                    });
-            var response = await Mediator.Send(submitWritingCorrection);
-            _isUploading = false;
-            if (response.SubmittedRequestID == -1)
+        var writingFiles = await FileServices.ConvertIBrowseFilesToWritingFilesAsync
+        (userWritingCorrectionRequest.WritingFiles);
+        var request = new ProcessWritingFilesRequest(new ProcessFilesRequest
             {
-                _submitSuccess = false;
-                _errorMessage = "Something went wrong!";
-                return;
-            }
-            _submitSuccess = true;
-            StateHasChanged();
-            _errorMessage = string.Empty;
-            await Task.Run(() =>
-            {
-                _counter = 3;
-                Timer timer = new();
-                timer.Interval = 1000;
-                timer.Elapsed += delegate
-                {
-                    _counter--;
-                    StateHasChanged();
-                    if (_counter <= 0)
-                    {
-                        timer.Stop();
-                        NavigationManager.NavigateTo($"/Services/Correction/Writing/Payment/{response.SubmittedRequestID}");
-                    }
-                };
-                timer.Start();
+                WritingFiles = writingFiles,
+                RequiresEmailResponse = userWritingCorrectionRequest.RequiresEmailResponse
             });
-        }
-        catch (Exception)
+        var response = await Mediator.Send(request);
+        if (response.CalculatedPayment is not null)
         {
-            throw;
-        }
-    }
-    private void RemoveItem(int id)
-    {
-        var item = writingFiles.SubmitedFiles.FirstOrDefault(x => x.ID == id);
-        if (item != default)
-        {
-            writingFiles.SubmitedFiles.Remove(item);
+            _areFilesProcessed = true;
+            _successMessage = response.CalculatedPayment.Message;
+            _processedWritingFiles = response.CalculatedPayment.ProcessedFiles;
             StateHasChanged();
         }
-    }
-    private void RemoveAllItems()
-    {
-        writingFiles.SubmitedFiles.Clear();
-        StateHasChanged();
-    }
-    private async Task<List<WritingRequestFile>> ReadFilesAsync(List<IBrowserFile> files)
-    {
-        var readFiles = new List<WritingRequestFile>();
-        foreach (var file in files)
+        else
         {
-            using (var ms = new MemoryStream())
-            {
-                if (file.Size > 0 && file.Size < 10E6)
-                {
-                    var stream = file.OpenReadStream(maxAllowedSize: (long)10E6);
-                    await stream.CopyToAsync(ms);
-                    var fileBytes = ms.ToArray();
-                    string bytesString = Convert.ToBase64String(fileBytes);
-                    readFiles.Add(new WritingRequestFile
-                        {
-                            Data = bytesString,
-                            Name = file.Name
-                        });
-                    _uploadingProgress += (100 / files.Count);
-                    StateHasChanged();
-                }
-            }
+            _errorMessage = response.CalculatedPayment.Message;
+            StateHasChanged();
         }
-        return readFiles;
     }
     public List<WebsitePage> BreadCrumbs { get; set; } = new List<WebsitePage>{
         new WebsitePage{Name="Home",DisplayName="Home",Link="/" },

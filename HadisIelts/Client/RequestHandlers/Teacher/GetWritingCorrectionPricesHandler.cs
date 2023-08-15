@@ -1,0 +1,26 @@
+﻿using HadisIelts.Shared.Requests.Teacher;
+using MediatR;
+using System.Net.Http.Json;
+
+namespace HadisIelts.Client.RequestHandlers.Teacher
+{
+    public class GetWritingCorrectionPricesHandler : IRequestHandler
+        <GetWritingCorrectionPricesRequest, GetWritingCorrectionPricesRequest.Response>
+    {
+        private readonly HttpClient _httpClient;
+        public GetWritingCorrectionPricesHandler(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+        public async Task<GetWritingCorrectionPricesRequest.Response> Handle(GetWritingCorrectionPricesRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _httpClient.PostAsJsonAsync(GetWritingCorrectionPricesRequest.EndPointUri, request, cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<GetWritingCorrectionPricesRequest.Response>();
+                return result;
+            }
+            return null;
+        }
+    }
+}

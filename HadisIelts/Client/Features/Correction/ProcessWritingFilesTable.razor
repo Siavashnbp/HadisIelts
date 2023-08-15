@@ -1,0 +1,98 @@
+﻿@using HadisIelts.Client.Features.Correction.Models;
+@using static HadisIelts.Shared.Enums.FileRelatedEnums;
+<EditForm Model="@_userWritingCorrectionRequest"
+          OnValidSubmit="@(async ()=>await OnUploadFilesToProcessAsync.InvokeAsync(_userWritingCorrectionRequest))">
+    <table class="table table-hover" style="margin:auto;">
+        <thead>
+            <tr class="table-secondary">
+                <th colspan="2">Name</th>
+                <th>Writing Task</th>
+                <th>
+                    <div class="row justify-content-end" style="right:auto; margin-right:auto;">
+                        <span class="badge bg-info rounded-pill" style="color:black; max-width:50px;">Size</span>
+                        <span class="btn badge bg-primary rounded-pill" style="max-width:50px;" @onclick="()=>RemoveAllItems()">Clear all</span>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _userWritingCorrectionRequest.WritingFiles)
+            {
+                <tr>
+                    <td colspan="2">@item.BrowserFile.Name</td>
+                    <td>
+                        <InputSelect @bind-Value="@(item.WritingType)">
+                            <option value="@(WritingTypes.NotSelected)">Select writing Task</option>
+                            <option value="@(WritingTypes.IeltsTask1)">Ielts Task 1</option>
+                            <option value="@(WritingTypes.IeltsTask2)">Ielts Task 2</option>
+                        </InputSelect>
+                    </td>
+                    <td>
+                        <div class="row justify-content-end" style="right:0; margin-right:auto;">
+                            <span class="badge bg-info rounded-pill" style="color:black;width:max-content; ">
+                                @(
+                                    item.BrowserFile.Size / 1000
+                                    ) KB
+                            </span>
+                            <span class="btn badge bg-primary rounded-pill" style="width:fit-content; min-width:50px;" @onclick="()=>RemoveItem(item.ID)">Clear</span>
+                        </div>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="4">
+                    <UploadFileComponent OnFileIsLoaded="HandleOnFileIsLoadedAsync" />
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+   
+    <fieldset class="form-group" style="padding-bottom:15px;">
+        <div class="form-check" style="margin-top:30px;left:0;">
+            <InputCheckbox @bind-Value="_userWritingCorrectionRequest.RequiresEmailResponse" />
+            <label class="form-check-label" for="flexCheckDefault">
+                Email corrected files
+            </label>
+        </div>
+    </fieldset>
+    <span class="badge bg-info" style="color:black;">Rials</span>
+    <button type="submit" class="btn btn-secondary" style="margin-top:25px; margin-bottom:10px;">
+        Process files
+    </button>
+</EditForm>
+@code {
+    [Parameter]
+    public EventCallback<UserWritingCorrectionRequest> OnUploadFilesToProcessAsync { get; set; }
+    private UserWritingCorrectionRequest _userWritingCorrectionRequest = new UserWritingCorrectionRequest();
+    private int _ID = 0;
+    private int _maxAllowedFiles = 5;
+    private void HandleOnFileIsLoadedAsync(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount > 0)
+        {
+            int id = 0;
+            foreach (var file in e.GetMultipleFiles())
+            {
+                _userWritingCorrectionRequest.WritingFiles.Add(
+                    new UserWritingFile { ID = id++, BrowserFile = file, WritingType = WritingTypes.NotSelected });
+            }
+        }
+    }
+
+    private void RemoveItem(int id)
+    {
+        var item = _userWritingCorrectionRequest.WritingFiles.FirstOrDefault(x => x.ID == id);
+        if (item != default)
+        {
+            _userWritingCorrectionRequest.WritingFiles.Remove(item);
+            StateHasChanged();
+        }
+    }
+    private void RemoveAllItems()
+    {
+        _userWritingCorrectionRequest.WritingFiles.Clear();
+        StateHasChanged();
+    }
+
+}

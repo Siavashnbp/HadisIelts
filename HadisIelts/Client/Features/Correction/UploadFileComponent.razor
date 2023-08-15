@@ -1,0 +1,14 @@
+﻿@using HadisIelts.Client.Features.Correction.Models;
+@using static HadisIelts.Shared.Enums.FileRelatedEnums;
+<div class="container">
+    <div class="row">
+        <InputFile class="form-control" type="file" OnChange="async (e)=>await OnFileIsLoaded.InvokeAsync(e)" accept=".docx" multiple/>                
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<InputFileChangeEventArgs> OnFileIsLoaded { get; set; }
+    private UserWritingFile _writingFile = new UserWritingFile();
+    
+}
