@@ -3,10 +3,11 @@ using AutoMapper;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Shared.Requests.Correction;
 using HadisIelts.Shared.Requests.Teacher;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HadisIelts.Server.FeaturesEndPoint.Teacher
+namespace HadisIelts.Server.FeaturesEndPoint.General
 {
     public class GetWritingCorrectionServicePrices : EndpointBaseAsync
         .WithoutRequest

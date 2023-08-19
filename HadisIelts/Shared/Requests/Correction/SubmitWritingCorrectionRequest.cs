@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using static HadisIelts.Shared.Enums.FileRelatedEnums;
 
 namespace HadisIelts.Shared.Requests.Correction
 {
@@ -19,7 +18,7 @@ namespace HadisIelts.Shared.Requests.Correction
     public class WritingFile
     {
         public string Name { get; set; }
-        public WritingTypes WritingType { get; set; }
+        public int WritingTypeID { get; set; }
         public string Data { get; set; }
     }
     public class WritingCorrectionValidator : AbstractValidator<SubmitWritingCorrectionRequest>

@@ -1,6 +1,7 @@
-﻿using MediatR;
+﻿using HadisIelts.Shared.Requests.Teacher;
+using MediatR;
 
-namespace HadisIelts.Shared.Requests.Teacher
+namespace HadisIelts.Shared.Requests.Correction
 {
     public record GetWritingCorrectionPricesRequest()
         : IRequest<GetWritingCorrectionPricesRequest.Response>

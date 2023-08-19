@@ -1,0 +1,34 @@
+﻿using Ardalis.ApiEndpoints;
+using HadisIelts.Server.Models.Entities;
+using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Shared.Requests.Correction;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HadisIelts.Server.FeaturesEndPoint.General
+{
+    public class GetWritingTypesEndpoint : EndpointBaseAsync
+        .WithoutRequest
+        .WithActionResult<GetWritingTypesRequest.Response>
+    {
+        private readonly ICustomRepositoryServices<ApplicationWritingType, int> _writingTypeRepository;
+        public GetWritingTypesEndpoint(ICustomRepositoryServices<ApplicationWritingType, int> writingTypeRepository)
+        {
+            _writingTypeRepository = writingTypeRepository;
+        }
+        [HttpGet(GetWritingTypesRequest.EndPointUri)]
+        public override async Task<ActionResult<GetWritingTypesRequest.Response>> HandleAsync(CancellationToken cancellationToken = default)
+        {
+            var result = _writingTypeRepository.GetAll();
+            if (result is not null)
+            {
+                var writingTypes = new List<WritingType>();
+                foreach (var item in result)
+                {
+                    writingTypes.Add(new WritingType { ID = item.ID, Name = item.Name });
+                }
+                return Ok(new GetWritingTypesRequest.Response(writingTypes));
+            }
+            return Problem(null);
+        }
+    }
+}

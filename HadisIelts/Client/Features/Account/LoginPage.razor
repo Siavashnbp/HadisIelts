@@ -1,4 +1,4 @@
-﻿@page "/account/login"
+﻿@page "/account/login/"
 @using HadisIelts.Client.Features.Account.Models;
 @using HadisIelts.Shared.Requests.Account;
 @inject IMediator Mediator
@@ -39,8 +39,8 @@
 </div>
 
 @code {
-    [Parameter]
-    public string ReturnUrl { get; set; }
+    [Parameter,SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
     private LoginModel loginModel { get; set; } = new LoginModel();
     private bool _loginError;
     private string _errorMessage;

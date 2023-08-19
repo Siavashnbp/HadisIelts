@@ -1,5 +1,9 @@
 ﻿@using HadisIelts.Client.Features.Correction.Models;
+@using HadisIelts.Client.Features.Teacher
+@using HadisIelts.Client.Features.Teacher.Models;
+@using HadisIelts.Shared.Requests.Correction;
 @using static HadisIelts.Shared.Enums.FileRelatedEnums;
+@inject IMediator Mediator;
 <EditForm Model="@_userWritingCorrectionRequest"
           OnValidSubmit="@(async ()=>await OnUploadFilesToProcessAsync.InvokeAsync(_userWritingCorrectionRequest))">
     <table class="table table-hover" style="margin:auto;">
@@ -21,10 +25,12 @@
                 <tr>
                     <td colspan="2">@item.BrowserFile.Name</td>
                     <td>
-                        <InputSelect @bind-Value="@(item.WritingType)">
-                            <option value="@(WritingTypes.NotSelected)">Select writing Task</option>
-                            <option value="@(WritingTypes.IeltsTask1)">Ielts Task 1</option>
-                            <option value="@(WritingTypes.IeltsTask2)">Ielts Task 2</option>
+                        <InputSelect @bind-Value="item.WritingTypeID">
+                            <option value="0">Not Selected</option>
+                            @foreach (var writingType in _writingTypes)
+                            {
+                                <option value="@(writingType.ID)">@(writingType.Name)</option>
+                            }
                         </InputSelect>
                     </td>
                     <td>
@@ -47,7 +53,7 @@
             </tr>
         </tbody>
     </table>
-   
+
     <fieldset class="form-group" style="padding-bottom:15px;">
         <div class="form-check" style="margin-top:30px;left:0;">
             <InputCheckbox @bind-Value="_userWritingCorrectionRequest.RequiresEmailResponse" />
@@ -67,6 +73,11 @@
     private UserWritingCorrectionRequest _userWritingCorrectionRequest = new UserWritingCorrectionRequest();
     private int _ID = 0;
     private int _maxAllowedFiles = 5;
+    private List<WritingTypeModel> _writingTypes;
+    protected override async Task OnInitializedAsync()
+    {
+        await GetWritingTypes();
+    }
     private void HandleOnFileIsLoadedAsync(InputFileChangeEventArgs e)
     {
         if (e.FileCount > 0)
@@ -75,11 +86,27 @@
             foreach (var file in e.GetMultipleFiles())
             {
                 _userWritingCorrectionRequest.WritingFiles.Add(
-                    new UserWritingFile { ID = id++, BrowserFile = file, WritingType = WritingTypes.NotSelected });
+                    new UserWritingFile { ID = id++, BrowserFile = file, WritingTypeID = 0 });
             }
         }
     }
-
+    private async Task GetWritingTypes()
+    {
+        var request = new GetWritingTypesRequest();
+        var response = await Mediator.Send(request);
+        if (response.WritingTypes is not null && response.WritingTypes.Count > 0)
+        {
+            _writingTypes = new List<WritingTypeModel>();
+            foreach (var item in response.WritingTypes)
+            {
+                _writingTypes.Add(new WritingTypeModel
+                    {
+                        ID = item.ID,
+                        Name = item.Name
+                    });
+            }
+        }
+    }
     private void RemoveItem(int id)
     {
         var item = _userWritingCorrectionRequest.WritingFiles.FirstOrDefault(x => x.ID == id);

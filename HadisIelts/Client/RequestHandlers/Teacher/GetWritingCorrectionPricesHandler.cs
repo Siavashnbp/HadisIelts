@@ -1,4 +1,4 @@
-﻿using HadisIelts.Shared.Requests.Teacher;
+﻿using HadisIelts.Shared.Requests.Correction;
 using MediatR;
 using System.Net.Http.Json;
 
@@ -8,9 +8,9 @@ namespace HadisIelts.Client.RequestHandlers.Teacher
         <GetWritingCorrectionPricesRequest, GetWritingCorrectionPricesRequest.Response>
     {
         private readonly HttpClient _httpClient;
-        public GetWritingCorrectionPricesHandler(HttpClient httpClient)
+        public GetWritingCorrectionPricesHandler(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("HadisIelts.AnonymousAPI");
         }
         public async Task<GetWritingCorrectionPricesRequest.Response> Handle(GetWritingCorrectionPricesRequest request, CancellationToken cancellationToken)
         {

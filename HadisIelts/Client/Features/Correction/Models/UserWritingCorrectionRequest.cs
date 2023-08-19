@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Components.Forms;
-using static HadisIelts.Shared.Enums.FileRelatedEnums;
 
 namespace HadisIelts.Client.Features.Correction.Models
 {
@@ -18,7 +17,7 @@ namespace HadisIelts.Client.Features.Correction.Models
     {
         public int ID { get; set; }
         public IBrowserFile BrowserFile { get; set; }
-        public WritingTypes WritingType { get; set; }
+        public int WritingTypeID { get; set; }
     }
     public class SubmitedFilesValidator : AbstractValidator<UserWritingCorrectionRequest>
     {

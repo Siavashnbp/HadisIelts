@@ -36,6 +36,21 @@ $theme-colors: ( primary: $primary, secondary: $secondary, success: $success, in
     margin-top:35px;
     text-align:center;
 }
+.secondary-form {
+    margin: auto;
+    flex-direction: column;
+    align-content: space-around;
+    border: dotted;
+    border-color: #e9861fff;
+    border-radius: 25px;
+    justify-content: center;
+    padding: 50px;
+    padding-bottom: 10px;
+    padding-top: 40px;
+    box-shadow: 2px 2px 10px 10px silver;
+    margin-top: 35px;
+    text-align: center;
+}
 .form-control{
     margin:5px;
 }

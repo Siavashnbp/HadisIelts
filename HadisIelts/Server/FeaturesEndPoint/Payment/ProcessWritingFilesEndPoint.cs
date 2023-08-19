@@ -26,19 +26,23 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 if (request.Request.WritingFiles is not null
                     && request.Request.WritingFiles.Count > 0)
                 {
-                    decimal price = 0;
+                    uint price = 0;
                     List<ProcessedWritingFile> processedWritingFiles = new List<ProcessedWritingFile>();
                     foreach (var file in request.Request.WritingFiles)
                     {
                         int wordCount = 0;
                         wordCount = _wordFileServices.CountFileWords(file.Data);
-                        decimal filePrice = await _writingCorrrectionServices.CalculateFilePriceAsync(wordCount, file.WritingType);
-                        processedWritingFiles.Add(new ProcessedWritingFile
+                        var filePrice = _writingCorrrectionServices.CalculateFilePriceAsync(wordCount, file.WritingTypeID);
+                        if (filePrice > 0)
                         {
-                            WritingFile = file,
-                            Price = filePrice,
-                            WordCount = wordCount
-                        });
+                            processedWritingFiles.Add(new ProcessedWritingFile
+                            {
+                                WritingFile = file,
+                                Price = filePrice,
+                                WordCount = wordCount
+                            });
+                            price += filePrice;
+                        }
                     }
                     return Ok(new ProcessWritingFilesRequest.Response(new CalculatedPayment
                     {

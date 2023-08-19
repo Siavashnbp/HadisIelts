@@ -17,7 +17,7 @@ namespace HadisIelts.Client.Services.File
                     {
                         Data = await ReadUploadedFileDataAsync(file.BrowserFile),
                         Name = file.BrowserFile.Name,
-                        WritingType = file.WritingType
+                        WritingTypeID = file.WritingTypeID
                     });
                 }
                 return writingFiles;

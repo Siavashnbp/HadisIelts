@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using static HadisIelts.Shared.Enums.FileRelatedEnums;
 
 namespace HadisIelts.Client.Features.Teacher.Models
 {
@@ -7,10 +6,30 @@ namespace HadisIelts.Client.Features.Teacher.Models
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public decimal? Price { get; set; }
+        public int? Price { get; set; }
         public int? WordCount { get; set; }
-        public WritingTypes WritingType { get; set; }
+        private WritingTypeModel _writingType;
+
+        public WritingTypeModel WritingType
+        {
+            get { return _writingType; }
+            set
+            {
+                _writingType = new WritingTypeModel
+                {
+                    ID = value.ID,
+                    Name = value.Name,
+                };
+            }
+        }
+        public WritingPriceModel()
+        {
+            WritingType = new WritingTypeModel();
+        }
+
+
     }
+
     public class WritingPriceModelValidator : AbstractValidator<WritingPriceModel>
     {
         public WritingPriceModelValidator()
@@ -25,7 +44,9 @@ namespace HadisIelts.Client.Features.Teacher.Models
                 .WithMessage("Word count cannot be empty");
             RuleFor(x => x.WordCount).GreaterThan(0)
                 .WithMessage("Word count must be greater than 0");
-            RuleFor(x => x.WritingType).NotEqual(WritingTypes.NotSelected)
+            RuleFor(x => x.WritingType).NotNull().NotEmpty()
+                .WithMessage("Please select a writing type");
+            RuleFor(x => x.WritingType.ID).NotEqual(0)
                 .WithMessage("Please select a writing type");
         }
     }

@@ -238,6 +238,21 @@ namespace HadisIelts.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("HadisIelts.Server.Models.Entities.ApplicationWritingType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("WritingTypes");
+                });
+
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.WritingCorrectionServicePrice", b =>
                 {
                     b.Property<int>("ID")
@@ -256,12 +271,14 @@ namespace HadisIelts.Server.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<int>("WritingType")
+                    b.Property<int>("WritingTypeID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
 
-                    b.ToTable("WritingCorrectionServicePrice");
+                    b.HasIndex("WritingTypeID");
+
+                    b.ToTable("WritingCorrectionServicePrices");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -396,6 +413,17 @@ namespace HadisIelts.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HadisIelts.Server.Models.Entities.WritingCorrectionServicePrice", b =>
+                {
+                    b.HasOne("HadisIelts.Server.Models.Entities.ApplicationWritingType", "WritingType")
+                        .WithMany("WritingCorrectionServicePrices")
+                        .HasForeignKey("WritingTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WritingType");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -445,6 +473,11 @@ namespace HadisIelts.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HadisIelts.Server.Models.Entities.ApplicationWritingType", b =>
+                {
+                    b.Navigation("WritingCorrectionServicePrices");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,15 +12,15 @@
     <NotAuthorized>
         <div class="container d-flex" style="justify-content:space-between; margin:auto;">
             <a class="nav-link" href="account/register">Register</a>
-            <a class="nav-link" href="account/login">Log in</a>
+            <a class="nav-link" href="@($"account/login/?ReturnUrl={NavMan.Uri}")">Log in</a>
         </div>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
-    private void BeginLogOut()
+    private async Task BeginLogOut()
     {
-        Mediator.Send(new AccountLogoutRequest());
+        await Mediator.Send(new AccountLogoutRequest());
         NavMan.NavigateTo("/",true);
     }   
 }

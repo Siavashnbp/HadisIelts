@@ -24,7 +24,7 @@ namespace HadisIelts.Shared.Requests.Payment
     {
         public WritingFile WritingFile { get; set; }
         public int WordCount { get; set; }
-        public decimal Price { get; set; }
+        public uint Price { get; set; }
 
     }
 }
