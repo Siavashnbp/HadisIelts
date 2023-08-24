@@ -12,19 +12,25 @@ namespace HadisIelts.Shared.Requests.Payment
     public class ProcessFilesRequest
     {
         public List<WritingFile> WritingFiles { get; set; }
-        public bool RequiresEmailResponse { get; set; }
 
     }
     public class CalculatedPayment
     {
         public List<ProcessedWritingFile> ProcessedFiles { get; set; }
+        public uint TotalPrice { get; set; }
         public string Message { get; set; }
     }
     public class ProcessedWritingFile
     {
         public WritingFile WritingFile { get; set; }
         public int WordCount { get; set; }
-        public uint Price { get; set; }
+        public PriceGroup PriceGroup { get; set; }
+        public string Message { get; set; }
 
+    }
+    public class PriceGroup
+    {
+        public string PriceName { get; set; }
+        public uint Price { get; set; }
     }
 }

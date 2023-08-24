@@ -32,21 +32,37 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     {
                         int wordCount = 0;
                         wordCount = _wordFileServices.CountFileWords(file.Data);
-                        var filePrice = _writingCorrrectionServices.CalculateFilePriceAsync(wordCount, file.WritingTypeID);
-                        if (filePrice > 0)
+                        if (wordCount <= 0)
                         {
                             processedWritingFiles.Add(new ProcessedWritingFile
                             {
+                                WordCount = wordCount,
+                                PriceGroup = null,
                                 WritingFile = file,
-                                Price = filePrice,
-                                WordCount = wordCount
+                                Message = "Writing is not in correct format"
                             });
-                            price += filePrice;
                         }
+                        else
+                        {
+                            var filePrice = _writingCorrrectionServices.CalculateFilePriceAsync(wordCount, file.WritingTypeID);
+                            if (filePrice.PriceGroup.Price > 0)
+                            {
+                                price += filePrice.PriceGroup.Price;
+                                processedWritingFiles.Add(new ProcessedWritingFile
+                                {
+                                    WritingFile = file,
+                                    PriceGroup = filePrice.PriceGroup,
+                                    WordCount = wordCount,
+                                    Message = filePrice.Message
+                                });
+                            }
+                        }
+
                     }
                     return Ok(new ProcessWritingFilesRequest.Response(new CalculatedPayment
                     {
                         ProcessedFiles = processedWritingFiles,
+                        TotalPrice = price,
                         Message = "Files were processed successfully"
                     }));
                 }
@@ -58,8 +74,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
             }
             catch (Exception)
             {
-
-                throw;
+                return Problem("Something went wrong");
             }
         }
     }

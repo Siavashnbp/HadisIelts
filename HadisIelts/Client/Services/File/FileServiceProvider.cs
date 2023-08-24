@@ -6,26 +6,21 @@ namespace HadisIelts.Client.Services.File
 {
     public class FileServiceProvider : IFileServices
     {
-        public async Task<List<WritingFile>> ConvertIBrowseFilesToWritingFilesAsync(List<UserWritingFile> files)
+        public async Task<List<WritingFile>> ConvertIBrowseFilesToWritingFilesAsync(List<WritingFileModel> files)
         {
-            try
+
+            List<WritingFile> writingFiles = new();
+            foreach (var file in files)
             {
-                List<WritingFile> writingFiles = new();
-                foreach (var file in files)
+                writingFiles.Add(new WritingFile
                 {
-                    writingFiles.Add(new WritingFile
-                    {
-                        Data = await ReadUploadedFileDataAsync(file.BrowserFile),
-                        Name = file.BrowserFile.Name,
-                        WritingTypeID = file.WritingTypeID
-                    });
-                }
-                return writingFiles;
+                    Data = file.FileData,
+                    Name = file.Name,
+                    WritingTypeID = file.WritingType.ID
+                });
             }
-            catch (Exception)
-            {
-                return null;
-            }
+            return writingFiles;
+
         }
 
         public async Task<string> ReadUploadedFileDataAsync(IBrowserFile file)

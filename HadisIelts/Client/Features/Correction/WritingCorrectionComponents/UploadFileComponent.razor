@@ -2,13 +2,13 @@
 @using static HadisIelts.Shared.Enums.FileRelatedEnums;
 <div class="container">
     <div class="row">
-        <InputFile class="form-control" type="file" OnChange="async (e)=>await OnFileIsLoaded.InvokeAsync(e)" accept=".docx" multiple/>                
+        <InputFile class="form-control" type="file" OnChange="async (e)=>await OnFileIsLoaded.InvokeAsync(e)" accept=".docx" multiple 
+            style="margin-left:10px;"/>
     </div>
 </div>
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public EventCallback<InputFileChangeEventArgs> OnFileIsLoaded { get; set; }
-    private UserWritingFile _writingFile = new UserWritingFile();
-    
+
 }

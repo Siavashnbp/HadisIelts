@@ -7,6 +7,6 @@ namespace HadisIelts.Client.Services.File
     public interface IFileServices
     {
         public Task<string> ReadUploadedFileDataAsync(IBrowserFile file);
-        public Task<List<WritingFile>> ConvertIBrowseFilesToWritingFilesAsync(List<UserWritingFile> files);
+        public Task<List<WritingFile>> ConvertIBrowseFilesToWritingFilesAsync(List<WritingFileModel> files);
     }
 }

@@ -1,0 +1,59 @@
+﻿@using HadisIelts.Client.Features.Correction.Models;
+<table class="table table-danger" style="color:black; margin-top:15px;">
+    <thead>
+        <tr>
+            <th>
+                <h5>Row</h5>
+            </th>
+            <th>
+                <h5>Name</h5>
+            </th>
+            <th>
+                <h5>Writing Type</h5>
+            </th>
+            <th>
+                <h5>Word Count</h5>
+            </th>
+            <th>
+                <h5>Message</h5>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (FilesWithError is not null)
+        {
+            int i = 1;
+            @foreach (var file in FilesWithError)
+            {
+                <tr>
+                    <td>
+                        <h6>@(i++)</h6>
+                    </td>
+                    <td>
+                        <h6>@file.Name</h6>
+                    </td>
+                    <td>
+                        <h6>
+                            @file.WritingType.Name
+                        </h6>
+                    </td>
+                    <td>
+                        <h6>
+                            @file.WordCount
+                        </h6>
+                    </td>
+                    <td>
+                        <h6>
+                            @file.Message
+                        </h6>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@code {
+    [Parameter, EditorRequired]
+    public List<ProcessedWritingFileModel> FilesWithError { get; set; } = new List<ProcessedWritingFileModel>();
+}
+

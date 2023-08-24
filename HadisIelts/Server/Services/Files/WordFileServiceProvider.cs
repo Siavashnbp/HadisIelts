@@ -5,10 +5,6 @@ namespace HadisIelts.Server.Services.Files
 {
     public class WordFileServiceProvider : IWordFileServices
     {
-        public string ConvertDocxtoXml(string docxData)
-        {
-            throw new NotImplementedException();
-        }
 
         public int CountFileWords(string data)
         {
@@ -28,12 +24,25 @@ namespace HadisIelts.Server.Services.Files
                     XmlNode bodyNode = xmlDoc.SelectSingleNode("//w:body", namespaceManager);
                     if (bodyNode != null)
                     {
+                        bool isAnswerFound = false;
                         XmlNodeList paragraphNodes = bodyNode.SelectNodes(".//w:p", namespaceManager);
                         foreach (XmlNode paragraphNode in paragraphNodes)
                         {
                             string paragraphText = paragraphNode.InnerText.Trim();
                             string[] words = paragraphText.Split(new char[] { ' ', '\t', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                            wordCount += words.Length;
+                            if (isAnswerFound)
+                            {
+                                wordCount += words.Length;
+                            }
+                            else
+                            {
+                                int answerIndex = Array.IndexOf(words, "#Answer:");
+                                if (answerIndex != -1)
+                                {
+                                    wordCount += words.Length - (answerIndex + 1);
+                                    isAnswerFound = true;
+                                }
+                            }
                         }
                     }
                     return wordCount;

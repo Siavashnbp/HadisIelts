@@ -1,8 +1,10 @@
-﻿namespace HadisIelts.Server.Services.Payment
+﻿using HadisIelts.Shared.Requests.Payment;
+
+namespace HadisIelts.Server.Services.Payment
 {
     public interface IWritingCorrectionPayment
     {
-        public uint CalculateFilePriceAsync(int wordCount, int writingTypeID);
+        public ProcessedWritingFile CalculateFilePriceAsync(int wordCount, int writingTypeID);
     }
 
 }
