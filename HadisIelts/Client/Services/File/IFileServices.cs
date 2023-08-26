@@ -1,5 +1,5 @@
 ﻿using HadisIelts.Client.Features.Correction.Models;
-using HadisIelts.Shared.Requests.Correction;
+using HadisIelts.Shared.Models;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace HadisIelts.Client.Services.File

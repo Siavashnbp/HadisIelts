@@ -8,11 +8,11 @@
 @using HadisIelts.Shared.Requests.Payment;
 @using MediatR;
 @using System.Timers;
-@using static HadisIelts.Shared.Enums.FileRelatedEnums;
 @inject NavigationManager NavigationManager
 @inject IMediator Mediator;
 @inject IFileServices FileServices;
 @inject IClientWritingServices ClientWritingServices;
+@inject AuthenticationStateProvider AuthProvider;
 <BreadCrumb Pages=@BreadCrumbs />
 <AuthorizeView>
     <Authorized>
@@ -37,7 +37,7 @@
                             </div>
                             <div class="row justify-content-center">
                                 <div class="col">
-                                    <button class="btn btn-success">Upload Files</button>
+                                    <button class="btn btn-success" @onclick="(()=>UploadProcessedWritingFiles())">Upload Files</button>
                                 </div>
                             </div>
                         </div>
@@ -115,9 +115,11 @@
     private List<ProcessedWritingFileModel> _processedWritingFiles = new List<ProcessedWritingFileModel>();
     private List<ProcessedWritingFileModel> _writingFilesWithError = new List<ProcessedWritingFileModel>();
     private List<WritingTypeModel> _writingTypes = new List<WritingTypeModel>();
+    private AuthenticationState _userAuthenticationState;
     protected override async Task OnInitializedAsync()
     {
         _writingTypes = await ClientWritingServices.GetWritingTypesAsync();
+        _userAuthenticationState = await AuthProvider.GetAuthenticationStateAsync();
     }
     private async Task UploadFilesToProcessAsync()
     {
@@ -149,8 +151,12 @@
                         {
                             _processedWritingFiles.Add(new ProcessedWritingFileModel
                                 {
-                                    Name = item.WritingFile.Name,
-                                    WritingType = _writingTypes.FirstOrDefault(x => x.ID == item.WritingFile.WritingTypeID)!,
+                                    WritingFileModel = new WritingFileModel
+                                    {
+                                        Name = item.WritingFile.Name,
+                                        WritingType = _writingTypes.FirstOrDefault(x => x.ID == item.WritingFile.WritingTypeID)!,
+                                        FileData = item.WritingFile.Data,
+                                    },
                                     PriceGroup = item.PriceGroup,
                                     WordCount = item.WordCount,
                                 });
@@ -159,8 +165,12 @@
                         {
                             _writingFilesWithError.Add(new ProcessedWritingFileModel
                                 {
-                                    Name = item.WritingFile.Name,
-                                    WritingType = _writingTypes.FirstOrDefault(x => x.ID == item.WritingFile.WritingTypeID)!,
+                                    WritingFileModel = new WritingFileModel
+                                    {
+                                        Name = item.WritingFile.Name,
+                                        WritingType = _writingTypes.FirstOrDefault(x => x.ID == item.WritingFile.WritingTypeID)!,
+                                        FileData = item.WritingFile.Data,
+                                    },
                                     WordCount = item.WordCount,
                                     Message = item.Message
                                 });
@@ -181,6 +191,52 @@
             throw;
         }
     }
+    private async Task UploadProcessedWritingFiles()
+    {
+        try
+        {
+            if (_processedWritingFiles is not null && _processedWritingFiles.Count > 0)
+            {
+                var files = new SubmitProcessedWritingCorrectinFiles();
+                foreach (var item in _processedWritingFiles)
+                {
+                    files.WritingFiles.Add(new WritingFile
+                        {
+                            Name = item.WritingFileModel.Name,
+                            Data = item.WritingFileModel.FileData,
+                            WritingTypeID = item.WritingFileModel.WritingType.ID,
+                            Price = item.PriceGroup.Price,
+                            WordCount = item.WordCount
+                        });
+                }
+                var userID = _userAuthenticationState.User.Claims.FirstOrDefault(x => x.Type == "sub").Value;
+                if (userID != string.Empty)
+                {
+                    var request = new UploadProcessedWritingFilesRequest(new SubmitProcessedWritingCorrectinFiles
+                        {
+                            WritingFiles = files.WritingFiles,
+                            RequiresEmailResponse = _requiresEmailResponse,
+                            UserID = userID
+                        });
+                    var result = await Mediator.Send(request);
+                    if (result is not null)
+                    {
+                        var paymentID = result.SubmissionID;
+                        if (paymentID != string.Empty)
+                        {
+                            NavigationManager.NavigateTo($"/services/WritingCorrection/{paymentID}");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    //EventHandlers
     private async Task HandleOnFileIsLoadedAsync(InputFileChangeEventArgs e)
     {
         _areFilesProcessed = false;
@@ -237,21 +293,7 @@
         _areFilesProcessed = false;
         StateHasChanged();
     }
-    private void UploadProcessedWritingFiles()
-    {
-        try
-        {
-            if (_processedWritingFiles is not null)
-            {
-
-            }
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
-    }
+    //BreadCrumbs
     public List<WebsitePage> BreadCrumbs { get; set; } = new List<WebsitePage>{
         new WebsitePage{Name="Home",DisplayName="Home",Link="/" },
         new WebsitePage{Name="Services",DisplayName="Correction Services",Link="/Services" },

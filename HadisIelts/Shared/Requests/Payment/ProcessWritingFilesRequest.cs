@@ -1,4 +1,4 @@
-﻿using HadisIelts.Shared.Requests.Correction;
+﻿using HadisIelts.Shared.Models;
 using MediatR;
 
 namespace HadisIelts.Shared.Requests.Payment

@@ -1,4 +1,4 @@
-﻿using HadisIelts.Shared.Requests.Correction;
+﻿using HadisIelts.Shared.Models;
 
 namespace HadisIelts.Client.Features.Correction.Models
 {
