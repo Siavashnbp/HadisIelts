@@ -158,7 +158,7 @@
                                         FileData = item.WritingFile.Data,
                                     },
                                     PriceGroup = item.PriceGroup,
-                                    WordCount = item.WordCount,
+                                    WordCount = (int)item.WritingFile.WordCount!,
                                 });
                         }
                         else
@@ -171,7 +171,7 @@
                                         WritingType = _writingTypes.FirstOrDefault(x => x.ID == item.WritingFile.WritingTypeID)!,
                                         FileData = item.WritingFile.Data,
                                     },
-                                    WordCount = item.WordCount,
+                                    WordCount = item.WritingFile.WordCount ??= 0,
                                     Message = item.Message
                                 });
                         }
@@ -200,13 +200,21 @@
                 var files = new SubmitProcessedWritingCorrectinFiles();
                 foreach (var item in _processedWritingFiles)
                 {
-                    files.WritingFiles.Add(new WritingFile
+                    files.ProcessedWritingFiles.Add(new ProcessedWritingFile
                         {
-                            Name = item.WritingFileModel.Name,
-                            Data = item.WritingFileModel.FileData,
-                            WritingTypeID = item.WritingFileModel.WritingType.ID,
-                            Price = item.PriceGroup.Price,
-                            WordCount = item.WordCount
+                            WritingFile = new WritingFile
+                            {
+                                Name = item.WritingFileModel.Name,
+                                Data = item.WritingFileModel.FileData,
+                                WritingTypeID = item.WritingFileModel.WritingType.ID,
+                                WordCount = item.WordCount
+                            },
+                            PriceGroup = new PriceGroup
+                            {
+                                Price = item.PriceGroup.Price,
+                                PriceName = item.PriceGroup.PriceName
+                            },
+                            Message = string.Empty
                         });
                 }
                 var userID = _userAuthenticationState.User.Claims.FirstOrDefault(x => x.Type == "sub").Value;
@@ -214,9 +222,10 @@
                 {
                     var request = new UploadProcessedWritingFilesRequest(new SubmitProcessedWritingCorrectinFiles
                         {
-                            WritingFiles = files.WritingFiles,
+                            ProcessedWritingFiles = files.ProcessedWritingFiles,
                             RequiresEmailResponse = _requiresEmailResponse,
-                            UserID = userID
+                            UserID = userID,
+                            TotalPrice = _totalPrice
                         });
                     var result = await Mediator.Send(request);
                     if (result is not null)
@@ -224,7 +233,7 @@
                         var paymentID = result.SubmissionID;
                         if (paymentID != string.Empty)
                         {
-                            NavigationManager.NavigateTo($"/services/WritingCorrection/{paymentID}");
+                            NavigationManager.NavigateTo($"/payment/WritingCorrection/{paymentID}");
                         }
                     }
                 }

@@ -23,7 +23,7 @@ namespace HadisIelts.Client.RequestHandlers.Payment
                     var result = await response.Content.ReadFromJsonAsync<ProcessWritingFilesRequest.Response>();
                     return result;
                 }
-                return new ProcessWritingFilesRequest.Response(new CalculatedPayment
+                return new ProcessWritingFilesRequest.Response(new CalculatedWritingCorrectionPayment
                 {
                     ProcessedFiles = null,
                     Message = "Bad Request!"
@@ -31,7 +31,7 @@ namespace HadisIelts.Client.RequestHandlers.Payment
             }
             catch (Exception e)
             {
-                return new ProcessWritingFilesRequest.Response(new CalculatedPayment
+                return new ProcessWritingFilesRequest.Response(new CalculatedWritingCorrectionPayment
                 {
                     ProcessedFiles = null,
                     Message = $"Request failed with {e.Message}"

@@ -32,7 +32,7 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
         {
             try
             {
-                if (request.Request.WritingFiles is not null && request.Request.WritingFiles.Count > 0
+                if (request.Request.ProcessedWritingFiles is not null && request.Request.ProcessedWritingFiles.Count > 0
                     && request.Request.UserID != string.Empty)
                 {
                     var user = await _userManager.FindByIdAsync(request.Request.UserID);
@@ -41,21 +41,23 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
                         var submitID = await _submittedCorrectionFilesRepository.InsertAsync(new SubmittedWritingCorrectionFiles
                         {
                             User = user,
-                            UserID = user.Id
+                            UserID = user.Id,
+                            TotalPrice = request.Request.TotalPrice
                         });
                         var submitRecord = await _submittedCorrectionFilesRepository.FindByIDAsync(submitID);
                         if (submitRecord != null)
                         {
                             var writingCorrectionFiles = new List<WritingCorrectionFile>();
-                            foreach (var item in request.Request.WritingFiles)
+                            foreach (var item in request.Request.ProcessedWritingFiles)
                             {
                                 var writingFile = new WritingCorrectionFile
                                 {
-                                    Name = item.Name,
-                                    Data = item.Data,
-                                    WordCount = (int)item.WordCount,
-                                    Price = (uint)item.Price,
-                                    ApplicationWritingTypeID = item.WritingTypeID,
+                                    Name = item.WritingFile.Name,
+                                    Data = item.WritingFile.Data,
+                                    WordCount = (int)item.WritingFile.WordCount,
+                                    Price = (uint)item.PriceGroup.Price,
+                                    PriceName = item.PriceGroup.PriceName,
+                                    ApplicationWritingTypeID = item.WritingFile.WritingTypeID,
                                     SubmittedWritingCorrectionFiles = submitRecord,
                                     SubmittedWritingCorecionFilesID = submitRecord.ID,
                                     ApplicationWritingType = null

@@ -9,6 +9,7 @@ namespace HadisIelts.Server.Models.Entities
         public string Data { get; set; }
         public int WordCount { get; set; }
         public uint Price { get; set; }
+        public string PriceName { get; set; }
         public int ApplicationWritingTypeID { get; set; }
         public ApplicationWritingType ApplicationWritingType { get; set; }
         public string SubmittedWritingCorecionFilesID { get; set; }

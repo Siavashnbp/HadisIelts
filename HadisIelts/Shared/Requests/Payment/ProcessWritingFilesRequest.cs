@@ -7,14 +7,14 @@ namespace HadisIelts.Shared.Requests.Payment
         : IRequest<ProcessWritingFilesRequest.Response>
     {
         public const string EndPointUri = "/api/services/payment/processWritingFile";
-        public record Response(CalculatedPayment CalculatedPayment);
+        public record Response(CalculatedWritingCorrectionPayment CalculatedPayment);
     }
     public class ProcessFilesRequest
     {
         public List<WritingFile> WritingFiles { get; set; }
 
     }
-    public class CalculatedPayment
+    public class CalculatedWritingCorrectionPayment
     {
         public List<ProcessedWritingFile> ProcessedFiles { get; set; }
         public uint TotalPrice { get; set; }
@@ -23,7 +23,6 @@ namespace HadisIelts.Shared.Requests.Payment
     public class ProcessedWritingFile
     {
         public WritingFile WritingFile { get; set; }
-        public int WordCount { get; set; }
         public PriceGroup PriceGroup { get; set; }
         public string Message { get; set; }
 

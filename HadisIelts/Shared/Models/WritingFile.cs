@@ -6,6 +6,5 @@
         public int WritingTypeID { get; set; }
         public string Data { get; set; }
         public int? WordCount { get; set; }
-        public uint? Price { get; set; }
     }
 }

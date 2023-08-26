@@ -4,11 +4,11 @@ using System.Net.Http.Json;
 
 namespace HadisIelts.Client.RequestHandlers.Correction
 {
-    public class UploadProcessedWritingCorrectionFiles : IRequestHandler
+    public class UploadProcessedWritingCorrectionFilesHandler : IRequestHandler
         <UploadProcessedWritingFilesRequest, UploadProcessedWritingFilesRequest.Response>
     {
         private readonly HttpClient _httpClient;
-        public UploadProcessedWritingCorrectionFiles(HttpClient httpClient)
+        public UploadProcessedWritingCorrectionFilesHandler(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }

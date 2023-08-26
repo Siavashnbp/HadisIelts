@@ -36,7 +36,6 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         {
                             processedWritingFiles.Add(new ProcessedWritingFile
                             {
-                                WordCount = wordCount,
                                 PriceGroup = null,
                                 WritingFile = file,
                                 Message = "Writing is not in correct format"
@@ -44,6 +43,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         }
                         else
                         {
+                            file.WordCount = wordCount;
                             var filePrice = _writingCorrrectionServices.CalculateFilePriceAsync(wordCount, file.WritingTypeID);
                             if (filePrice.PriceGroup.Price > 0)
                             {
@@ -52,21 +52,20 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                                 {
                                     WritingFile = file,
                                     PriceGroup = filePrice.PriceGroup,
-                                    WordCount = wordCount,
                                     Message = filePrice.Message
                                 });
                             }
                         }
 
                     }
-                    return Ok(new ProcessWritingFilesRequest.Response(new CalculatedPayment
+                    return Ok(new ProcessWritingFilesRequest.Response(new CalculatedWritingCorrectionPayment
                     {
                         ProcessedFiles = processedWritingFiles,
                         TotalPrice = price,
                         Message = "Files were processed successfully"
                     }));
                 }
-                return BadRequest(new ProcessWritingFilesRequest.Response(new CalculatedPayment
+                return BadRequest(new ProcessWritingFilesRequest.Response(new CalculatedWritingCorrectionPayment
                 {
                     ProcessedFiles = null,
                     Message = "No files were submited"

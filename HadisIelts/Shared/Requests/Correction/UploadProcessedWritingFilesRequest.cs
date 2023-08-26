@@ -1,4 +1,4 @@
-﻿using HadisIelts.Shared.Models;
+﻿using HadisIelts.Shared.Requests.Payment;
 using MediatR;
 
 namespace HadisIelts.Shared.Requests.Correction
@@ -12,11 +12,12 @@ namespace HadisIelts.Shared.Requests.Correction
     public class SubmitProcessedWritingCorrectinFiles
     {
         public bool RequiresEmailResponse { get; set; }
-        public List<WritingFile> WritingFiles { get; set; }
+        public uint TotalPrice { get; set; }
+        public List<ProcessedWritingFile> ProcessedWritingFiles { get; set; }
         public string UserID { get; set; }
         public SubmitProcessedWritingCorrectinFiles()
         {
-            WritingFiles = new List<WritingFile>();
+            ProcessedWritingFiles = new List<ProcessedWritingFile>();
         }
     }
 

@@ -1,0 +1,17 @@
+﻿@page "/payment/WritingCorrection/SubmissionID"
+@using HadisIelts.Client.Features.Correction.Models;
+@using HadisIelts.Client.Services.Writing;
+@inject IClientWritingServices ClientWritingSevices; 
+<div class="container">
+</div>
+@code {
+    [Parameter, SupplyParameterFromQuery]
+    public string SubmissionID { get; set; }
+    private string _errorMessage;
+    private List<ProcessedWritingFileModel> _writingFiles;
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await ClientWritingSevices.GetSubmittedWritingCorrectionFiles(SubmissionID);
+        _errorMessage = result.Message;
+    }
+}

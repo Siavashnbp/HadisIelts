@@ -1,5 +1,6 @@
 ﻿using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Payment;
 
 namespace HadisIelts.Server.Services.Payment
@@ -39,13 +40,19 @@ namespace HadisIelts.Server.Services.Payment
                         Price = price.Price,
                         PriceName = price.Name
                     },
-                    WordCount = wordCount,
+                    WritingFile = new WritingFile
+                    {
+                        WordCount = wordCount,
+                    }
                 };
             }
             return new ProcessedWritingFile
             {
                 Message = $"Writing word count exceeds maximum word count for this task",
-                WordCount = wordCount,
+                WritingFile = new WritingFile
+                {
+                    WordCount = wordCount,
+                }
             };
         }
     }
