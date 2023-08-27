@@ -1,0 +1,42 @@
+﻿@using HadisIelts.Client.Features.Payment.Models;
+<div class="card shadow-sm">
+    @if (PaymentFile.FileSuffix == "application/pdf")
+    {
+        <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg"
+             role="img" aria-label="Placeholder: Pdf File" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <title>Placeholder</title>
+            <rect width="100%" height="100%" fill="#55595c"></rect>
+            <text x="50%" y="50%" fill="#eceeef" dy=".3em">Pdf File</text>
+        </svg>
+    }
+    else
+    {
+        <img class="card-img-top" alt="English Class" src="@(PaymentFileModel.ViewImageData(PaymentFile.Data))"
+         @onclick="(async()=>await OnThumbnailIsClicked.InvokeAsync(PaymentFile.Data))" 
+         style="cursor:pointer; height:350px; object-fit:cover;"/>
+    }
+    <div class="card-body">
+        <p class="card-text">@(PaymentFile.Name)</p>
+        <p class="card-text">File Format: @(PaymentFile.FileSuffix)</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-secondary"
+                        @onclick="(async()=>await OnThumbnailIsClicked.InvokeAsync(PaymentFile.Data))">
+                    View
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                @onclick="(()=>OnRemoveButtonIsClicked.InvokeAsync(PaymentFile.ID))"><i class="fa fa-remove"></i></button>
+            </div>
+            <small class="text-muted">@PaymentFile.DateTime</small>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter, EditorRequired]
+    public PaymentFileModel PaymentFile { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<string> OnThumbnailIsClicked { get; set; }
+    [Parameter,EditorRequired]
+    public EventCallback<int> OnRemoveButtonIsClicked { get; set; } 
+}
+
