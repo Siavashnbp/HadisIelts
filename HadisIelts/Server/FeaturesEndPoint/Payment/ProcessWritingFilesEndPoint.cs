@@ -48,13 +48,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             if (filePrice.PriceGroup.Price > 0)
                             {
                                 price += filePrice.PriceGroup.Price;
-                                processedWritingFiles.Add(new ProcessedWritingFile
-                                {
-                                    WritingFile = file,
-                                    PriceGroup = filePrice.PriceGroup,
-                                    Message = filePrice.Message
-                                });
                             }
+                            processedWritingFiles.Add(new ProcessedWritingFile
+                            {
+                                WritingFile = file,
+                                PriceGroup = filePrice.PriceGroup,
+                                Message = filePrice.Message
+                            });
                         }
 
                     }

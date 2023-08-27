@@ -6,9 +6,8 @@ namespace HadisIelts.Client.Services.File
 {
     public class FileServiceProvider : IFileServices
     {
-        public async Task<List<WritingFile>> ConvertIBrowseFilesToWritingFilesAsync(List<WritingFileModel> files)
+        public List<WritingFile> ConvertWritingFileModelToWritingFilesAsync(List<WritingFileModel> files)
         {
-
             List<WritingFile> writingFiles = new();
             foreach (var file in files)
             {

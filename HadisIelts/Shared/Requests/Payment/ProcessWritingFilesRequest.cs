@@ -27,9 +27,4 @@ namespace HadisIelts.Shared.Requests.Payment
         public string Message { get; set; }
 
     }
-    public class PriceGroup
-    {
-        public string PriceName { get; set; }
-        public uint Price { get; set; }
-    }
 }

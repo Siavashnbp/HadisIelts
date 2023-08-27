@@ -48,6 +48,7 @@ namespace HadisIelts.Server.Services.Payment
             }
             return new ProcessedWritingFile
             {
+                PriceGroup = new PriceGroup(),
                 Message = $"Writing word count exceeds maximum word count for this task",
                 WritingFile = new WritingFile
                 {

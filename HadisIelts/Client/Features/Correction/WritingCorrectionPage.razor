@@ -129,7 +129,7 @@
             if (_userWritingFiles is not null && _userWritingFiles.Count > 0 &&
                 _userWritingFiles.All(x => x.WritingType.ID != 0))
             {
-                _processRequest.WritingFiles = await FileServices.ConvertIBrowseFilesToWritingFilesAsync(_userWritingFiles);
+                _processRequest.WritingFiles = FileServices.ConvertWritingFileModelToWritingFilesAsync(_userWritingFiles);
                 var request = new ProcessWritingFilesRequest(new ProcessFilesRequest
                     {
                         WritingFiles = _processRequest.WritingFiles,
@@ -140,42 +140,28 @@
                 if (response.CalculatedPayment is not null
                     && response.CalculatedPayment.ProcessedFiles is not null)
                 {
-                    _processedWritingFiles = new List<ProcessedWritingFileModel>();
-                    _writingFilesWithError = new List<ProcessedWritingFileModel>();
                     _areFilesProcessed = true;
                     _successMessage = response.CalculatedPayment.Message;
                     _totalPrice = response.CalculatedPayment.TotalPrice;
+                    _processedWritingFiles = new List<ProcessedWritingFileModel>();
+                    _writingFilesWithError = new List<ProcessedWritingFileModel>();
+                    var errorFiles = new List<ProcessedWritingFile>();
+                    var processedFiles = new List<ProcessedWritingFile>();
                     foreach (var item in response.CalculatedPayment.ProcessedFiles)
                     {
                         if (item.PriceGroup is not null && item.PriceGroup.Price > 0)
                         {
-                            _processedWritingFiles.Add(new ProcessedWritingFileModel
-                                {
-                                    WritingFileModel = new WritingFileModel
-                                    {
-                                        Name = item.WritingFile.Name,
-                                        WritingType = _writingTypes.FirstOrDefault(x => x.ID == item.WritingFile.WritingTypeID)!,
-                                        FileData = item.WritingFile.Data,
-                                    },
-                                    PriceGroup = item.PriceGroup,
-                                    WordCount = (int)item.WritingFile.WordCount!,
-                                });
+                            processedFiles.Add(item);
                         }
                         else
                         {
-                            _writingFilesWithError.Add(new ProcessedWritingFileModel
-                                {
-                                    WritingFileModel = new WritingFileModel
-                                    {
-                                        Name = item.WritingFile.Name,
-                                        WritingType = _writingTypes.FirstOrDefault(x => x.ID == item.WritingFile.WritingTypeID)!,
-                                        FileData = item.WritingFile.Data,
-                                    },
-                                    WordCount = item.WritingFile.WordCount ??= 0,
-                                    Message = item.Message
-                                });
+                            errorFiles.Add(item);
                         }
                     }
+                    _processedWritingFiles = ProcessedWritingFileModel
+                    .ConvertFilesToProcessedWritingFile(processedFiles, _writingTypes);
+                    _writingFilesWithError = ProcessedWritingFileModel
+                    .ConvertFilesToProcessedWritingFile(errorFiles, _writingTypes);
                     StateHasChanged();
                 }
                 else
