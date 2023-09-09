@@ -24,11 +24,10 @@ namespace HadisIelts.Client.RequestHandlers.Admininstrator
                     var result = await response.Content.ReadFromJsonAsync<UpdateUserRoleRequest.Response>();
                     return result;
                 }
-                return new UpdateUserRoleRequest.Response(new UpdatedUserRole
-                {
-                    UserRoles = default,
-                    Message = "Bad request!",
-                });
+                return new UpdateUserRoleRequest.Response(
+                    UserRoles: default,
+                    Message: "Bad request!"
+                );
             }
             catch (Exception)
             {

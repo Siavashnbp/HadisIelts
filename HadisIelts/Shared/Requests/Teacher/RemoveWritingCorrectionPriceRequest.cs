@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 
 namespace HadisIelts.Shared.Requests.Teacher
 {
@@ -6,6 +7,13 @@ namespace HadisIelts.Shared.Requests.Teacher
         <RemoveWritingCorrectionPriceRequest.Response>
     {
         public const string EndPointUri = "/api/teacher/removeWritingCorrectionPrice";
-        public record Response(bool wasSuccessful);
+        public record Response(bool WasSuccessful);
+    }
+    public class RemoveWritingCorrectionPriceRequestValidator : AbstractValidator<RemoveWritingCorrectionPriceRequest>
+    {
+        public RemoveWritingCorrectionPriceRequestValidator()
+        {
+            RuleFor(x => x.ID).NotEmpty().NotNull();
+        }
     }
 }

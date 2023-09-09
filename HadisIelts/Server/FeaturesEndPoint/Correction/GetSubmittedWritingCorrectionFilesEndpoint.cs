@@ -5,7 +5,6 @@ using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Correction;
-using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,95 +15,103 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
         .WithRequest<GetSubmittedWritingCorrectionFilesRequest>
         .WithActionResult<GetSubmittedWritingCorrectionFilesRequest.Response>
     {
-        private readonly ICustomRepositoryServices<SubmittedWritingCorrectionFiles, string>
+        private readonly ICustomRepositoryServices<WritingCorrectionSubmissionGroup, string>
             _submittedWritingCorrectionFilesRepository;
-        private readonly ICustomRepositoryServices<WritingCorrectionServicePrice, int>
-            _writingCorrectionServicePrice;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
         public GetSubmittedWritingCorrectionFilesEndpoint(UserManager<ApplicationUser> userManager
             , ApplicationDbContext dbContext
-            , ICustomRepositoryServices<SubmittedWritingCorrectionFiles, string> submittedWritingCorrectionFilesRepository
-            , ICustomRepositoryServices<WritingCorrectionServicePrice, int> writingCorrectionServicePrice)
+            , ICustomRepositoryServices<WritingCorrectionSubmissionGroup, string> submittedWritingCorrectionFilesRepository)
         {
             _submittedWritingCorrectionFilesRepository = submittedWritingCorrectionFilesRepository;
             _userManager = userManager;
             _dbContext = dbContext;
-            _writingCorrectionServicePrice = writingCorrectionServicePrice;
         }
+        /// <summary>
+        /// gets submitted writing correction files of a user
+        /// </summary>
+        /// <param name="request">
+        /// UserID: ID of issuer user
+        /// SubmissionID: ID of submitted group
+        /// </param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>
+        /// Unauthorized if found user is different and is not in admin or teacher role
+        /// WritingCorrectionPackage, with appropriate message
+        /// </returns>
         [Authorize]
         [HttpPost(GetSubmittedWritingCorrectionFilesRequest.EndpointUri)]
         public override async Task<ActionResult<GetSubmittedWritingCorrectionFilesRequest.Response>> HandleAsync(GetSubmittedWritingCorrectionFilesRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
-                if (request.Request is not null)
+                var user = await _userManager.FindByIdAsync(request.UserID);
+                if (user != null)
                 {
-                    var user = await _userManager.FindByIdAsync(request.Request.UserID);
-                    if (user != null)
+                    var isUserTeacher = await _userManager.IsInRoleAsync(user, "Administrator,Teacher");
+                    var submission = await _submittedWritingCorrectionFilesRepository.FindByIDAsync(request.SubmissionID);
+                    if (submission != null)
                     {
-                        var isUserTeacher = await _userManager.IsInRoleAsync(user, "Administrator,Teacher");
-                        var submission = await _submittedWritingCorrectionFilesRepository.FindByIDAsync(request.Request.SubmissionID);
-                        if (submission != null)
+                        if (!isUserTeacher)
                         {
-                            if (!isUserTeacher)
+                            if (submission.UserID != request.UserID)
                             {
-                                if (submission.UserID != request.Request.UserID)
-                                {
-                                    return Unauthorized();
-                                }
+                                return Unauthorized();
                             }
-                            var files = _dbContext.WritingCorrectionFiles.ToList().FindAll
-                                (x => x.SubmittedWritingCorecionFilesID == submission.ID);
-                            if (files is not null && files.Count > 0)
-                            {
-                                var writingFiles = new List<ProcessedWritingFile>();
-                                foreach (var file in files)
-                                {
-                                    writingFiles.Add(new ProcessedWritingFile
-                                    {
-                                        WritingFile = new WritingFile
-                                        {
-                                            Name = file.Name,
-                                            Data = file.Data,
-                                            WordCount = file.WordCount,
-                                            WritingTypeID = file.ApplicationWritingTypeID
-                                        },
-                                        PriceGroup = new PriceGroup
-                                        {
-                                            Price = file.Price,
-                                            PriceName = file.PriceName
-                                        }
-                                    });
-                                }
-                                return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(new CalculatedWritingCorrectionPayment
-                                {
-                                    ProcessedFiles = writingFiles,
-                                    TotalPrice = submission.TotalPrice
-                                }));
-                            }
-                            return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(new CalculatedWritingCorrectionPayment
-                            {
-                                ProcessedFiles = new List<ProcessedWritingFile>(),
-                                TotalPrice = 0,
-                                Message = "No files were found"
-                            }));
                         }
-                        return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(new CalculatedWritingCorrectionPayment
+                        var files = _dbContext.WritingCorrectionFiles.ToList().FindAll
+                            (x => x.SubmittedWritingCorecionFilesID == submission.ID);
+                        if (files is not null && files.Count > 0)
                         {
-                            ProcessedFiles = new List<ProcessedWritingFile>(),
-                            TotalPrice = 0,
-                            Message = "Submission request was not found"
-                        }));
+                            var writingFiles = new List<ProcessedWritingFileSharedModel>();
+                            foreach (var file in files)
+                            {
+                                writingFiles.Add(new ProcessedWritingFileSharedModel
+                                {
+                                    WritingFile = new WritingFileSharedModel
+                                    {
+                                        Name = file.Name,
+                                        Data = file.Data,
+                                        WordCount = file.WordCount,
+                                        WritingTypeID = file.ApplicationWritingTypeID
+                                    },
+                                    PriceGroup = new PriceGroupSharedModel
+                                    {
+                                        Price = file.Price,
+                                        PriceName = file.PriceName
+                                    }
+                                });
+                            }
+                            return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(
+                                new WritingCorrectionPackageSharedModel
+                                {
+                                    ProcessedWritingFiles = writingFiles,
+                                    TotalPrice = submission.TotalPrice
+                                }
+                                , Message: string.Empty));
+                        }
+                        return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(
+                            WritingCorrectionPackage: new WritingCorrectionPackageSharedModel
+                            {
+                                ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>(),
+                                TotalPrice = 0,
+                            },
+                            Message: "No files were found"));
+
                     }
-                    return Unauthorized();
+                    return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(
+                        new WritingCorrectionPackageSharedModel
+                        {
+                            ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>(),
+                            TotalPrice = 0,
+                        }
+                    , Message: "Submission request was not found"));
                 }
-                return BadRequest();
+                return Unauthorized();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

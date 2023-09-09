@@ -34,14 +34,15 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                     var result = _writingCorrectionPriceRepository.Update(writingCorrectionPriceEntity);
                     if (result)
                     {
-                        return Ok(new EditWritingCorrectionPriceRequest.Response(new WritingCorrectionPrice
-                        {
-                            ID = writingCorrectionPriceEntity.ID,
-                            Name = writingCorrectionPriceEntity.Name,
-                            Price = writingCorrectionPriceEntity.Price,
-                            WordCount = writingCorrectionPriceEntity.WordCount,
-                            WritingTypeID = writingCorrectionPriceEntity.WritingTypeID
-                        }));
+                        return Ok(new EditWritingCorrectionPriceRequest.Response(
+                            new Shared.Models.WritingCorrectionServicePriceSharedModel
+                            {
+                                ID = writingCorrectionPriceEntity.ID,
+                                Name = writingCorrectionPriceEntity.Name,
+                                Price = writingCorrectionPriceEntity.Price,
+                                WordCount = writingCorrectionPriceEntity.WordCount,
+                                WritingTypeID = writingCorrectionPriceEntity.WritingTypeID
+                            }));
                     }
                 }
                 return Problem();

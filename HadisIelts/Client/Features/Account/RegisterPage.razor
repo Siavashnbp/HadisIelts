@@ -57,14 +57,9 @@
     {
         try
         {
-            var request = new RegisterAccountRequest
-            (
-                new RegiterRequest
-                    {
-                        Email = _registerModel.Email,
-                        Password = _registerModel.Password
-                    }
-            );
+            var request = new RegisterAccountRequest(
+                Email: _registerModel.Email,
+                Password: _registerModel.Password);
             var response = await Mediator.Send(request);
             if (response.registerSuccess)
             {

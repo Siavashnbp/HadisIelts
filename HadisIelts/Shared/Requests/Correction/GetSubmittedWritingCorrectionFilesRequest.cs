@@ -1,17 +1,22 @@
-﻿using HadisIelts.Shared.Requests.Payment;
+﻿using FluentValidation;
+using HadisIelts.Shared.Models;
 using MediatR;
 
 namespace HadisIelts.Shared.Requests.Correction
 {
-    public record GetSubmittedWritingCorrectionFilesRequest(SubmittedWritingFilesIdentifications Request)
+    public record GetSubmittedWritingCorrectionFilesRequest(string UserID, string SubmissionID)
         : IRequest<GetSubmittedWritingCorrectionFilesRequest.Response>
     {
         public const string EndpointUri = "/api/services/writingCorrection/getFiles";
-        public record Response(CalculatedWritingCorrectionPayment CalculatedWritingCorrectionPayment);
+        public record Response(WritingCorrectionPackageSharedModel WritingCorrectionPackage, string Message);
     }
-    public class SubmittedWritingFilesIdentifications
+    public class GetSubmittedWritingCorrectionFilesRequestValidator
+        : AbstractValidator<GetSubmittedWritingCorrectionFilesRequest>
     {
-        public string UserID { get; set; }
-        public string SubmissionID { get; set; }
+        public GetSubmittedWritingCorrectionFilesRequestValidator()
+        {
+            RuleFor(x => x.UserID).NotEmpty().NotNull();
+            RuleFor(x => x.SubmissionID).NotEmpty().NotNull();
+        }
     }
 }

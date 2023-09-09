@@ -1,8 +1,7 @@
 ﻿using HadisIelts.Server.Data;
 using HadisIelts.Server.Models;
-using HadisIelts.Shared.Requests.Admin;
+using HadisIelts.Shared.Models;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
 using static HadisIelts.Shared.Enums.UserRelatedEnums;
 
 namespace HadisIelts.Server.Services.User
@@ -34,19 +33,17 @@ namespace HadisIelts.Server.Services.User
             return ConvertToApplicationRoles(userRoles.ToList());
         }
 
-        public async Task<List<UserRoles>> GetUsersRolesAsync(List<ApplicationUser> users)
+        public async Task<List<UserRolesSharedModel>> GetUsersRolesAsync(List<ApplicationUser> users)
         {
-            var usersRoles = new List<UserRoles>();
+            var usersRoles = new List<UserRolesSharedModel>();
             if (users is not null && users.Count > 0)
             {
                 foreach (var user in users)
                 {
                     var roles = await _userManager.GetRolesAsync(user);
                     var applicationRoles = ConvertToApplicationRoles(roles.ToList());
-                    var rolesInJson = JsonConvert.SerializeObject(applicationRoles);
-                    usersRoles.Add(new UserRoles
+                    usersRoles.Add(new UserRolesSharedModel(email: user.Email!)
                     {
-                        Email = user.Email,
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         Roles = applicationRoles,
@@ -57,10 +54,12 @@ namespace HadisIelts.Server.Services.User
         }
         private List<Tuple<ApplicationRoles, bool>> ConvertToApplicationRoles(List<string> roles)
         {
-            var applicationRoles = new List<Tuple<ApplicationRoles, bool>>();
-            applicationRoles.Add(Tuple.Create(ApplicationRoles.Admin, roles.Contains("Administrator")));
-            applicationRoles.Add(Tuple.Create(ApplicationRoles.Teacher, roles.Contains("Teacher")));
-            applicationRoles.Add(Tuple.Create(ApplicationRoles.Student, roles.Contains("Student")));
+            var applicationRoles = new List<Tuple<ApplicationRoles, bool>>
+            {
+                Tuple.Create(ApplicationRoles.Admin, roles.Contains("Administrator")),
+                Tuple.Create(ApplicationRoles.Teacher, roles.Contains("Teacher")),
+                Tuple.Create(ApplicationRoles.Student, roles.Contains("Student"))
+            };
             return applicationRoles;
         }
     }

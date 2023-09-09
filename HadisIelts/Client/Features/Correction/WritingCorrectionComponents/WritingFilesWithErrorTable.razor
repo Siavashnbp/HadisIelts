@@ -30,16 +30,16 @@
                         <h6>@(i++)</h6>
                     </td>
                     <td>
-                        <h6>@file.WritingFileModel.Name</h6>
+                        <h6>@file.WritingFile.Name</h6>
                     </td>
                     <td>
                         <h6>
-                            @file.WritingFileModel.WritingType.Name
+                            @*@file.WritingFile.WritingType.Name*@
                         </h6>
                     </td>
                     <td>
                         <h6>
-                            @file.WordCount
+                            @file.WritingFile
                         </h6>
                     </td>
                     <td>
@@ -54,6 +54,6 @@
 </table>
 @code {
     [Parameter, EditorRequired]
-    public List<ProcessedWritingFileModel> FilesWithError { get; set; } = new List<ProcessedWritingFileModel>();
+    public List<ProcessedWritingFileSharedModel> FilesWithError { get; set; } = new List<ProcessedWritingFileSharedModel>();
 }
 

@@ -59,7 +59,7 @@
     [Parameter, EditorRequired]
     public List<WritingFileModel> WritingFiles { get; set; }
     [Parameter]
-    public List<WritingTypeModel> WritingTypes { get; set; }
+    public List<WritingTypeSharedModel> WritingTypes { get; set; }
     [Parameter, EditorRequired]
     public EventCallback<(int WritingTypeID, int WritingID)> OnWritingTypeIsSelected { get; set; }
     [Parameter, EditorRequired]

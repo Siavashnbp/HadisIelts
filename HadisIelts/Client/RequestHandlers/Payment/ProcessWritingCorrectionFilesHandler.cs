@@ -1,4 +1,5 @@
-﻿using HadisIelts.Shared.Requests.Payment;
+﻿using HadisIelts.Shared.Models;
+using HadisIelts.Shared.Requests.Payment;
 using MediatR;
 using System.Net.Http.Json;
 
@@ -23,19 +24,19 @@ namespace HadisIelts.Client.RequestHandlers.Payment
                     var result = await response.Content.ReadFromJsonAsync<ProcessWritingFilesRequest.Response>();
                     return result;
                 }
-                return new ProcessWritingFilesRequest.Response(new CalculatedWritingCorrectionPayment
+                return new ProcessWritingFilesRequest.Response(new WritingCorrectionPackageSharedModel
                 {
-                    ProcessedFiles = null,
-                    Message = "Bad Request!"
-                });
+                    ProcessedWritingFiles = null,
+
+                }, Message: "Bad Request!");
             }
             catch (Exception e)
             {
-                return new ProcessWritingFilesRequest.Response(new CalculatedWritingCorrectionPayment
+                return new ProcessWritingFilesRequest.Response(new WritingCorrectionPackageSharedModel
                 {
-                    ProcessedFiles = null,
-                    Message = $"Request failed with {e.Message}"
-                });
+                    ProcessedWritingFiles = null
+                }
+                , Message: "failed");
             }
         }
     }

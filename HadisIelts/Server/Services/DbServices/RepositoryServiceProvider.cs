@@ -28,11 +28,11 @@ namespace HadisIelts.Server.Services.DbServices
             return _dbContext.Set<TEntity>().ToList();
         }
 
-        public async Task<TKey> InsertAsync(TEntity entity)
+        public TEntity Insert(TEntity entity)
         {
-            var data = await _dbContext.AddAsync<TEntity>(entity);
+            var data = _dbContext.Add(entity);
             _dbContext.SaveChanges();
-            return data.Entity.ID;
+            return data.Entity;
         }
 
         public bool Update(TEntity entity)

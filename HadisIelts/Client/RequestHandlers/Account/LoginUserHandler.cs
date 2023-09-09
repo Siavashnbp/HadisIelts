@@ -17,7 +17,7 @@ namespace HadisIelts.Client.RequestHandlers.Account
         }
         public async Task<AccountLoginRequest.Response?> Handle(AccountLoginRequest request, CancellationToken cancellationToken)
         {
-            request.Request.Password = _passwordService.HashPassword(request.Request.Password);
+            request.LoginRequest.Password = _passwordService.HashPassword(request.LoginRequest.Password);
             var response = await _httpClient.PostAsJsonAsync
                 (AccountLoginRequest.EndPointUri, request, cancellationToken);
             if (response.IsSuccessStatusCode)
@@ -25,11 +25,10 @@ namespace HadisIelts.Client.RequestHandlers.Account
                 var result = await response.Content.ReadFromJsonAsync<AccountLoginRequest.Response>();
                 return result;
             }
-            return new AccountLoginRequest.Response(new LoginResponse
-            {
-                LoginSucess = false,
-                Message = "Bad Request!"
-            });
+            return new AccountLoginRequest.Response(
+                LoginSuccess: false,
+                Message: "Bad Request!"
+            );
         }
     }
 }

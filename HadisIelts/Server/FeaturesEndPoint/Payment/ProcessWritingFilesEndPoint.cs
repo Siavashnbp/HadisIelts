@@ -1,6 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Services.Files;
 using HadisIelts.Server.Services.Payment;
+using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,57 +24,47 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                if (request.Request.WritingFiles is not null
-                    && request.Request.WritingFiles.Count > 0)
+                uint price = 0;
+                List<ProcessedWritingFileSharedModel> processedWritingFiles = new List<ProcessedWritingFileSharedModel>();
+                foreach (var file in request.WritingFiles)
                 {
-                    uint price = 0;
-                    List<ProcessedWritingFile> processedWritingFiles = new List<ProcessedWritingFile>();
-                    foreach (var file in request.Request.WritingFiles)
+                    int wordCount = 0;
+                    wordCount = _wordFileServices.CountFileWords(file.Data);
+                    if (wordCount <= 0)
                     {
-                        int wordCount = 0;
-                        wordCount = _wordFileServices.CountFileWords(file.Data);
-                        if (wordCount <= 0)
+                        processedWritingFiles.Add(new ProcessedWritingFileSharedModel
                         {
-                            processedWritingFiles.Add(new ProcessedWritingFile
-                            {
-                                PriceGroup = null,
-                                WritingFile = file,
-                                Message = "Writing is not in correct format"
-                            });
-                        }
-                        else
-                        {
-                            file.WordCount = wordCount;
-                            var filePrice = _writingCorrrectionServices.CalculateFilePriceAsync(wordCount, file.WritingTypeID);
-                            if (filePrice.PriceGroup.Price > 0)
-                            {
-                                price += filePrice.PriceGroup.Price;
-                            }
-                            processedWritingFiles.Add(new ProcessedWritingFile
-                            {
-                                WritingFile = file,
-                                PriceGroup = filePrice.PriceGroup,
-                                Message = filePrice.Message
-                            });
-                        }
-
+                            PriceGroup = null,
+                            WritingFile = file,
+                            Message = "Writing is not in correct format"
+                        });
                     }
-                    return Ok(new ProcessWritingFilesRequest.Response(new CalculatedWritingCorrectionPayment
+                    else
                     {
-                        ProcessedFiles = processedWritingFiles,
-                        TotalPrice = price,
-                        Message = "Files were processed successfully"
-                    }));
+                        file.WordCount = wordCount;
+                        var filePrice = _writingCorrrectionServices.CalculateFilePriceAsync(wordCount, file.WritingTypeID);
+                        if (filePrice.PriceGroup.Price > 0)
+                        {
+                            price += filePrice.PriceGroup.Price;
+                        }
+                        processedWritingFiles.Add(new ProcessedWritingFileSharedModel
+                        {
+                            WritingFile = file,
+                            PriceGroup = filePrice.PriceGroup,
+                            Message = filePrice.Message
+                        });
+                    }
                 }
-                return BadRequest(new ProcessWritingFilesRequest.Response(new CalculatedWritingCorrectionPayment
+                return Ok(new ProcessWritingFilesRequest.Response(new WritingCorrectionPackageSharedModel
                 {
-                    ProcessedFiles = null,
-                    Message = "No files were submited"
-                }));
+                    ProcessedWritingFiles = processedWritingFiles,
+                    TotalPrice = price,
+                },
+                Message: string.Empty));
             }
             catch (Exception)
             {
-                return Problem("Something went wrong");
+                return BadRequest("Something went wrong");
             }
         }
     }

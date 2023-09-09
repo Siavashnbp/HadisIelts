@@ -6,12 +6,12 @@ namespace HadisIelts.Client.Services.File
 {
     public class FileServiceProvider : IFileServices
     {
-        public List<WritingFile> ConvertWritingFileModelToWritingFilesAsync(List<WritingFileModel> files)
+        public List<WritingFileSharedModel> ConvertWritingFileModelToWritingFilesAsync(List<WritingFileModel> files)
         {
-            List<WritingFile> writingFiles = new();
+            List<WritingFileSharedModel> writingFiles = new();
             foreach (var file in files)
             {
-                writingFiles.Add(new WritingFile
+                writingFiles.Add(new WritingFileSharedModel
                 {
                     Data = file.FileData,
                     Name = file.Name,
@@ -36,6 +36,10 @@ namespace HadisIelts.Client.Services.File
                 }
                 return null;
             }
+        }
+        public string ViewImageData(string imageData)
+        {
+            return String.Format("data:image/gif;base64,{0}", imageData);
         }
     }
 }

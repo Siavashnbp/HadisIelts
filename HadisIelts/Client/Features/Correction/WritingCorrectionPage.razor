@@ -112,9 +112,9 @@
     private bool _requiresEmailResponse = false;
     private List<WritingFileModel> _userWritingFiles = new List<WritingFileModel>();
     private ProcessWritingCorrectionFilesModel _processRequest = new ProcessWritingCorrectionFilesModel();
-    private List<ProcessedWritingFileModel> _processedWritingFiles = new List<ProcessedWritingFileModel>();
-    private List<ProcessedWritingFileModel> _writingFilesWithError = new List<ProcessedWritingFileModel>();
-    private List<WritingTypeModel> _writingTypes = new List<WritingTypeModel>();
+    private List<ProcessedWritingFileSharedModel> _processedWritingFiles = new List<ProcessedWritingFileSharedModel>();
+    private List<ProcessedWritingFileSharedModel> _writingFilesWithError = new List<ProcessedWritingFileSharedModel>();
+    private List<WritingTypeSharedModel> _writingTypes = new List<WritingTypeSharedModel>();
     private AuthenticationState _userAuthenticationState;
     protected override async Task OnInitializedAsync()
     {
@@ -130,43 +130,34 @@
                 _userWritingFiles.All(x => x.WritingType.ID != 0))
             {
                 _processRequest.WritingFiles = FileServices.ConvertWritingFileModelToWritingFilesAsync(_userWritingFiles);
-                var request = new ProcessWritingFilesRequest(new ProcessFilesRequest
-                    {
-                        WritingFiles = _processRequest.WritingFiles,
-                    });
+                var request = new ProcessWritingFilesRequest(WritingFiles: _processRequest.WritingFiles);
                 var response = await Mediator.Send(request);
                 _processedWritingFiles.Clear();
                 _userWritingFiles.Clear();
-                if (response.CalculatedPayment is not null
-                    && response.CalculatedPayment.ProcessedFiles is not null)
+                if (response.ProcessedWritingCorrection is not null
+                    && response.ProcessedWritingCorrection.ProcessedWritingFiles is not null)
                 {
                     _areFilesProcessed = true;
-                    _successMessage = response.CalculatedPayment.Message;
-                    _totalPrice = response.CalculatedPayment.TotalPrice;
-                    _processedWritingFiles = new List<ProcessedWritingFileModel>();
-                    _writingFilesWithError = new List<ProcessedWritingFileModel>();
-                    var errorFiles = new List<ProcessedWritingFile>();
-                    var processedFiles = new List<ProcessedWritingFile>();
-                    foreach (var item in response.CalculatedPayment.ProcessedFiles)
+                    _successMessage = response.Message;
+                    _totalPrice = response.ProcessedWritingCorrection.TotalPrice;
+                    _processedWritingFiles = new List<ProcessedWritingFileSharedModel>();
+                    _writingFilesWithError = new List<ProcessedWritingFileSharedModel>();
+                    foreach (var item in response.ProcessedWritingCorrection.ProcessedWritingFiles)
                     {
                         if (item.PriceGroup is not null && item.PriceGroup.Price > 0)
                         {
-                            processedFiles.Add(item);
+                            _processedWritingFiles.Add(item);
                         }
                         else
                         {
-                            errorFiles.Add(item);
+                            _writingFilesWithError.Add(item);
                         }
                     }
-                    _processedWritingFiles = ProcessedWritingFileModel
-                    .ConvertFilesToProcessedWritingFile(processedFiles, _writingTypes);
-                    _writingFilesWithError = ProcessedWritingFileModel
-                    .ConvertFilesToProcessedWritingFile(errorFiles, _writingTypes);
                     StateHasChanged();
                 }
                 else
                 {
-                    _errorMessage = response.CalculatedPayment.Message;
+                    _errorMessage = response.Message;
                     StateHasChanged();
                 }
             }
@@ -183,19 +174,19 @@
         {
             if (_processedWritingFiles is not null && _processedWritingFiles.Count > 0)
             {
-                var files = new SubmitProcessedWritingCorrectinFiles();
+                var files = new List<ProcessedWritingFileSharedModel>();
                 foreach (var item in _processedWritingFiles)
                 {
-                    files.ProcessedWritingFiles.Add(new ProcessedWritingFile
+                    files.Add(new ProcessedWritingFileSharedModel
                         {
-                            WritingFile = new WritingFile
+                            WritingFile = new WritingFileSharedModel
                             {
-                                Name = item.WritingFileModel.Name,
-                                Data = item.WritingFileModel.FileData,
-                                WritingTypeID = item.WritingFileModel.WritingType.ID,
-                                WordCount = item.WordCount
+                                Name = item.WritingFile.Name,
+                                Data = item.WritingFile.Data,
+                                WritingTypeID = item.WritingFile.WritingTypeID,
+                                WordCount = item.WritingFile.WordCount
                             },
-                            PriceGroup = new PriceGroup
+                            PriceGroup = new PriceGroupSharedModel
                             {
                                 Price = item.PriceGroup.Price,
                                 PriceName = item.PriceGroup.PriceName
@@ -204,19 +195,20 @@
                         });
                 }
                 var userID = _userAuthenticationState.User.Claims.FirstOrDefault(x => x.Type == "sub").Value;
-                if (userID != string.Empty)
+                if (userID is not null)
                 {
-                    var request = new UploadProcessedWritingFilesRequest(new SubmitProcessedWritingCorrectinFiles
-                        {
-                            ProcessedWritingFiles = files.ProcessedWritingFiles,
-                            RequiresEmailResponse = _requiresEmailResponse,
-                            UserID = userID,
-                            TotalPrice = _totalPrice
-                        });
+                    var request = new UploadProcessedWritingFilesRequest(UserID: userID
+                        , new WritingCorrectionPackageSharedModel
+                            {
+                                ID = "Submit file",
+                                ProcessedWritingFiles = files,
+                                RequiresEmailResponse = _requiresEmailResponse,
+                                TotalPrice = _totalPrice
+                            });
                     var result = await Mediator.Send(request);
                     if (result is not null)
                     {
-                        var paymentID = result.SubmissionID;
+                        var paymentID = result.PaymentID;
                         if (paymentID != string.Empty)
                         {
                             NavigationManager.NavigateTo($"/payment/WritingCorrection/{paymentID}");
@@ -245,7 +237,7 @@
                             ID = _id,
                             Name = file.Name,
                             FileSize = file.Size,
-                            WritingType = new WritingTypeModel(),
+                            WritingType = new WritingTypeSharedModel(),
                             FileData = await FileServices.ReadUploadedFileDataAsync(file)
                         });
 

@@ -1,24 +1,35 @@
-﻿using HadisIelts.Shared.Requests.Payment;
+﻿using FluentValidation;
+using HadisIelts.Shared.Models;
 using MediatR;
 
 namespace HadisIelts.Shared.Requests.Correction
 {
-    public record UploadProcessedWritingFilesRequest(SubmitProcessedWritingCorrectinFiles Request)
+    public record UploadProcessedWritingFilesRequest(string UserID
+        , WritingCorrectionPackageSharedModel WritingCorrectionPackage)
         : IRequest<UploadProcessedWritingFilesRequest.Response>
     {
         public const string EndpointUri = "/api/services/submitProcessedWritingFiles";
-        public record Response(string SubmissionID);
+        public record Response(string PaymentID);
     }
-    public class SubmitProcessedWritingCorrectinFiles
+    public class UploadProcessedWritingFilesRequestValidator
+        : AbstractValidator<UploadProcessedWritingFilesRequest>
     {
-        public bool RequiresEmailResponse { get; set; }
-        public uint TotalPrice { get; set; }
-        public List<ProcessedWritingFile> ProcessedWritingFiles { get; set; }
-        public string UserID { get; set; }
-        public SubmitProcessedWritingCorrectinFiles()
+        public UploadProcessedWritingFilesRequestValidator()
         {
-            ProcessedWritingFiles = new List<ProcessedWritingFile>();
+            RuleFor(x => x.UserID).NotNull().NotEmpty();
+            RuleFor(x => x.WritingCorrectionPackage).SetValidator(new WritingCorrectionPackageValidator());
         }
     }
+    public class WritingCorrectionPackageValidator
+        : AbstractValidator<WritingCorrectionPackageSharedModel>
+    {
+        public WritingCorrectionPackageValidator()
+        {
+            RuleFor(x => x.TotalPrice).GreaterThan((uint)0);
+            RuleFor(x => x.ProcessedWritingFiles).NotNull().NotEmpty();
+            RuleFor(x => x.ProcessedWritingFiles.Count).GreaterThan(0);
+        }
+    }
+
 
 }

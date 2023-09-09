@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using HadisIelts.Shared.Models;
 
 namespace HadisIelts.Client.Features.Teacher.Models
 {
@@ -8,14 +9,14 @@ namespace HadisIelts.Client.Features.Teacher.Models
         public string Name { get; set; }
         public int? Price { get; set; }
         public int? WordCount { get; set; }
-        private WritingTypeModel _writingType;
+        private WritingTypeSharedModel _writingType;
 
-        public WritingTypeModel WritingType
+        public WritingTypeSharedModel WritingType
         {
             get { return _writingType; }
             set
             {
-                _writingType = new WritingTypeModel
+                _writingType = new WritingTypeSharedModel
                 {
                     ID = value.ID,
                     Name = value.Name,
@@ -24,7 +25,7 @@ namespace HadisIelts.Client.Features.Teacher.Models
         }
         public WritingPriceModel()
         {
-            WritingType = new WritingTypeModel();
+            WritingType = new WritingTypeSharedModel();
         }
 
 

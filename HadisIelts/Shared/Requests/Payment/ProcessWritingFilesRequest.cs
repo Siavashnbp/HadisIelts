@@ -1,30 +1,22 @@
-﻿using HadisIelts.Shared.Models;
+﻿using FluentValidation;
+using HadisIelts.Shared.Models;
 using MediatR;
 
 namespace HadisIelts.Shared.Requests.Payment
 {
-    public record ProcessWritingFilesRequest(ProcessFilesRequest Request)
+    public record ProcessWritingFilesRequest(List<WritingFileSharedModel> WritingFiles)
         : IRequest<ProcessWritingFilesRequest.Response>
     {
         public const string EndPointUri = "/api/services/payment/processWritingFile";
-        public record Response(CalculatedWritingCorrectionPayment CalculatedPayment);
+        public record Response(WritingCorrectionPackageSharedModel ProcessedWritingCorrection, string Message);
     }
-    public class ProcessFilesRequest
+    public class ProcessWritingFilesRequestValidator
+        : AbstractValidator<ProcessWritingFilesRequest>
     {
-        public List<WritingFile> WritingFiles { get; set; }
-
-    }
-    public class CalculatedWritingCorrectionPayment
-    {
-        public List<ProcessedWritingFile> ProcessedFiles { get; set; }
-        public uint TotalPrice { get; set; }
-        public string Message { get; set; }
-    }
-    public class ProcessedWritingFile
-    {
-        public WritingFile WritingFile { get; set; }
-        public PriceGroup PriceGroup { get; set; }
-        public string Message { get; set; }
-
+        public ProcessWritingFilesRequestValidator()
+        {
+            RuleFor(x => x.WritingFiles).NotNull().NotEmpty();
+            RuleFor(x => x.WritingFiles.Count).GreaterThan(0);
+        }
     }
 }

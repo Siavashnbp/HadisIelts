@@ -1,11 +1,12 @@
 ﻿@page "/profile"
-@page "/profile/{userID}"
+@page "/profile/{RequestedUserID}"
 @using HadisIelts.Client.Features.Account.Models;
+@using HadisIelts.Client.Services.User;
 @using HadisIelts.Shared.Requests.Account;
 @using System.Security.Claims;
 @inject IMediator Mediator;
 @inject NavigationManager NavMan;
-@inject AuthenticationStateProvider AuthProvider;
+@inject IUserServices UserServices;
 <AuthorizeView>
     <Authorized>
         <div class="container main-form col-lg-6">
@@ -15,37 +16,32 @@
                 </div>
                 <div class="d-flex col-8" style="flex-direction:column;">
                     <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_profileModel.UserName" type="text" id="floatingUsername" />
+                        <InputText class="form-control" placeholder="_userInformation.Username" type="text" id="floatingUsername" disabled/>
                         <label for="floatingUsername">Username</label>
                     </div>
                     <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_profileModel.FirstName" typeof="text" id="floatingFirstName" />
+                        <InputText class="form-control" @bind-Value="_userInformation.FirstName" typeof="text" id="floatingFirstName" />
                         <label for="floatingName">First Name</label>
                     </div>
                     <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_profileModel.LastName" typeof="text" id="floatingLastName" />
+                        <InputText class="form-control" @bind-Value="_userInformation.LastName" typeof="text" id="floatingLastName" />
                         <label for="floatingName">Last Name</label>
                     </div>
                     <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_profileModel.Email" typeof="email" id="floatingEmail" />
+                        <InputText class="form-control" placeholder="_userInformation.Email" typeof="email" id="floatingEmail" disabled/>
                         <label for="floatingEmail">Email</label>
                     </div>
                     <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_profileModel.Skype" typeof="text" id="floatingSkype" />
+                        <InputText class="form-control" @bind-Value="_userInformation.Skype" typeof="text" id="floatingSkype" />
                         <label for="floatingSkype">Skype ID</label>
                     </div>
-                    @if (_authenticationState.User.Claims.First(x => x.Type == "sub").Value == userID)
+                    @if (_currentUserID == RequestedUserID)
                     {
                         <button>Edit</button>
                     }
                 </div>
             </div>
-        </div>
-        @foreach (var item in _authenticationState.User.Claims)
-        {
-            <h3>@(item.Type)</h3>
-            <h3>@(item.Value)</h3>
-        }
+        </div>        
     </Authorized>
     <NotAuthorized>
         <NotAuthorizedComponent />
@@ -54,19 +50,18 @@
 
 @code {
     [Parameter]
-    public string userID { get; set; } = string.Empty;
-    private ProfileModel _profileModel { get; set; } = new();
-    private AuthenticationState? _authenticationState { get; set; }
+    public string RequestedUserID { get; set; } = string.Empty;
+    private string _currentUserID;
+    private UserInformationSharedModel _userInformation { get; set; }
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _authenticationState = await AuthProvider.GetAuthenticationStateAsync();
-            if (userID == string.Empty)
+            _currentUserID = await UserServices.GetUserIDAsync();
+            if (RequestedUserID == string.Empty)
             {
-                var authenticationState = await AuthProvider.GetAuthenticationStateAsync();
-                userID = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "sub").Value;
-            };
+                RequestedUserID = _currentUserID;
+            }
             await GetUserInformation();
         }
         catch (Exception)
@@ -79,18 +74,17 @@
     {
         try
         {
-
-            var userInfoRequest = new GetUserInformationRequest(userID);
+            var userInfoRequest = new GetUserInformationRequest(_currentUserID, RequestedUserID);
             var result = await Mediator.Send(userInfoRequest);
             if (result is not null)
             {
-                _profileModel = new ProfileModel
+                _userInformation = new UserInformationSharedModel(
+                    username: result.userInformation.Username,
+                    email: result.userInformation.Email)
                     {
                         FirstName = result.userInformation.FirstName,
                         LastName = result.userInformation.LastName,
-                        Email = result.userInformation.Email,
                         Skype = result.userInformation.Skype,
-                        UserName = result.userInformation.Username
                     };
             }
             StateHasChanged();

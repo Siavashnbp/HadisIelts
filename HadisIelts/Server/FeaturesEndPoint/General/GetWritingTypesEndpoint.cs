@@ -1,6 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Correction;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,10 +22,10 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
             var result = _writingTypeRepository.GetAll();
             if (result is not null)
             {
-                var writingTypes = new List<WritingType>();
+                var writingTypes = new List<WritingTypeSharedModel>();
                 foreach (var item in result)
                 {
-                    writingTypes.Add(new WritingType { ID = item.ID, Name = item.Name });
+                    writingTypes.Add(new WritingTypeSharedModel { ID = item.ID, Name = item.Name });
                 }
                 return Ok(new GetWritingTypesRequest.Response(writingTypes));
             }

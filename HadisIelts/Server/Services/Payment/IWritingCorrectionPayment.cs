@@ -1,10 +1,10 @@
-﻿using HadisIelts.Shared.Requests.Payment;
+﻿using HadisIelts.Shared.Models;
 
 namespace HadisIelts.Server.Services.Payment
 {
     public interface IWritingCorrectionPayment
     {
-        public ProcessedWritingFile CalculateFilePriceAsync(int wordCount, int writingTypeID);
+        public ProcessedWritingFileSharedModel CalculateFilePriceAsync(int wordCount, int writingTypeID);
     }
 
 }

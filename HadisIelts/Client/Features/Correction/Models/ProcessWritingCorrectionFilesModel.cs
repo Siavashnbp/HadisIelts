@@ -4,11 +4,11 @@ namespace HadisIelts.Client.Features.Correction.Models
 {
     public class ProcessWritingCorrectionFilesModel
     {
-        public List<WritingFile> WritingFiles { get; set; }
+        public List<WritingFileSharedModel> WritingFiles { get; set; }
         public bool IsProcessed { get; set; }
         public ProcessWritingCorrectionFilesModel()
         {
-            WritingFiles = new List<WritingFile>();
+            WritingFiles = new List<WritingFileSharedModel>();
         }
     }
 }

@@ -13,6 +13,6 @@ namespace HadisIelts.Server.Models.Entities
         public int ApplicationWritingTypeID { get; set; }
         public ApplicationWritingType ApplicationWritingType { get; set; }
         public string SubmittedWritingCorecionFilesID { get; set; }
-        public SubmittedWritingCorrectionFiles SubmittedWritingCorrectionFiles { get; set; }
+        public WritingCorrectionSubmissionGroup SubmittedWritingCorrectionFiles { get; set; }
     }
 }

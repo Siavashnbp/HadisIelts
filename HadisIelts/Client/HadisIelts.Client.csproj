@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\Administrator\Models\" />
+    <Folder Include="Features\Payment\Models\" />
   </ItemGroup>
   <Target Name="CheckForNpm" BeforeTargets="RunNpmInstall">
     <Exec Command="npm --version" ContinueOnError="true">

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using HadisIelts.Shared.Models;
+using MediatR;
 
 namespace HadisIelts.Shared.Requests.Correction
 {
@@ -6,11 +7,6 @@ namespace HadisIelts.Shared.Requests.Correction
         : IRequest<GetWritingTypesRequest.Response>
     {
         public const string EndPointUri = "/api/services/getWritingTypes";
-        public record Response(List<WritingType> WritingTypes);
-    }
-    public class WritingType
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
+        public record Response(List<WritingTypeSharedModel> WritingTypes);
     }
 }

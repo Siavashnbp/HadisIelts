@@ -1,7 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
-using HadisIelts.Shared.Requests.Correction;
+using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Teacher;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,13 +22,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
             if (request is not null)
             {
                 var writingTypeEntity = new ApplicationWritingType { Name = request.WritingName };
-                var writingTypeID = await _writingTypeRepository.InsertAsync(writingTypeEntity);
-                var result = await _writingTypeRepository.FindByIDAsync(writingTypeID);
-                if (result != null)
+                var addedWritingType = _writingTypeRepository.Insert(writingTypeEntity);
+                if (addedWritingType != null)
                 {
-                    return Ok(new AddWritingTypeRequest.Response(new WritingType
+                    return Ok(new AddWritingTypeRequest.Response(new WritingTypeSharedModel
                     {
-                        ID = writingTypeID,
+                        ID = addedWritingType.ID,
                         Name = request.WritingName,
                     }));
                 }

@@ -1,4 +1,4 @@
-﻿using HadisIelts.Client.Features.Teacher.Models;
+﻿using HadisIelts.Shared.Models;
 
 namespace HadisIelts.Client.Features.Correction.Models
 {
@@ -8,6 +8,6 @@ namespace HadisIelts.Client.Features.Correction.Models
         public string Name { get; set; }
         public string FileData { get; set; }
         public long FileSize { get; set; }
-        public WritingTypeModel WritingType { get; set; }
+        public WritingTypeSharedModel WritingType { get; set; }
     }
 }

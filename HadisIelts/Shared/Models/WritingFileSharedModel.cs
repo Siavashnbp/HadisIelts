@@ -1,6 +1,6 @@
 ﻿namespace HadisIelts.Shared.Models
 {
-    public class WritingFile
+    public class WritingFileSharedModel
     {
         public string Name { get; set; }
         public int WritingTypeID { get; set; }

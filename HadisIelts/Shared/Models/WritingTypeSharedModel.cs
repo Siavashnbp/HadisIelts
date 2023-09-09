@@ -1,6 +1,6 @@
-﻿namespace HadisIelts.Client.Features.Teacher.Models
+﻿namespace HadisIelts.Shared.Models
 {
-    public class WritingTypeModel
+    public class WritingTypeSharedModel
     {
         public int ID { get; set; }
         public string Name { get; set; }

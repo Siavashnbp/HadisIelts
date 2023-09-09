@@ -12,8 +12,10 @@ namespace HadisIelts.Server.Data
         public DbSet<WritingCorrectionServicePrice> WritingCorrectionServicePrices { get; set; }
         public DbSet<ApplicationWritingType> WritingTypes { get; set; }
         public DbSet<WritingCorrectionFile> WritingCorrectionFiles { get; set; }
-        public DbSet<SubmittedWritingCorrectionFiles> SubmittedWritingCorrectionFiles { get; set; }
-        public DbSet<WritingPaymentPicture> WritingPaymentPictures { get; set; }
+        public DbSet<WritingCorrectionSubmissionGroup> SubmittedWritingCorrectionFiles { get; set; }
+        public DbSet<PaymentPicture> PaymentPictures { get; set; }
+        public DbSet<PaymentGroup> PaymentGroups { get; set; }
+        public DbSet<Service> Services { get; set; }
         public ApplicationDbContext(
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
@@ -39,15 +41,28 @@ namespace HadisIelts.Server.Data
             builder.Entity<WritingCorrectionFile>().HasOne(x => x.ApplicationWritingType)
                 .WithMany(x => x.WritingCorrectionFiles).HasForeignKey(x => x.ApplicationWritingTypeID);
             //SubmittedWritingCorrectionFiles
-            builder.Entity<SubmittedWritingCorrectionFiles>().HasKey(x => x.ID);
-            builder.Entity<SubmittedWritingCorrectionFiles>().Property(x => x.ID).ValueGeneratedOnAdd();
-            builder.Entity<SubmittedWritingCorrectionFiles>().HasMany(x => x.WritingCorrectionFiles)
+            builder.Entity<WritingCorrectionSubmissionGroup>().HasKey(x => x.ID);
+            builder.Entity<WritingCorrectionSubmissionGroup>().Property(x => x.ID).ValueGeneratedOnAdd();
+            builder.Entity<WritingCorrectionSubmissionGroup>().HasMany(x => x.WritingCorrectionFiles)
                 .WithOne(x => x.SubmittedWritingCorrectionFiles).HasForeignKey(x => x.SubmittedWritingCorecionFilesID);
-            //WritingPaymentPicture
-            builder.Entity<WritingPaymentPicture>().HasKey(x => x.ID);
-            builder.Entity<WritingPaymentPicture>().Property(x => x.ID).ValueGeneratedOnAdd();
-            builder.Entity<WritingPaymentPicture>().HasOne(x => x.SubmittedWritingCorrectionFiles)
-                .WithMany(y => y.PaymentPictures).HasForeignKey(x => x.SubmitedWritingCorrectionFilesID);
+            builder.Entity<WritingCorrectionSubmissionGroup>().Property(x => x.PaymentGroupID).IsRequired(false);
+            //PaymentPicture
+            builder.Entity<PaymentPicture>().HasKey(x => x.ID);
+            builder.Entity<PaymentPicture>().Property(x => x.ID).ValueGeneratedOnAdd();
+            builder.Entity<PaymentPicture>().HasOne(x => x.PaymentGroup)
+                .WithMany(x => x.PaymentPictures).HasForeignKey(x => x.PaymentGroupID);
+            //PaymentGroup
+            builder.Entity<PaymentGroup>().HasKey(x => x.ID);
+            builder.Entity<PaymentGroup>().Property(x => x.ID).ValueGeneratedOnAdd();
+            builder.Entity<PaymentGroup>().HasOne(x => x.Service)
+                .WithMany(x => x.PaymentGroups).HasForeignKey(x => x.ServiceID);
+            builder.Entity<PaymentGroup>().Property(x => x.LastUpdateDateTime)
+                .ValueGeneratedOnAddOrUpdate().HasDefaultValue(DateTime.UtcNow);
+            //Service
+            builder.Entity<Service>().HasKey(x => x.ID);
+            builder.Entity<Service>().Property(x => x.ID).ValueGeneratedOnAdd();
+            builder.Entity<Service>().Property(x => x.Name).IsRequired();
+            builder.Entity<Service>().Property(x => x.Description).IsRequired(false);
             base.OnModelCreating(builder);
         }
     }

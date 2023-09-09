@@ -82,7 +82,7 @@
     [Parameter, EditorRequired]
     public List<WritingPriceModel> WritingCorrectionPrices { get; set; }
     [Parameter]
-    public List<WritingTypeModel> WritingTypes { get; set; }
+    public List<WritingTypeSharedModel> WritingTypes { get; set; }
     private WritingPriceModel _editWritingPriceModel;
     private async Task RemoveWritingCorrectionPrice(int id)
     {
@@ -90,7 +90,7 @@
         {
             var request = new RemoveWritingCorrectionPriceRequest(id);
             var result = await Mediator.Send(request);
-            if (result.wasSuccessful)
+            if (result.WasSuccessful)
             {
                 WritingCorrectionPrices.RemoveAll(x => x.ID == id);
                 StateHasChanged();
@@ -124,7 +124,7 @@
         {
             if (_editWritingPriceModel is not null)
             {
-                var request = new EditWritingCorrectionPriceRequest(new WritingCorrectionPrice
+                var request = new EditWritingCorrectionPriceRequest(new WritingCorrectionServicePriceSharedModel
                     {
                         ID = _editWritingPriceModel.ID,
                         Name = _editWritingPriceModel.Name,

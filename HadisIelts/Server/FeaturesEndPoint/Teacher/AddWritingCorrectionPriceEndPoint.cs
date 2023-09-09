@@ -1,6 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Teacher;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,33 +27,28 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         {
             try
             {
-                //validate request
-                if (request.Request is not null)
+                var writingType = await _writingTypeRepository.FindByIDAsync
+                    (request.WritingCorrectionServicePrice.WritingTypeID);
+                if (writingType is not null)
                 {
-                    if (request.Request.WritingTypeID != 0)
+                    var writingCorrectionPriceEntity = new WritingCorrectionServicePrice
                     {
-                        var writingType = await _writingTypeRepository.FindByIDAsync(request.Request.WritingTypeID);
-                        var writingCorrectionPriceEntity = new WritingCorrectionServicePrice
+                        Name = request.WritingCorrectionServicePrice.Name,
+                        Price = request.WritingCorrectionServicePrice.Price,
+                        WordCount = request.WritingCorrectionServicePrice.WordCount,
+                        WritingType = writingType
+                    };
+                    var addedWritingCorrectionPrice = _writingCorrectionRepository.Insert(writingCorrectionPriceEntity);
+                    return Ok(new AddWritingCorrectionPriceRequest.Response(
+                        new WritingCorrectionServicePriceSharedModel
                         {
-                            Name = request.Request.Name,
-                            Price = request.Request.Price,
-                            WordCount = request.Request.WordCount,
-                            WritingType = writingType
-                        };
-                        var id = await _writingCorrectionRepository.InsertAsync(writingCorrectionPriceEntity);
-                        var createdEntity = await _writingCorrectionRepository.FindByIDAsync(id);
-                        if (createdEntity is not null)
-                        {
-                            return Ok(new AddWritingCorrectionPriceRequest.Response(new WritingCorrectionPrice
-                            {
-                                ID = createdEntity.ID,
-                                Name = createdEntity.Name,
-                                Price = createdEntity.Price,
-                                WordCount = createdEntity.WordCount,
-                                WritingTypeID = createdEntity.WritingTypeID
-                            }));
-                        }
-                    }
+                            ID = addedWritingCorrectionPrice.ID,
+                            Name = addedWritingCorrectionPrice.Name,
+                            Price = addedWritingCorrectionPrice.Price,
+                            WordCount = addedWritingCorrectionPrice.WordCount,
+                            WritingTypeID = addedWritingCorrectionPrice.WritingTypeID
+                        }));
+
                 }
                 return Problem();
             }

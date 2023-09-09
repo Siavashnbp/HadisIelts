@@ -1,4 +1,5 @@
-﻿using HadisIelts.Shared.Requests.Account;
+﻿using HadisIelts.Shared.Models;
+using HadisIelts.Shared.Requests.Account;
 using MediatR;
 using System.Net.Http.Json;
 
@@ -18,15 +19,13 @@ namespace HadisIelts.Client.RequestHandlers.Account
                 (GetUserInformationRequest.EndPointUri, request, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                var result = response.Content.ReadFromJsonAsync<UserInformation>();
+                var result = response.Content.ReadFromJsonAsync<GetUserInformationRequest.Response>();
                 if (result.Result is not null)
                 {
-                    return new GetUserInformationRequest.Response(result.Result);
+                    return new GetUserInformationRequest.Response(result.Result.userInformation);
                 }
-                return new GetUserInformationRequest.Response(new UserInformation
+                return new GetUserInformationRequest.Response(new UserInformationSharedModel(username: null, email: null)
                 {
-                    Username = "Not Found",
-                    Email = "Not Found",
                     FirstName = "Not Found",
                     LastName = "Not Found",
                     Skype = "Not Found"

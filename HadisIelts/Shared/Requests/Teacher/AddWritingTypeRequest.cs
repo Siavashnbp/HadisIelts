@@ -1,4 +1,4 @@
-﻿using HadisIelts.Shared.Requests.Correction;
+﻿using HadisIelts.Shared.Models;
 using MediatR;
 
 namespace HadisIelts.Shared.Requests.Teacher
@@ -7,6 +7,6 @@ namespace HadisIelts.Shared.Requests.Teacher
         : IRequest<AddWritingTypeRequest.Response>
     {
         public const string EndPointUri = "/api/teacher/addWritingType";
-        public record Response(WritingType WritingType);
+        public record Response(WritingTypeSharedModel WritingType);
     }
 }

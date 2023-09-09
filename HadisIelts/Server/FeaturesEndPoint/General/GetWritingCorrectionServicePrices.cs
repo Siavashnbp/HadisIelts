@@ -3,8 +3,8 @@ using AutoMapper;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Correction;
-using HadisIelts.Shared.Requests.Teacher;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HadisIelts.Server.FeaturesEndPoint.General
@@ -27,18 +27,17 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
                 var prices = _writingCorrectionPriceRepository.GetAll();
                 var mapper = new Mapper(new MapperConfiguration(config =>
                 {
-                    config.CreateMap<WritingCorrectionServicePrice, WritingCorrectionPrice>();
+                    config.CreateMap<WritingCorrectionServicePrice, WritingCorrectionServicePriceSharedModel>();
                 }));
-                var result = new List<WritingCorrectionPrice>();
+                var result = new List<WritingCorrectionServicePriceSharedModel>();
                 foreach (var item in prices)
                 {
-                    result.Add(mapper.Map<WritingCorrectionPrice>(item));
+                    result.Add(mapper.Map<WritingCorrectionServicePriceSharedModel>(item));
                 }
                 return Ok(new GetWritingCorrectionPricesRequest.Response(result));
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

@@ -97,7 +97,7 @@
 </div>
 @code {
     private List<WritingPriceModel> _writingCorrectionPrices = new List<WritingPriceModel>();
-    private List<WritingTypeModel> _writingTypes = new();
+    private List<WritingTypeSharedModel> _writingTypes = new();
     private WritingPriceModel _writingPriceModel = new WritingPriceModel();
     private string _addWritingTypeName;
     protected override async Task OnInitializedAsync()
@@ -107,7 +107,7 @@
     }
     private async Task AddWritingCorrectionPrice()
     {
-        var request = new AddWritingCorrectionPriceRequest(new WritingCorrectionPrice
+        var request = new AddWritingCorrectionPriceRequest(new WritingCorrectionServicePriceSharedModel
             {
                 Name = _writingPriceModel.Name,
                 Price = (uint)_writingPriceModel.Price!,
@@ -117,15 +117,15 @@
         var result = await Mediator.Send(request);
         if (result is not null)
         {
-            var writingType = _writingTypes.FirstOrDefault(x => x.ID == result.WritingCorrectionPrice.WritingTypeID);
+            var writingType = _writingTypes.FirstOrDefault(x => x.ID == result.AddedWritingCorrectionServicePrice.WritingTypeID);
             if (writingType is not null)
             {
                 _writingCorrectionPrices.Add(new WritingPriceModel
                     {
-                        ID = result.WritingCorrectionPrice.ID,
-                        Name = result.WritingCorrectionPrice.Name,
-                        Price = (int)result.WritingCorrectionPrice.Price,
-                        WordCount = result.WritingCorrectionPrice.WordCount,
+                        ID = result.AddedWritingCorrectionServicePrice.ID,
+                        Name = result.AddedWritingCorrectionServicePrice.Name,
+                        Price = (int)result.AddedWritingCorrectionServicePrice.Price,
+                        WordCount = result.AddedWritingCorrectionServicePrice.WordCount,
                         WritingType = writingType
                     });
                     _writingPriceModel = new WritingPriceModel();
@@ -167,10 +167,10 @@
         var response = await Mediator.Send(request);
         if (response.WritingTypes is not null && response.WritingTypes.Count > 0)
         {
-            _writingTypes = new List<WritingTypeModel>();
+            _writingTypes = new List<WritingTypeSharedModel>();
             foreach (var item in response.WritingTypes)
             {
-                _writingTypes.Add(new WritingTypeModel
+                _writingTypes.Add(new WritingTypeSharedModel
                     {
                         ID = item.ID,
                         Name = item.Name
@@ -185,7 +185,7 @@
         var response = await Mediator.Send(request);
         if (response.WritingType is not null)
         {
-            _writingTypes.Add(new WritingTypeModel
+            _writingTypes.Add(new WritingTypeSharedModel
                 {
                     ID = response.WritingType.ID,
                     Name = response.WritingType.Name

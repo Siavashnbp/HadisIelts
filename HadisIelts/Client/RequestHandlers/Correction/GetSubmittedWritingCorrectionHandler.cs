@@ -1,5 +1,5 @@
-﻿using HadisIelts.Shared.Requests.Correction;
-using HadisIelts.Shared.Requests.Payment;
+﻿using HadisIelts.Shared.Models;
+using HadisIelts.Shared.Requests.Correction;
 using MediatR;
 using System.Net.Http.Json;
 
@@ -22,11 +22,11 @@ namespace HadisIelts.Client.RequestHandlers.Correction
                 var result = await response.Content.ReadFromJsonAsync<GetSubmittedWritingCorrectionFilesRequest.Response>();
                 return result;
             }
-            return new GetSubmittedWritingCorrectionFilesRequest.Response(new CalculatedWritingCorrectionPayment
+            return new GetSubmittedWritingCorrectionFilesRequest.Response(new Shared.Models.WritingCorrectionPackageSharedModel
             {
-                ProcessedFiles = new List<ProcessedWritingFile>(),
-                Message = "There was a problem with the request"
-            });
+                ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>(),
+
+            }, Message: "There was a problem with the request");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using HadisIelts.Shared.Requests.Teacher;
+﻿using HadisIelts.Shared.Models;
 using MediatR;
 
 namespace HadisIelts.Shared.Requests.Correction
@@ -7,7 +7,7 @@ namespace HadisIelts.Shared.Requests.Correction
         : IRequest<GetWritingCorrectionPricesRequest.Response>
     {
         public const string EndPointUri = "/api/services/getWritingCorrectionPrices";
-        public record Response(List<WritingCorrectionPrice> WritingCorrectionPrices);
+        public record Response(List<WritingCorrectionServicePriceSharedModel> WritingCorrectionPrices);
     }
 
 }

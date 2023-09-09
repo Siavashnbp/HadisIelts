@@ -1,7 +1,6 @@
 ﻿using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Shared.Models;
-using HadisIelts.Shared.Requests.Payment;
 
 namespace HadisIelts.Server.Services.Payment
 {
@@ -19,12 +18,12 @@ namespace HadisIelts.Server.Services.Payment
         /// <param name="wordCount">file word count submitted by user and processed by WordFileServiceProvider</param>
         /// <param name="writingTypeID">task selected by user</param>
         /// <returns>ProcessedWritingFile with no message if price is found or appropriate message for errors</returns>
-        public ProcessedWritingFile CalculateFilePriceAsync(int wordCount, int writingTypeID)
+        public ProcessedWritingFileSharedModel CalculateFilePriceAsync(int wordCount, int writingTypeID)
         {
             var allPrices = _writingCorrectionPriceRepository.GetAll();
             if (allPrices is null)
             {
-                return new ProcessedWritingFile
+                return new ProcessedWritingFileSharedModel
                 {
                     Message = "Writing task was not found"
                 };
@@ -33,24 +32,24 @@ namespace HadisIelts.Server.Services.Payment
                 .MinBy(x => x.WordCount);
             if (price is not null)
             {
-                return new ProcessedWritingFile
+                return new ProcessedWritingFileSharedModel
                 {
-                    PriceGroup = new PriceGroup
+                    PriceGroup = new PriceGroupSharedModel
                     {
                         Price = price.Price,
                         PriceName = price.Name
                     },
-                    WritingFile = new WritingFile
+                    WritingFile = new WritingFileSharedModel
                     {
                         WordCount = wordCount,
                     }
                 };
             }
-            return new ProcessedWritingFile
+            return new ProcessedWritingFileSharedModel
             {
-                PriceGroup = new PriceGroup(),
+                PriceGroup = new PriceGroupSharedModel(),
                 Message = $"Writing word count exceeds maximum word count for this task",
-                WritingFile = new WritingFile
+                WritingFile = new WritingFileSharedModel
                 {
                     WordCount = wordCount,
                 }
