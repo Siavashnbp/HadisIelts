@@ -2,6 +2,7 @@
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
@@ -15,14 +16,14 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
     {
         private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
         private readonly ApplicationDbContext _dbContext;
-        private readonly HttpClient _httpClient;
+        private readonly IUserServices _userServices;
         public GetPaymentGroupEndpoint(ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
             ApplicationDbContext dbContext,
-            HttpClient httpClient)
+            IUserServices userServices)
         {
             _paymentGroupRepository = paymentGroupRepository;
             _dbContext = dbContext;
-            _httpClient = httpClient;
+            _userServices = userServices;
         }
         [Authorize]
         [HttpPost(GetPaymentGroupRequest.EndpointUri)]
@@ -33,32 +34,38 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 var paymentGroup = await _paymentGroupRepository.FindByIDAsync(request.PaymentID);
                 if (paymentGroup is not null)
                 {
-                    var pictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupID == paymentGroup.ID).ToList();
-                    var payments = new List<PaymentPictureSharedModel>();
-                    foreach (var item in pictures)
+                    if (_userServices.IsUserOwnerOrSpecificRoles(userID: paymentGroup.UserID, claims: User.Claims.ToList(),
+                        roles: new List<string> { "Administrator", "Teacher" }))
                     {
-                        payments.Add(new PaymentPictureSharedModel
+
+                        var pictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupID == paymentGroup.ID).ToList();
+                        var payments = new List<PaymentPictureSharedModel>();
+                        foreach (var item in pictures)
                         {
-                            Data = item.Data,
-                            FileSuffix = item.FileSuffix,
-                            ID = item.ID,
-                            IsVerified = item.IsVerified,
-                            Message = item.Message,
-                            Name = item.Name,
-                            UploadDateTime = paymentGroup.LastUpdateDateTime
-                        });
+                            payments.Add(new PaymentPictureSharedModel
+                            {
+                                Data = item.Data,
+                                FileSuffix = item.FileSuffix,
+                                ID = item.ID,
+                                IsVerified = item.IsVerified,
+                                Message = item.Message,
+                                Name = item.Name,
+                                UploadDateTime = paymentGroup.LastUpdateDateTime
+                            });
+                        }
+                        return Ok(new GetPaymentGroupRequest.Response(
+                            new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>
+                            {
+                                UploadDateTime = paymentGroup.LastUpdateDateTime,
+                                IsPaymentApproved = paymentGroup.IsPaymentApproved,
+                                Message = paymentGroup.Message,
+                                IsPaymentCheckPending = paymentGroup.IsPaymentCheckPending,
+                                PaymentPictures = payments,
+                                ID = paymentGroup.ID,
+                                SubmittedServiceID = paymentGroup.SubmittedServiceID,
+                            }));
                     }
-                    return Ok(new GetPaymentGroupRequest.Response(
-                        new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>
-                        {
-                            UploadDateTime = paymentGroup.LastUpdateDateTime,
-                            IsPaymentApproved = paymentGroup.IsPaymentApproved,
-                            Message = paymentGroup.Message,
-                            IsPaymentCheckPending = paymentGroup.IsPaymentCheckPending,
-                            PaymentPictures = payments,
-                            ID = paymentGroup.ID,
-                            SubmittedServiceID = paymentGroup.SubmittedServiceID,
-                        }));
+                    return Unauthorized();
                 }
                 return Ok(new GetPaymentGroupRequest.Response(
                     new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>

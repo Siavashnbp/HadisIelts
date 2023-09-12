@@ -5,20 +5,23 @@
                 <NotAuthorized>
                     @if (context.User.Identity?.IsAuthenticated != true)
                     {
-                        <RedirectToLogin />
+                        <NotAuthenticatedComponent/>
                     }
                     else
                     {
-                        <p role="alert">You are not authorized to access this resource.</p>
+                        <NotAuthorizedComponent/>
                     }
                 </NotAuthorized>
+                <Authorizing>
+                    <Loading/>
+                </Authorizing>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
             <LayoutView Layout="@typeof(MainLayout)">
-                <p role="alert">Sorry, there's nothing at this address.</p>
+                <NotFoundPage/>
             </LayoutView>
         </NotFound>
     </Router>

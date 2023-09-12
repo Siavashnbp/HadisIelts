@@ -2,6 +2,7 @@
 using HadisIelts.Server.Models;
 using HadisIelts.Shared.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using static HadisIelts.Shared.Enums.UserRelatedEnums;
 
 namespace HadisIelts.Server.Services.User
@@ -25,6 +26,22 @@ namespace HadisIelts.Server.Services.User
                 return users;
             }
             return _dbContext.Users.ToList();
+        }
+
+        public async Task<UserInformationSharedModel> GetUserInformationAsync(string userID)
+        {
+            var user = await _userManager.FindByIdAsync(userID);
+            if (user != null)
+            {
+                return new UserInformationSharedModel(username: user.UserName!, email: user.Email!)
+                {
+                    Birthday = DateOnly.FromDateTime(user.DateOfBirth!.Value),
+                    FirstName = user.FirstName!,
+                    LastName = user.LastName!,
+                    Skype = user.Skype,
+                };
+            }
+            return null!;
         }
 
         public async Task<List<Tuple<ApplicationRoles, bool>>> GetUserRolesAsync(ApplicationUser user)
@@ -52,6 +69,19 @@ namespace HadisIelts.Server.Services.User
             }
             return usersRoles;
         }
+
+        public bool IsUserOwnerOrSpecificRoles(List<Claim> claims, List<string> roles, string userID)
+        {
+            //is user owner
+            var isUserOwner = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value == userID;
+            if (isUserOwner)
+            {
+                return true;
+            }
+            //is user in roles
+            return claims.Any(claim => claim.Type == "role" && roles.Contains(claim.Value));
+        }
+
         private List<Tuple<ApplicationRoles, bool>> ConvertToApplicationRoles(List<string> roles)
         {
             var applicationRoles = new List<Tuple<ApplicationRoles, bool>>

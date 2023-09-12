@@ -24,20 +24,22 @@
         </div>
         <div class="d-flex justify-content-between align-items-center" style="margin-top:5px;">
             <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-outline-secondary"
-                        @onclick="(async()=>await OnThumbnailIsClicked.InvokeAsync(PaymentFile.Data))">
-                    View
-                </button>
-                @if (!PaymentFile.IsVerified)
-                {
-                    <button type="button" class="btn btn-sm btn-outline-danger"
-                        @onclick="(()=>OnRemoveButtonIsClicked.InvokeAsync(PaymentFile.ID))">
-                        <i class="fa fa-remove"></i>
-                    </button>
-                }
+                <div class="container justify-content-around">
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-sm btn-outline-success"
+                                    @onclick="(async()=>await OnThumbnailIsClicked.InvokeAsync(PaymentFile.Data))">
+                                <i class="fa fa-check-square">Approve</i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                    @onclick="(()=>OnDenyButtonIsClicked.InvokeAsync(PaymentFile.ID))">
+                                <i class="fa fa-remove">Deny</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <small class="text-muted">@PaymentFile.UploadDateTime</small>
-
         </div>
     </div>
 </div>
@@ -47,6 +49,9 @@
     [Parameter, EditorRequired]
     public EventCallback<string> OnThumbnailIsClicked { get; set; }
     [Parameter, EditorRequired]
-    public EventCallback<int> OnRemoveButtonIsClicked { get; set; }
+    public EventCallback<int> OnVerifyButtonIsClicked { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDenyButtonIsClicked { get; set; }
 }
+
 

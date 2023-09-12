@@ -12,117 +12,118 @@
 @inject IFileServices FileServices;
 @inject IMediator Mediator;
 @inject IUserServices UserServices;
+<AuthorizeView>
+    <Authorized>
+        <div class="container" style="margin-top:10px;">
+            @if (_paymentGroup is not null && _paymentGroup.Service is not null)
+            {
+                <div class="row">
+                    <div class="col">
+                        <ProcessedWritingFilesTable ProcessedFiles="_paymentGroup.Service.ProcessedWritingFiles" />
+                    </div>
+                </div>
+                <div class="row justify-content-center text-center">
+                    <div class="col">
+                        <h5 class="text-success">Total Price : @($"{_paymentGroup.Service.TotalPrice:n0}") Rials</h5>
+                    </div>
+                </div>
+            }
 
-<div class="container" style="margin-top:10px;">
+            <div class="row">
+                @if (_paymentFiles is not null && _paymentFiles.Count > 0)
+                {
+                    <div class="accordion" id="accordionSubmittedPayments">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="submittedPaymentHeader">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#submittedPaymentCollapse" aria-expanded="false"
+                                        aria-controls="submittedPaymentCollapse">
+                                    Submitted Payments
+                                </button>
+                            </h2>
+                            <div id="submittedPaymentCollapse" class="accordion-collapse collapse show" aria-labelledby="submittedPaymentHeader"
+                                 data-bs-parent="#accordionSubmittedPayment">
+                                <div class="accordion-body">
+                                    <div class="row">
 
-    @if (_paymentGroup is not null && _paymentGroup.Service is not null)
-    {
-        <div class="row">
-            <div class="col">
-                <ProcessedWritingFilesTable ProcessedFiles="_paymentGroup.Service.ProcessedWritingFiles" />
-            </div>
-        </div>
-        <div class="row justify-content-center text-center">
-            <div class="col">
-                <h5 class="text-success">Total Price : @($"{_paymentGroup.Service.TotalPrice:n0}") Rials</h5>
-            </div>
-        </div>
-    }
-
-    <div class="row">
-        @if (_paymentFiles is not null && _paymentFiles.Count > 0)
-        {
-            <div class="accordion" id="accordionSubmittedPayments">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="submittedPaymentHeader">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#submittedPaymentCollapse" aria-expanded="false"
-                                aria-controls="submittedPaymentCollapse">
-                            Submitted Payments
-                        </button>
-                    </h2>
-                    <div id="submittedPaymentCollapse" class="accordion-collapse collapse show" aria-labelledby="submittedPaymentHeader"
-                         data-bs-parent="#accordionSubmittedPayment">
-                        <div class="accordion-body">
-                            <div class="row">
-
-                            @foreach (var item in _paymentFiles)
-                            {
-                                <div class="col-lg-4">
-                                    <PaymenImageCard PaymentFile="item" OnThumbnailIsClicked="HandleOnThumbnailIsClicked"
-                                             OnRemoveButtonIsClicked="HandleImageRemovebuttonIsClicked" />
+                                        @foreach (var item in _paymentFiles)
+                                        {
+                                            <div class="col-lg-4">
+                                                <PaymenImageCard PaymentFile="item" OnThumbnailIsClicked="HandleOnThumbnailIsClicked"
+                                                         OnRemoveButtonIsClicked="HandleImageRemovebuttonIsClicked" />
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
-                            }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="row text-center" style="margin-top:15px;">
+                <div class="col">
+                    @if ((_paymentFiles?.Count + _pendingToUploadPaymentFiles?.Count) < 3)
+                    {
+                        <UploadPicturesInput OnInputFilesChange="HandleInputFileChange" />
+                    }
+                    else
+                    {
+                        <h5 class="text-primary">Maximum 3 files can be uploaded</h5>
+                    }
+                </div>
+            </div>
+            @if (_pendingToUploadPaymentFiles is not null && _pendingToUploadPaymentFiles.Count > 0)
+            {
+                <div class="accordion" id="accordionPendingPayments">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="pendingPaymentHeader">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#pendingPaymentCollapse" aria-expanded="false"
+                                    aria-controls="pendingPaymentCollapse">
+                                Pending To Upload Payments
+                            </button>
+                        </h2>
+                        <div id="pendingPaymentCollapse" class="accordion-collapse collapse show"
+                             aria-labelledby="pendingPaymentHeader" data-bs-parent="#accordionPendingPayment">
+                            <div class="accordion-body">
+                                <div class="row">
+
+                                    @foreach (var item in _pendingToUploadPaymentFiles)
+                                    {
+                                        <div class="col-lg-4">
+                                            <PaymenImageCard PaymentFile="item" OnThumbnailIsClicked="HandleOnThumbnailIsClicked"
+                                                     OnRemoveButtonIsClicked="HandleImageRemovebuttonIsClicked" />
+                                        </div>
+                                    }
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+            }
+
+            @if (_pendingToUploadPaymentFiles is not null && _pendingToUploadPaymentFiles.Count > 0)
+            {
+                <div class="row text-center" style="margin-top:20px;margin-bottom:50px;">
+                    <div class="col">
+                        <button class="btn btn-primary" @onclick="(()=>UploadPaymentFiles())">Upload Payment Files</button>
+
+                    </div>
+                </div>
+            }
+        </div>
+        @if (_showModal)
+        {
+            <ViewImageModal ImageData="@(FileServices.ViewImageData(_modalImageData))" OnCloseButtonIsClicked="CloseModal" />
         }
-    </div>
-    <div class="row text-center" style="margin-top:15px;">
-        <div class="col">
-            @if ((_paymentFiles?.Count+_pendingToUploadPaymentFiles?.Count) < 3)
-            {
-                <UploadPicturesInput OnInputFilesChange="HandleInputFileChange" />
-            }
-            else
-            {
-                <h5 class="text-primary">Maximum 3 files can be uploaded</h5>
-            }
-        </div>
-    </div>
-    @if (_pendingToUploadPaymentFiles is not null && _pendingToUploadPaymentFiles.Count > 0)
-    {
-        <div class="accordion" id="accordionPendingPayments">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="pendingPaymentHeader">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#pendingPaymentCollapse" aria-expanded="false"
-                            aria-controls="pendingPaymentCollapse">
-                        Pending To Upload Payments
-                    </button>
-                </h2>
-                <div id="pendingPaymentCollapse" class="accordion-collapse collapse show"
-                     aria-labelledby="pendingPaymentHeader" data-bs-parent="#accordionPendingPayment">
-                    <div class="accordion-body">
-                        <div class="row">
-
-                        @foreach (var item in _pendingToUploadPaymentFiles)
-                        {
-                            <div class="col-lg-4">
-                                <PaymenImageCard PaymentFile="item" OnThumbnailIsClicked="HandleOnThumbnailIsClicked"
-                                         OnRemoveButtonIsClicked="HandleImageRemovebuttonIsClicked" />
-                            </div>
-                        }
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    }
-
-    @if (_pendingToUploadPaymentFiles is not null && _pendingToUploadPaymentFiles.Count > 0)
-    {
-        <div class="row text-center" style="margin-top:20px;margin-bottom:50px;">
-            <div class="col">
-                <button class="btn btn-primary" @onclick="(()=>UploadPaymentFiles())">Upload Payment Files</button>
-
-            </div>
-        </div>
-    }
-</div>
-@if (_showModal)
-{
-    <ViewImageModal ImageData="@(FileServices.ViewImageData(_modalImageData))" OnCloseButtonIsClicked="CloseModal" />
-}
+    </Authorized>
+</AuthorizeView>
 @code {
     [Parameter]
-    public string PaymentID { get; set; }
+    public string? PaymentID { get; set; }
     private PaymentGroupSharedModel<WritingCorrectionPackageSharedModel> _paymentGroup = new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>();
-    private string _userID;
     private string? _modalImageData;
     private bool _showModal = false;
     private int _paymentFileID = 0;
@@ -130,7 +131,6 @@
     private List<PaymentPictureSharedModel> _pendingToUploadPaymentFiles = new List<PaymentPictureSharedModel>();
     protected override async Task OnInitializedAsync()
     {
-        _userID = await UserServices.GetUserIDAsync();
         await GetWritingCorrectionPaymentPackage();
         if (_paymentGroup is not null)
         {
@@ -209,7 +209,7 @@
         if (PaymentID is not null)
         {
             _paymentGroup = new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>();
-            var request = new GetPaymentGroupRequest(PaymentID, _userID);
+            var request = new GetPaymentGroupRequest(PaymentID);
             var result = await Mediator.Send(request);
             _paymentGroup = result.PaymentGroup;
             _paymentFiles = _paymentGroup.PaymentPictures;

@@ -1,0 +1,51 @@
+﻿@page "/user/submissions/writingCorrections"
+@using HadisIelts.Client.Features.Correction.UserWritingCorrectionSubmissionsComponents
+@using HadisIelts.Client.Services.User;
+@using HadisIelts.Shared.Requests.Correction;
+@using Microsoft.AspNetCore.Authorization;
+@inject IUserServices UserServices;
+@inject IMediator Mediator;
+
+<AuthorizeView>
+    <Authorized>
+        @if (_submittedServices is not null)
+        {
+            <div class="container text-center" style="margin-top:15px;">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <WritingCorrectionSubmissionsTable SubmittedServices="_submittedServices" />
+                    </div>
+                </div>
+                <div class="row justify-content-center text-center">
+                    <div class="col-lg-4 justify-content-center text-center">
+                        <Pagination />
+                    </div>
+                </div>
+            </div>
+        }
+    </Authorized>
+</AuthorizeView>
+@code {
+    private List<SubmittedServiceSummarySharedModel> _submittedServices = new List<SubmittedServiceSummarySharedModel>();
+    private int _page = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await GetUserWritingCorrections();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    private async Task GetUserWritingCorrections()
+    {
+        var userID = await UserServices.GetUserIDAsync();
+        if (userID is not null)
+        {
+            var response = await Mediator.Send(new GetUserSubmittedWritingCorrectionRequest(userID));
+            _submittedServices = response.SubmittedServices;
+        }
+    }
+}

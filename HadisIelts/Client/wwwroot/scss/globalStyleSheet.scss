@@ -3,7 +3,7 @@ $primary: #a9233cff;
 $secondary: #e9861fff;
 $success: #8dbe22ff;
 $info: #eae914ff;
-$warning: #c39de5ff;
+$warning: #9d5ed4ff;
 $danger: #ff2600ff;
 $light: #e5eeaaff;
 $dark: #4d2707ff;
@@ -53,4 +53,15 @@ $theme-colors: ( primary: $primary, secondary: $secondary, success: $success, in
 }
 .form-control{
     margin:5px;
+}
+.borderless-form {
+    margin: auto;
+    flex-direction: column;
+    align-content: space-around;
+    justify-content: center;
+    padding: 50px;
+    padding-bottom: 10px;
+    padding-top: 40px;
+    margin-top: 35px;
+    text-align: center;
 }

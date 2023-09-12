@@ -3,7 +3,7 @@
 @using HadisIelts.Shared.Requests.Account;
 @using MediatR;
 @inject IMediator Mediator;
-
+@attribute [AllowAnonymous]
 <div class="container col-lg-4 col-md-6 main-form">
     <EditForm Model="@_registerModel" OnValidSubmit="UploadRegisterForm">
         <FluentValidationValidator />

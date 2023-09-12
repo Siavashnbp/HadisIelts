@@ -7,6 +7,7 @@ using HadisIelts.Shared.Requests.Correction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HadisIelts.Server.FeaturesEndpoint.Correction
 {
@@ -41,54 +42,52 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
         {
             try
             {
-                var user = await _userManager.FindByIdAsync(request.UserID);
-                if (user != null)
-                {
-                    var writingCorrectionGroup = _submittedCorrectionFilesRepository.Insert(
-                        new WritingCorrectionSubmissionGroup
-                        {
-                            User = user,
-                            UserID = user.Id,
-                            TotalPrice = request.WritingCorrectionPackage.TotalPrice
-                        });
-                    if (writingCorrectionGroup != null)
+                var userID = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)!.Value;
+                var writingCorrectionGroup = _submittedCorrectionFilesRepository.Insert(
+                    new WritingCorrectionSubmissionGroup
                     {
-                        var service = _applicationDbContext.Services.FirstOrDefault(x => x.Name == "Writing Correction");
-                        if (service != null)
+                        UserID = userID!,
+                        TotalPrice = request.WritingCorrectionPackage.TotalPrice,
+                        SubmissionDateTime = DateTime.UtcNow
+                    });
+                if (writingCorrectionGroup != null)
+                {
+                    var service = _applicationDbContext.Services.FirstOrDefault(x => x.Name == "Writing Correction");
+                    if (service != null)
+                    {
+                        var writingCorrectionFiles = new List<WritingCorrectionFile>();
+                        foreach (var item in request.WritingCorrectionPackage.ProcessedWritingFiles)
                         {
-                            var writingCorrectionFiles = new List<WritingCorrectionFile>();
-                            foreach (var item in request.WritingCorrectionPackage.ProcessedWritingFiles)
+                            var writingFile = new WritingCorrectionFile
                             {
-                                var writingFile = new WritingCorrectionFile
-                                {
-                                    Name = item.WritingFile.Name,
-                                    Data = item.WritingFile.Data,
-                                    WordCount = (int)item.WritingFile.WordCount!,
-                                    Price = item.PriceGroup.Price,
-                                    PriceName = item.PriceGroup.PriceName,
-                                    ApplicationWritingTypeID = item.WritingFile.WritingTypeID,
-                                    SubmittedWritingCorrectionFiles = writingCorrectionGroup,
-                                    SubmittedWritingCorecionFilesID = writingCorrectionGroup.ID,
-                                };
-                                writingCorrectionFiles.Add(writingFile);
-                                var addedWritingFile = _writingCorrectionFileRepository.Insert(writingFile);
-                                writingFile.ID = addedWritingFile.ID;
-                            }
-                            var paymentGroup = new PaymentGroup
-                            {
-                                ServiceID = service.ID,
-                                IsPaymentApproved = false,
-                                IsPaymentCheckPending = false,
-                                SubmittedServiceID = writingCorrectionGroup.ID,
-                                Message = "No payment files are uploaded"
+                                Name = item.WritingFile.Name,
+                                Data = item.WritingFile.Data,
+                                WordCount = (int)item.WritingFile.WordCount!,
+                                Price = item.PriceGroup.Price,
+                                PriceName = item.PriceGroup.PriceName,
+                                ApplicationWritingTypeID = item.WritingFile.WritingTypeID,
+                                SubmittedWritingCorrectionFiles = writingCorrectionGroup,
+                                SubmittedWritingCorecionFilesID = writingCorrectionGroup.ID,
                             };
-                            var addedPaymentGroup = _paymentGroupRepository.Insert(paymentGroup);
-                            if (addedPaymentGroup is not null)
-                            {
-                                writingCorrectionGroup.PaymentGroupID = addedPaymentGroup.ID;
-                                _submittedCorrectionFilesRepository.Update(writingCorrectionGroup);
-                                return Ok(new UploadProcessedWritingFilesRequest.Response(writingCorrectionGroup.PaymentGroupID));
-                            }
+                            writingCorrectionFiles.Add(writingFile);
+                            var addedWritingFile = _writingCorrectionFileRepository.Insert(writingFile);
+                            writingFile.ID = addedWritingFile.ID;
+                        }
+                        var paymentGroup = new PaymentGroup
+                        {
+                            ServiceID = service.ID,
+                            UserID = userID,
+                            IsPaymentApproved = false,
+                            IsPaymentCheckPending = false,
+                            SubmittedServiceID = writingCorrectionGroup.ID,
+                            Message = "No payment files are uploaded"
+                        };
+                        var addedPaymentGroup = _paymentGroupRepository.Insert(paymentGroup);
+                        if (addedPaymentGroup is not null)
+                        {
+                            writingCorrectionGroup.PaymentGroupID = addedPaymentGroup.ID;
+                            _submittedCorrectionFilesRepository.Update(writingCorrectionGroup);
+                            return Ok(new UploadProcessedWritingFilesRequest.Response(writingCorrectionGroup.PaymentGroupID));
                         }
                     }
                 }

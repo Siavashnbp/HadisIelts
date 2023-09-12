@@ -1,0 +1,41 @@
+﻿@page "/teacher/allSubmittedWritingCorrections"
+@using HadisIelts.Client.Features.Correction.UserWritingCorrectionSubmissionsComponents
+@using HadisIelts.Shared.Requests.Teacher;
+@inject IMediator Mediator;
+<AuthorizeView Roles="Administrator,Teacher">
+    <Authorized>
+        <div class="container main-form col-lg-10">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-lg-6">
+                    <div class="form-floating">
+                        <InputText class="form-control" @bind-Value="_searchPhrase" id="userSearchInput" placeholder="Search Users" />
+                        <label for="userSearchInput" style="margin-left:10px;">Search Users</label>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <button class="btn btn-secondary" @onclick="(()=>GetAllSubmittedWritingCorrections())">
+                        @(string.IsNullOrEmpty(_searchPhrase) ? "Get All" : "Search")
+                    </button>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col">
+                    <WritingCorrectionSubmissionsTable SubmittedServices="_submittedServices" />
+                    @if (_submittedServices is null || _submittedServices.Count == 0)
+                    {
+                        <h5 class="text-warning">No Users Were Found!</h5>
+                    }
+                </div>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+@code {
+    private string _searchPhrase = string.Empty;
+    private List<SubmittedServiceSummarySharedModel> _submittedServices = new List<SubmittedServiceSummarySharedModel>();
+    private async Task GetAllSubmittedWritingCorrections()
+    {
+        var response = await Mediator.Send(new GetAllSubmittedWritingCorrectionsSummaryRequest(_searchPhrase));
+        _submittedServices = response.SubmittedServices;
+    }
+}

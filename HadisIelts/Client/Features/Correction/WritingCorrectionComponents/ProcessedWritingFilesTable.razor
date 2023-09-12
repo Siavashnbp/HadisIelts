@@ -1,5 +1,5 @@
 ﻿@using HadisIelts.Client.Features.Correction.Models;
-<table class="table table-success">
+<table class="table table-success text-center">
     <thead>
         <tr>
             <th>
@@ -16,6 +16,9 @@
             </th>
             <th>
                 <h5>Price</h5>
+            </th>
+            <th>
+                <button class="btn btn-primary">Get All</button>
             </th>
         </tr>
     </thead>
@@ -46,6 +49,9 @@
                         <h6>
                             @($"{file.PriceGroup.Price:n0}")
                         </h6>
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary">Download</button>
                     </td>
                 </tr>
             }

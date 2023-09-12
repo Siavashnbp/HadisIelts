@@ -1,5 +1,6 @@
 ﻿@page "/services/writingCorrection/price"
 @using HadisIelts.Client.Features.Teacher.Models;
+@using HadisIelts.Client.Features.Teacher.WritingCorrectionPricesComponents
 @using HadisIelts.Shared.Requests.Correction;
 @using HadisIelts.Shared.Requests.Teacher;
 @inject IMediator Mediator
@@ -99,7 +100,7 @@
     private List<WritingPriceModel> _writingCorrectionPrices = new List<WritingPriceModel>();
     private List<WritingTypeSharedModel> _writingTypes = new();
     private WritingPriceModel _writingPriceModel = new WritingPriceModel();
-    private string _addWritingTypeName;
+    private string? _addWritingTypeName;
     protected override async Task OnInitializedAsync()
     {
         await GetWritingTypes();

@@ -1,0 +1,42 @@
+﻿<div class="modal fade show" style="display: block; background-color: rgba(10, 10, 10, 0.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-body p-3">
+                <table class="table table-striped">
+                    <thead>
+                        <tr class="text-primary">
+                            <td>Writing Correction Service Prices</td>
+                            <td><a href="/services/writingCorrection/price">View Full Prices</a></td>
+                        </tr>
+                        <tr>
+                            <td>Name</td>
+                            <td>Price</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (WritingCorrectionPrices is not null && WritingCorrectionPrices.Count>0)
+                        {
+                            @foreach (var item in WritingCorrectionPrices)
+                            {
+                                <tr>
+                                    <td>@item.PriceName</td>
+                                    <td>@($"{item.Price:n0} Rials")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-lg btn-primary mt-5 w-100" data-bs-dismiss="modal"
+                        @onclick="(()=>OnCloseButtonIsClicked.InvokeAsync())">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter, EditorRequired]
+    public List<PriceGroupSharedModel> WritingCorrectionPrices { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback OnCloseButtonIsClicked { get; set; }
+}

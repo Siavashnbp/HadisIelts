@@ -10,5 +10,6 @@ namespace HadisIelts.Server.Models.Entities
         public uint TotalPrice { get; set; }
         public ApplicationUser User { get; set; }
         public string PaymentGroupID { get; set; }
+        public DateTime SubmissionDateTime { get; set; }
     }
 }

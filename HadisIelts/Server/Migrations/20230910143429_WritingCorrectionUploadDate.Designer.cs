@@ -3,6 +3,7 @@ using System;
 using HadisIelts.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HadisIelts.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230910143429_WritingCorrectionUploadDate")]
+    partial class WritingCorrectionUploadDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -268,7 +271,7 @@ namespace HadisIelts.Server.Migrations
                     b.Property<DateTime>("LastUpdateDateTime")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2023, 9, 12, 6, 21, 3, 703, DateTimeKind.Utc).AddTicks(4899));
+                        .HasDefaultValue(new DateTime(2023, 9, 10, 14, 34, 29, 494, DateTimeKind.Utc).AddTicks(1157));
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -278,10 +281,6 @@ namespace HadisIelts.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SubmittedServiceID")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("longtext");
 
