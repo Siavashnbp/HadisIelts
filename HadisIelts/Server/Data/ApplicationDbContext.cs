@@ -56,8 +56,6 @@ namespace HadisIelts.Server.Data
             builder.Entity<PaymentGroup>().Property(x => x.ID).ValueGeneratedOnAdd();
             builder.Entity<PaymentGroup>().HasOne(x => x.Service)
                 .WithMany(x => x.PaymentGroups).HasForeignKey(x => x.ServiceID);
-            builder.Entity<PaymentGroup>().Property(x => x.LastUpdateDateTime)
-                .ValueGeneratedOnAddOrUpdate().HasDefaultValue(DateTime.UtcNow);
             //Service
             builder.Entity<Service>().HasKey(x => x.ID);
             builder.Entity<Service>().Property(x => x.ID).ValueGeneratedOnAdd();

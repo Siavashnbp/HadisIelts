@@ -48,6 +48,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                                 FileSuffix = item.FileSuffix,
                                 ID = item.ID,
                                 IsVerified = item.IsVerified,
+                                IsVerificationPending = item.IsVerificationPending,
                                 Message = item.Message,
                                 Name = item.Name,
                                 UploadDateTime = paymentGroup.LastUpdateDateTime

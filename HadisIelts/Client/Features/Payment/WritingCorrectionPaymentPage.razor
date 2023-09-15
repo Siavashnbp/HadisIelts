@@ -191,11 +191,13 @@
     {
         try
         {
-            if (_paymentFiles is not null && _paymentFiles.Count > 0)
+            if (_pendingToUploadPaymentFiles is not null && _pendingToUploadPaymentFiles.Count > 0)
             {
                 var request = new UploadPaymentPackageRequest(_pendingToUploadPaymentFiles, PaymentID);
                 var response = await Mediator.Send(request);
                 _paymentFiles = response.PaymentPictures;
+                _pendingToUploadPaymentFiles.Clear();
+                StateHasChanged();
             }
         }
         catch (Exception)

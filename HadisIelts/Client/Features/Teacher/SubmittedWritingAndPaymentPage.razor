@@ -3,6 +3,7 @@
 @using HadisIelts.Client.Features.Teacher.SubmittedWritingAndPaymentComponents
 @using HadisIelts.Client.Services.Writing;
 @using HadisIelts.Shared.Requests.Payment;
+@using System.Net;
 @inject IClientWritingServices ClientWritingSevices;
 @inject IMediator Mediator;
 <AuthorizeView>
@@ -42,7 +43,8 @@
                                         @foreach (var item in _paymentFiles)
                                         {
                                             <div class="col-lg-4">
-                                                <PaymentVerificationImageCard PaymentFile="item" OnThumbnailIsClicked="HandleOnThumbnailIsClicked" />
+                                                <PaymentVerificationImageCard PaymentFile="item" OnThumbnailIsClicked="HandleOnThumbnailIsClicked"
+                                                                      OnVerificationButtonIsClicked="HandleOnVerificationButtonIsClicked" />
                                             </div>
                                         }
                                     </div>
@@ -91,5 +93,27 @@
     {
         _modalImageData = data;
         _showModal = true;
+    }
+    private async Task HandleOnVerificationButtonIsClicked((int pictureID, bool isVerified) paymentVerification)
+    {
+        try
+        {
+            var request = new PaymentVerificationRequest
+            (PaymentID: paymentVerification.pictureID, IsVerfifed: paymentVerification.isVerified);
+            var response = await Mediator.Send(request);
+            if (response.VerifiedPayment is not null)
+            {
+                var paymentIndex = _paymentFiles.FindIndex(payment => payment.ID == paymentVerification.pictureID);
+                if (paymentIndex != -1)
+                {
+                    _paymentFiles[paymentIndex] = response.VerifiedPayment;
+                }
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
 }

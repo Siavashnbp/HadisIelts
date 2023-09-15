@@ -1,5 +1,6 @@
 ﻿@page "/teacher/allSubmittedWritingCorrections"
 @using HadisIelts.Client.Features.Correction.UserWritingCorrectionSubmissionsComponents
+@using HadisIelts.Client.Features.Teacher.AllSubmittedWritingCorrectionsComponents
 @using HadisIelts.Shared.Requests.Teacher;
 @inject IMediator Mediator;
 <AuthorizeView Roles="Administrator,Teacher">
@@ -20,7 +21,7 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col">
-                    <WritingCorrectionSubmissionsTable SubmittedServices="_submittedServices" />
+                    <TeacherWritingCorrectionSubmissionsTable SubmittedServices="_submittedServices" />
                     @if (_submittedServices is null || _submittedServices.Count == 0)
                     {
                         <h5 class="text-warning">No Users Were Found!</h5>

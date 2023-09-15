@@ -10,6 +10,7 @@ namespace HadisIelts.Server.Models.Entities
         public string Data { get; set; }
         public string FileSuffix { get; set; }
         public bool IsVerified { get; set; }
+        public bool IsVerificationPending { get; set; }
         public string Message { get; set; }
         public DateTime UploadDateTime { get; set; }
         public string PaymentGroupID { get; set; }

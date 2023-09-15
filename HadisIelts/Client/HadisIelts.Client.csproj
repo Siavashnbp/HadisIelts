@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
+    <Content Remove="wwwroot\js\downloadFileFromStream.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +31,7 @@
     <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\lint.yml" />
     <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\node-sass.yml" />
     <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\release-notes.yml" />
+    <None Include="wwwroot\js\downloadFileFromStream.js" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,6 @@
 ﻿@using HadisIelts.Client.Features.Correction.Models;
+@using System.IO
+@inject IJSRuntime JS
 <table class="table table-success text-center">
     <thead>
         <tr>
@@ -18,7 +20,7 @@
                 <h5>Price</h5>
             </th>
             <th>
-                <button class="btn btn-primary">Get All</button>
+                Download
             </th>
         </tr>
     </thead>
@@ -51,7 +53,7 @@
                         </h6>
                     </td>
                     <td>
-                        <button class="btn btn-secondary">Download</button>
+                        <button class="btn btn-secondary" @onclick="(()=>DownloadFileFromStream(file.WritingFile))">Download</button>
                     </td>
                 </tr>
             }
@@ -61,4 +63,19 @@
 @code {
     [Parameter, EditorRequired]
     public List<ProcessedWritingFileSharedModel> ProcessedFiles { get; set; } = new List<ProcessedWritingFileSharedModel>();
+    private Stream GetFileStream(string data)
+    {
+        var fileStream = new MemoryStream(Convert.FromBase64String(data));
+        return fileStream;
+    }
+
+    private async Task DownloadFileFromStream(WritingFileSharedModel writingFile)
+    {
+        var fileStream = GetFileStream(writingFile.Data);
+        var fileName = $"{writingFile.Name}.docx";
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
 }

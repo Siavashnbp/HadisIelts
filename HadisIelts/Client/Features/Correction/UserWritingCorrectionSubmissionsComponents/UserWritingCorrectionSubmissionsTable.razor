@@ -1,0 +1,30 @@
+﻿<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Submission Date</th>
+            <th>Payment Status</th>
+            <th>Correction Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in SubmittedServices)
+        {
+            <tr>                
+                <td>@item.SubmissionDateTime</td>
+                <td>
+                    @item.PaymentStatus
+                </td>
+                <td>
+                    Correction status
+                </td>
+                <td>
+                    <a class="btn btn-primary" href=@($"/payment/writingCorrection/{item.PaymentID}")>View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    [Parameter, EditorRequired]
+    public List<SubmittedServiceSummarySharedModel> SubmittedServices { get; set; }
+}

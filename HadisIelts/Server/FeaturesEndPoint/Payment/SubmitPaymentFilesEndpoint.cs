@@ -1,4 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
+using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Shared.Models;
@@ -16,12 +17,15 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
             _paymentGroupRepository;
         private readonly ICustomRepositoryServices<PaymentPicture, int>
             _paymentPictureRepository;
+        private readonly ApplicationDbContext _dbContext;
         public SubmitPaymentFilesEndpoint(
-            ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository
-            , ICustomRepositoryServices<PaymentPicture, int> paymentPictureRepository)
+            ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
+            ICustomRepositoryServices<PaymentPicture, int> paymentPictureRepository,
+            ApplicationDbContext dbContext)
         {
             _paymentGroupRepository = paymentGroupRepository;
             _paymentPictureRepository = paymentPictureRepository;
+            _dbContext = dbContext;
         }
         /// <summary>
         /// finds the payment group created on submitting writing correction files
@@ -45,7 +49,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 var paymentGroup = await _paymentGroupRepository.FindByIDAsync(request.PaymentID);
                 if (paymentGroup is not null)
                 {
-                    var paymentFiles = new List<PaymentPicture>();
+                    var paymentFiles = _dbContext.PaymentPictures.Where(x => x.PaymentGroupID == paymentGroup.ID).ToList();
                     foreach (var payment in request.PaymentPictures)
                     {
                         var paymentFile = new PaymentPicture
@@ -55,6 +59,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             FileSuffix = payment.FileSuffix,
                             PaymentGroupID = request.PaymentID,
                             IsVerified = false,
+                            IsVerificationPending = true,
                             Message = "Pending to verify",
                             UploadDateTime = DateTime.UtcNow,
                         };
@@ -62,8 +67,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         paymentFile.ID = addedPayment.ID;
                         paymentFiles.Add(paymentFile);
                     }
-                    paymentGroup.Message = "Thank you for your payment, please wait while we verify your payment";
+                    paymentGroup.Message = "Verification Pending";
                     paymentGroup.IsPaymentCheckPending = true;
+                    paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
                     var paymentGroupIsUpdated = _paymentGroupRepository.Update(paymentGroup);
                     if (paymentGroupIsUpdated)
                     {
