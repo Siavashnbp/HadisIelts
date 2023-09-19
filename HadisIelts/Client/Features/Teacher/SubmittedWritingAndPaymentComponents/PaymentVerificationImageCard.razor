@@ -31,23 +31,21 @@
                             {
                                 <button type="button" class="btn btn-sm btn-outline-success"
                                     @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.ID,true)))">
-                                    <i class="fa fa-check-square">Approve</i>
+                                    <i class="fa fa-check-square">  Approve</i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-outline-danger"
                                     @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.ID,false)))">
-                                    <i class="fa fa-remove">Reject</i>
+                                    <i class="fa fa-remove">  Reject</i>
                                 </button>
                             }
                             else
                             {
-                                if (PaymentFile.IsVerified)
-                                {
-                                    <h5 class="text-success">Verified</h5>
-                                }
-                                else
-                                {
-                                    <h5 class="text-danger">Rejected</h5>
-                                    <h5 class="text-info">@PaymentFile.Message</h5>
+                                if (IsEditEnabled)
+                                {                                    
+                                <button type="button" class="btn btn-sm btn-outline-warning"
+                                    @onclick="(async()=>await OnEditButtonIsClicked.InvokeAsync(PaymentFile.ID))">
+                                    <i class="fa fa-edit">  Edit</i>
+                                </button>
                                 }
                             }
                         </div>
@@ -65,6 +63,10 @@
     public EventCallback<string> OnThumbnailIsClicked { get; set; }
     [Parameter, EditorRequired]
     public EventCallback<(int pictureID,bool isVerified)> OnVerificationButtonIsClicked { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnEditButtonIsClicked { get; set; }
+    [Parameter]
+    public bool IsEditEnabled { get; set; }
 }
 
 

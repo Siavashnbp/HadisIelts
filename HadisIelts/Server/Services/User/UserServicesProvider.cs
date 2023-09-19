@@ -28,6 +28,11 @@ namespace HadisIelts.Server.Services.User
             return _dbContext.Users.ToList();
         }
 
+        public string GetUserIDFromClaims(List<Claim> claims)
+        {
+            return claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value;
+        }
+
         public async Task<UserInformationSharedModel> GetUserInformationAsync(string userID)
         {
             var user = await _userManager.FindByIdAsync(userID);
@@ -70,10 +75,16 @@ namespace HadisIelts.Server.Services.User
             return usersRoles;
         }
 
+
+        public bool HasWritingCorrectionPending(ApplicationDbContext dbContext, string userID)
+        {
+            return _dbContext.SubmittedWritingCorrectionFiles.Where(x => x.UserID == userID).Any(x => !x.IsCorrected);
+        }
+
         public bool IsUserOwnerOrSpecificRoles(List<Claim> claims, List<string> roles, string userID)
         {
             //is user owner
-            var isUserOwner = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value == userID;
+            var isUserOwner = GetUserIDFromClaims(claims) == userID;
             if (isUserOwner)
             {
                 return true;

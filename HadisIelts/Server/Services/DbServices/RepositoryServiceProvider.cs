@@ -41,5 +41,14 @@ namespace HadisIelts.Server.Services.DbServices
             var result = _dbContext.SaveChanges();
             return result > 0 ? true : false;
         }
+
+        public bool UpdateAll(List<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                _dbContext.Update(entity);
+            }
+            return _dbContext.SaveChanges() > 0 ? true : false;
+        }
     }
 }

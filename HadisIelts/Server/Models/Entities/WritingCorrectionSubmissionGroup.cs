@@ -11,5 +11,6 @@ namespace HadisIelts.Server.Models.Entities
         public ApplicationUser User { get; set; }
         public string PaymentGroupID { get; set; }
         public DateTime SubmissionDateTime { get; set; }
+        public bool IsCorrected { get; set; }
     }
 }

@@ -12,6 +12,7 @@
 @inject IFileServices FileServices;
 @inject IMediator Mediator;
 @inject IUserServices UserServices;
+@inject NavigationManager NavMan;
 <AuthorizeView>
     <Authorized>
         <div class="container" style="margin-top:10px;">
@@ -32,7 +33,7 @@
             <div class="row">
                 @if (_paymentFiles is not null && _paymentFiles.Count > 0)
                 {
-                    <div class="accordion" id="accordionSubmittedPayments">
+                    <div class="accordion " id="accordionSubmittedPayments">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="submittedPaymentHeader">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -116,7 +117,7 @@
         </div>
         @if (_showModal)
         {
-            <ViewImageModal ImageData="@(FileServices.ViewImageData(_modalImageData))" OnCloseButtonIsClicked="CloseModal" />
+            <ViewImageModal ImageData="@(FileServices.ViewImageData(_modalImageData!))" OnCloseButtonIsClicked="CloseModal" />
         }
     </Authorized>
 </AuthorizeView>
@@ -132,7 +133,7 @@
     protected override async Task OnInitializedAsync()
     {
         await GetWritingCorrectionPaymentPackage();
-        if (_paymentGroup is not null)
+        if (_paymentGroup.ID != "NotFound")
         {
             _paymentGroup.Service = new WritingCorrectionPackageSharedModel();
             var result = await ClientWritingSevices.GetSubmittedWritingCorrectionFiles(_paymentGroup.SubmittedServiceID);
@@ -141,6 +142,12 @@
             _paymentGroup.Service.ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>();
             _paymentGroup.Service.ProcessedWritingFiles = result.WritingCorrectionPackage.ProcessedWritingFiles;
         }
+        else
+        {
+            NavMan.NavigateTo("Not Found");
+
+        }
+
     }
     //Event Handlers
     private async Task HandleInputFileChange(InputFileChangeEventArgs e)
@@ -161,7 +168,7 @@
             StateHasChanged();
         }
     }
-    private async Task HandleOnThumbnailIsClicked(string data)
+    private void HandleOnThumbnailIsClicked(string data)
     {
         _modalImageData = data;
         _showModal = true;
@@ -171,12 +178,17 @@
         _modalImageData = string.Empty;
         _showModal = false;
     }
-    private void HandleImageRemovebuttonIsClicked(int id)
+    private async Task HandleImageRemovebuttonIsClicked(int id)
     {
         var file = _paymentFiles.FirstOrDefault(x => x.ID == id);
         if (file is not null)
         {
-            _paymentFiles.Remove(file);
+            var request = new RemovePaymentPictureRequest(id);
+            var response = await Mediator.Send(request);
+            if (response.WasSuccessful)
+            {
+                _paymentFiles.Remove(file);
+            }
         }
         else
         {

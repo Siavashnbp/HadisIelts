@@ -1,48 +1,52 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
-using HadisIelts.Server.Models;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Requests.Correction;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace HadisIelts.Server.FeaturesEndpoint.Correction
 {
-    public class SubmitWritingCorrectionPackageEndpoint : EndpointBaseAsync
+    public class SubmitWritingCorrectionPackageEndpoint : EndpointBaseSync
         .WithRequest<UploadProcessedWritingFilesRequest>
         .WithActionResult<UploadProcessedWritingFilesRequest.Response>
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICustomRepositoryServices<WritingCorrectionSubmissionGroup, string>
             _submittedCorrectionFilesRepository;
         private readonly ICustomRepositoryServices<WritingCorrectionFile, int>
             _writingCorrectionFileRepository;
         private readonly ICustomRepositoryServices<PaymentGroup, string>
             _paymentGroupRepository;
-        private readonly ApplicationDbContext _applicationDbContext;
-        public SubmitWritingCorrectionPackageEndpoint(UserManager<ApplicationUser> userManager
-            , ICustomRepositoryServices<WritingCorrectionSubmissionGroup, string> submittedCorrectionFilesRepository
-            , ICustomRepositoryServices<WritingCorrectionFile, int> writingCorrectionFileRepository
-            , ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository
-            , ApplicationDbContext applicationDbContext)
+        private readonly IUserServices _userServices;
+        private readonly ApplicationDbContext _dbContext;
+        public SubmitWritingCorrectionPackageEndpoint(
+            ICustomRepositoryServices<WritingCorrectionSubmissionGroup, string> submittedCorrectionFilesRepository,
+            ICustomRepositoryServices<WritingCorrectionFile, int> writingCorrectionFileRepository,
+            ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
+            ApplicationDbContext dbContext,
+            IUserServices userServices)
 
         {
-            _userManager = userManager;
             _submittedCorrectionFilesRepository = submittedCorrectionFilesRepository;
             _writingCorrectionFileRepository = writingCorrectionFileRepository;
             _paymentGroupRepository = paymentGroupRepository;
-            _applicationDbContext = applicationDbContext;
+            _dbContext = dbContext;
+            _userServices = userServices;
         }
+
         [Authorize]
         [HttpPost(UploadProcessedWritingFilesRequest.EndpointUri)]
-        public override async Task<ActionResult<UploadProcessedWritingFilesRequest.Response>> HandleAsync(UploadProcessedWritingFilesRequest request, CancellationToken cancellationToken = default)
+        public override ActionResult<UploadProcessedWritingFilesRequest.Response> Handle(UploadProcessedWritingFilesRequest request)
         {
             try
             {
-                var userID = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)!.Value;
+                var userID = _userServices.GetUserIDFromClaims(User.Claims.ToList());
+                if (_userServices.HasWritingCorrectionPending(_dbContext, userID))
+                {
+                    return Problem("You have another writing correction pending");
+                }
                 var writingCorrectionGroup = _submittedCorrectionFilesRepository.Insert(
                     new WritingCorrectionSubmissionGroup
                     {
@@ -52,7 +56,7 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
                     });
                 if (writingCorrectionGroup != null)
                 {
-                    var service = _applicationDbContext.Services.FirstOrDefault(x => x.Name == "Writing Correction");
+                    var service = _dbContext.Services.FirstOrDefault(x => x.Name == "Writing Correction");
                     if (service != null)
                     {
                         var writingCorrectionFiles = new List<WritingCorrectionFile>();

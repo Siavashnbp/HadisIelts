@@ -10,5 +10,6 @@ namespace HadisIelts.Server.Services.DbServices
         bool Delete(TEntity entity);
         TEntity Insert(TEntity entity);
         bool Update(TEntity entity);
+        bool UpdateAll(List<TEntity> entities);
     }
 }

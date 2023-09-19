@@ -1,4 +1,5 @@
-﻿using HadisIelts.Server.Models;
+﻿using HadisIelts.Server.Data;
+using HadisIelts.Server.Models;
 using HadisIelts.Shared.Models;
 using System.Security.Claims;
 using static HadisIelts.Shared.Enums.UserRelatedEnums;
@@ -12,5 +13,7 @@ namespace HadisIelts.Server.Services.User
         public Task<List<Tuple<ApplicationRoles, bool>>> GetUserRolesAsync(ApplicationUser user);
         public bool IsUserOwnerOrSpecificRoles(List<Claim> claims, List<string> roles, string userID);
         public Task<UserInformationSharedModel> GetUserInformationAsync(string userID);
+        public string GetUserIDFromClaims(List<Claim> claims);
+        public bool HasWritingCorrectionPending(ApplicationDbContext dbContext, string userID);
     }
 }

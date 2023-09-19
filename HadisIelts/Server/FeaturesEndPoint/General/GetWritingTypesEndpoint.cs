@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HadisIelts.Server.FeaturesEndPoint.General
 {
-    public class GetWritingTypesEndpoint : EndpointBaseAsync
+    public class GetWritingTypesEndpoint : EndpointBaseSync
         .WithoutRequest
         .WithActionResult<GetWritingTypesRequest.Response>
     {
@@ -17,7 +17,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
             _writingTypeRepository = writingTypeRepository;
         }
         [HttpGet(GetWritingTypesRequest.EndPointUri)]
-        public override async Task<ActionResult<GetWritingTypesRequest.Response>> HandleAsync(CancellationToken cancellationToken = default)
+        public override ActionResult<GetWritingTypesRequest.Response> Handle()
         {
             var result = _writingTypeRepository.GetAll();
             if (result is not null)
@@ -31,5 +31,6 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
             }
             return Problem(null);
         }
+
     }
 }

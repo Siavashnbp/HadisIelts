@@ -60,7 +60,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             PaymentGroupID = request.PaymentID,
                             IsVerified = false,
                             IsVerificationPending = true,
-                            Message = "Pending to verify",
+                            Message = "Verification pending",
                             UploadDateTime = DateTime.UtcNow,
                         };
                         var addedPayment = _paymentPictureRepository.Insert(paymentFile);

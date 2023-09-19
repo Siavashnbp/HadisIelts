@@ -71,6 +71,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 return Ok(new GetPaymentGroupRequest.Response(
                     new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>
                     {
+                        ID = "NotFound",
                         Message = "Payment Group wan not found"
                     }));
             }

@@ -16,6 +16,7 @@ namespace HadisIelts.Server.Data
         public DbSet<PaymentPicture> PaymentPictures { get; set; }
         public DbSet<PaymentGroup> PaymentGroups { get; set; }
         public DbSet<Service> Services { get; set; }
+        public DbSet<CorrectedWritingFile> CorrectedWritingFiles { get; set; }
         public ApplicationDbContext(
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
@@ -61,6 +62,9 @@ namespace HadisIelts.Server.Data
             builder.Entity<Service>().Property(x => x.ID).ValueGeneratedOnAdd();
             builder.Entity<Service>().Property(x => x.Name).IsRequired();
             builder.Entity<Service>().Property(x => x.Description).IsRequired(false);
+            //CorrectedWritingFile
+            builder.Entity<CorrectedWritingFile>().HasKey(x => x.ID);
+            builder.Entity<CorrectedWritingFile>().Property(x => x.ID).ValueGeneratedOnAdd();
             base.OnModelCreating(builder);
         }
     }

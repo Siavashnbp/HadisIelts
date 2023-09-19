@@ -8,22 +8,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Payment
 {
-    public class PaymentVerificationEndpoint : EndpointBaseAsync
-        .WithRequest<PaymentVerificationRequest>
-        .WithActionResult<PaymentVerificationRequest.Response>
+    public class SubmitPaymentVerificationEndpoint : EndpointBaseAsync
+        .WithRequest<SubmitPaymentVerificationRequest>
+        .WithActionResult<SubmitPaymentVerificationRequest.Response>
     {
         private readonly ICustomRepositoryServices<PaymentPicture, int> _paymentPictureRepossitory;
-        public PaymentVerificationEndpoint(ICustomRepositoryServices<PaymentPicture, int> paymentPictureRepossitory)
+        public SubmitPaymentVerificationEndpoint(ICustomRepositoryServices<PaymentPicture, int> paymentPictureRepossitory)
         {
             _paymentPictureRepossitory = paymentPictureRepossitory;
         }
         [Authorize(Roles = "Administrator,Teacher")]
-        [HttpPost(PaymentVerificationRequest.EndpointUri)]
-        public override async Task<ActionResult<PaymentVerificationRequest.Response>> HandleAsync(PaymentVerificationRequest request, CancellationToken cancellationToken = default)
+        [HttpPost(SubmitPaymentVerificationRequest.EndpointUri)]
+        public override async Task<ActionResult<SubmitPaymentVerificationRequest.Response>> HandleAsync(SubmitPaymentVerificationRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
-                var picture = await _paymentPictureRepossitory.FindByIDAsync(request.PaymentID);
+                var picture = await _paymentPictureRepossitory.FindByIDAsync(request.PictureID);
                 if (picture != null)
                 {
                     picture.IsVerified = request.IsVerfifed;
@@ -43,7 +43,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             UploadDateTime = picture.UploadDateTime,
                             Message = picture.Message
                         };
-                        return Ok(new PaymentVerificationRequest.Response(updatedPicture));
+                        return Ok(new SubmitPaymentVerificationRequest.Response(updatedPicture));
                     }
                     return Problem("Picture could not be updated");
                 }
