@@ -26,6 +26,7 @@
     </Authorized>
 </AuthorizeView>
 @code {
+    public const string PageAddress = "/user/submissions/writingCorrections";
     private List<SubmittedServiceSummarySharedModel> _submittedServices = new List<SubmittedServiceSummarySharedModel>();
     private int _page = 0;
     protected override async Task OnInitializedAsync()
