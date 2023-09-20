@@ -78,7 +78,7 @@ namespace HadisIelts.Server.Services.User
 
         public bool HasWritingCorrectionPending(ApplicationDbContext dbContext, string userID)
         {
-            return _dbContext.SubmittedWritingCorrectionFiles.Where(x => x.UserID == userID).Any(x => !x.IsCorrected);
+            return _dbContext.WritingCorrectionSubmissionGroups.Where(x => x.UserID == userID).Any(x => !x.IsCorrected);
         }
 
         public bool IsUserOwnerOrSpecificRoles(List<Claim> claims, List<string> roles, string userID)

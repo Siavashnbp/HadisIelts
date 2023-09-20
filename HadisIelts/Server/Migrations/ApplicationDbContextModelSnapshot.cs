@@ -277,7 +277,13 @@ namespace HadisIelts.Server.Migrations
                     b.Property<int>("WritingCorrectionFileID")
                         .HasColumnType("int");
 
+                    b.Property<string>("WritingCorrectionSubmissionGroupID")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("WritingCorrectionSubmissionGroupID");
 
                     b.ToTable("CorrectedWritingFiles");
                 });
@@ -406,18 +412,18 @@ namespace HadisIelts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("SubmittedWritingCorecionFilesID")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
                     b.Property<int>("WordCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("WritingCorrectionSubmissionGroupID")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("ID");
 
                     b.HasIndex("ApplicationWritingTypeID");
 
-                    b.HasIndex("SubmittedWritingCorecionFilesID");
+                    b.HasIndex("WritingCorrectionSubmissionGroupID");
 
                     b.ToTable("WritingCorrectionFiles");
                 });
@@ -476,7 +482,7 @@ namespace HadisIelts.Server.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("SubmittedWritingCorrectionFiles");
+                    b.ToTable("WritingCorrectionSubmissionGroups");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -611,6 +617,17 @@ namespace HadisIelts.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HadisIelts.Server.Models.Entities.CorrectedWritingFile", b =>
+                {
+                    b.HasOne("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", "WritingCorrectionSubmissionGroup")
+                        .WithMany("CorrectedWritingFiles")
+                        .HasForeignKey("WritingCorrectionSubmissionGroupID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WritingCorrectionSubmissionGroup");
+                });
+
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.PaymentGroup", b =>
                 {
                     b.HasOne("HadisIelts.Server.Models.Entities.Service", "Service")
@@ -641,15 +658,15 @@ namespace HadisIelts.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", "SubmittedWritingCorrectionFiles")
+                    b.HasOne("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", "WritingCorrectionSubmissionGroup")
                         .WithMany("WritingCorrectionFiles")
-                        .HasForeignKey("SubmittedWritingCorecionFilesID")
+                        .HasForeignKey("WritingCorrectionSubmissionGroupID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationWritingType");
 
-                    b.Navigation("SubmittedWritingCorrectionFiles");
+                    b.Navigation("WritingCorrectionSubmissionGroup");
                 });
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.WritingCorrectionServicePrice", b =>
@@ -744,6 +761,8 @@ namespace HadisIelts.Server.Migrations
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", b =>
                 {
+                    b.Navigation("CorrectedWritingFiles");
+
                     b.Navigation("WritingCorrectionFiles");
                 });
 #pragma warning restore 612, 618

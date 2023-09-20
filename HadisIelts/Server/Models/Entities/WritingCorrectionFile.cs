@@ -12,8 +12,8 @@ namespace HadisIelts.Server.Models.Entities
         public string PriceName { get; set; }
         public int ApplicationWritingTypeID { get; set; }
         public ApplicationWritingType ApplicationWritingType { get; set; }
-        public string SubmittedWritingCorecionFilesID { get; set; }
-        public WritingCorrectionSubmissionGroup SubmittedWritingCorrectionFiles { get; set; }
+        public string WritingCorrectionSubmissionGroupID { get; set; }
+        public WritingCorrectionSubmissionGroup WritingCorrectionSubmissionGroup { get; set; }
         public int? CorrectedWritingFileID { get; set; }
     }
 }

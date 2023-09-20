@@ -12,7 +12,7 @@ namespace HadisIelts.Server.Data
         public DbSet<WritingCorrectionServicePrice> WritingCorrectionServicePrices { get; set; }
         public DbSet<ApplicationWritingType> WritingTypes { get; set; }
         public DbSet<WritingCorrectionFile> WritingCorrectionFiles { get; set; }
-        public DbSet<WritingCorrectionSubmissionGroup> SubmittedWritingCorrectionFiles { get; set; }
+        public DbSet<WritingCorrectionSubmissionGroup> WritingCorrectionSubmissionGroups { get; set; }
         public DbSet<PaymentPicture> PaymentPictures { get; set; }
         public DbSet<PaymentGroup> PaymentGroups { get; set; }
         public DbSet<Service> Services { get; set; }
@@ -45,7 +45,7 @@ namespace HadisIelts.Server.Data
             builder.Entity<WritingCorrectionSubmissionGroup>().HasKey(x => x.ID);
             builder.Entity<WritingCorrectionSubmissionGroup>().Property(x => x.ID).ValueGeneratedOnAdd();
             builder.Entity<WritingCorrectionSubmissionGroup>().HasMany(x => x.WritingCorrectionFiles)
-                .WithOne(x => x.SubmittedWritingCorrectionFiles).HasForeignKey(x => x.SubmittedWritingCorecionFilesID);
+                .WithOne(x => x.WritingCorrectionSubmissionGroup).HasForeignKey(x => x.WritingCorrectionSubmissionGroupID);
             builder.Entity<WritingCorrectionSubmissionGroup>().Property(x => x.PaymentGroupID).IsRequired(false);
             //PaymentPicture
             builder.Entity<PaymentPicture>().HasKey(x => x.ID);
@@ -65,6 +65,8 @@ namespace HadisIelts.Server.Data
             //CorrectedWritingFile
             builder.Entity<CorrectedWritingFile>().HasKey(x => x.ID);
             builder.Entity<CorrectedWritingFile>().Property(x => x.ID).ValueGeneratedOnAdd();
+            builder.Entity<CorrectedWritingFile>().HasOne(x => x.WritingCorrectionSubmissionGroup)
+                .WithMany(x => x.CorrectedWritingFiles).HasForeignKey(x => x.WritingCorrectionSubmissionGroupID);
             base.OnModelCreating(builder);
         }
     }

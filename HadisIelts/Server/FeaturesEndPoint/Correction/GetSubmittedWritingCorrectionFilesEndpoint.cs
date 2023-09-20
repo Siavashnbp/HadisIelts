@@ -60,12 +60,15 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                             }
                         }
                         var files = _dbContext.WritingCorrectionFiles.ToList().FindAll
-                            (x => x.SubmittedWritingCorecionFilesID == submission.ID);
+                            (x => x.WritingCorrectionSubmissionGroupID == submission.ID);
+                        var correctedFiles = _dbContext.CorrectedWritingFiles.ToList().FindAll
+                            (x => x.WritingCorrectionSubmissionGroupID == submission.ID);
                         if (files is not null && files.Count > 0)
                         {
                             var writingFiles = new List<ProcessedWritingFileSharedModel>();
                             foreach (var file in files)
                             {
+                                var correctedFile = correctedFiles.FirstOrDefault(x => x.WritingCorrectionFileID == file.ID);
                                 writingFiles.Add(new ProcessedWritingFileSharedModel
                                 {
                                     WritingFile = new WritingFileSharedModel
@@ -79,14 +82,22 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                                     {
                                         Price = file.Price,
                                         PriceName = file.PriceName
-                                    }
+                                    },
+                                    CorrectedWriting = correctedFile is not null ? new CorrectedWritingSharedModel
+                                    {
+                                        ID = correctedFile.ID,
+                                        Data = correctedFile.Data,
+                                        Name = correctedFile.Name,
+                                        UploadDateTime = correctedFile.UploadDateTime,
+                                        WritingFileID = correctedFile.WritingCorrectionFileID
+                                    } : null
                                 });
                             }
                             return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(
                                 new WritingCorrectionPackageSharedModel
                                 {
                                     ProcessedWritingFiles = writingFiles,
-                                    TotalPrice = submission.TotalPrice
+                                    TotalPrice = submission.TotalPrice,
                                 }
                                 , Message: string.Empty));
                         }

@@ -37,7 +37,7 @@ namespace HadisIelts.Server.Migrations
                     Id = table.Column<string>(type: "varchar(255)", nullable: false),
                     FirstName = table.Column<string>(type: "longtext", nullable: false),
                     LastName = table.Column<string>(type: "longtext", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     Skype = table.Column<string>(type: "longtext", nullable: true),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
@@ -117,6 +117,35 @@ namespace HadisIelts.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersistedGrants", x => x.Key);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Services",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Services", x => x.ID);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "WritingTypes",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WritingTypes", x => x.ID);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -231,6 +260,162 @@ namespace HadisIelts.Server.Migrations
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "WritingCorrectionSubmissionGroups",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "varchar(255)", nullable: false),
+                    UserID = table.Column<string>(type: "varchar(255)", nullable: false),
+                    TotalPrice = table.Column<uint>(type: "int unsigned", nullable: false),
+                    PaymentGroupID = table.Column<string>(type: "longtext", nullable: true),
+                    SubmissionDateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsCorrected = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WritingCorrectionSubmissionGroups", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_WritingCorrectionSubmissionGroups_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "PaymentGroups",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "varchar(255)", nullable: false),
+                    UserID = table.Column<string>(type: "longtext", nullable: false),
+                    SubmittedServiceID = table.Column<string>(type: "longtext", nullable: false),
+                    LastUpdateDateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsPaymentApproved = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    IsPaymentCheckPending = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Message = table.Column<string>(type: "longtext", nullable: false),
+                    ServiceID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentGroups", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_PaymentGroups_Services_ServiceID",
+                        column: x => x.ServiceID,
+                        principalTable: "Services",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "WritingCorrectionServicePrices",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    WritingTypeID = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<uint>(type: "int unsigned", nullable: false),
+                    WordCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WritingCorrectionServicePrices", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_WritingCorrectionServicePrices_WritingTypes_WritingTypeID",
+                        column: x => x.WritingTypeID,
+                        principalTable: "WritingTypes",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "CorrectedWritingFiles",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Data = table.Column<string>(type: "longtext", nullable: false),
+                    WritingCorrectionFileID = table.Column<int>(type: "int", nullable: false),
+                    WritingCorrectionSubmissionGroupID = table.Column<string>(type: "varchar(255)", nullable: false),
+                    CorrectorID = table.Column<string>(type: "longtext", nullable: false),
+                    UploadDateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CorrectedWritingFiles", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_CorrectedWritingFiles_WritingCorrectionSubmissionGroups_Writ~",
+                        column: x => x.WritingCorrectionSubmissionGroupID,
+                        principalTable: "WritingCorrectionSubmissionGroups",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "WritingCorrectionFiles",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Data = table.Column<string>(type: "longtext", nullable: false),
+                    WordCount = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<uint>(type: "int unsigned", nullable: false),
+                    PriceName = table.Column<string>(type: "longtext", nullable: false),
+                    ApplicationWritingTypeID = table.Column<int>(type: "int", nullable: false),
+                    WritingCorrectionSubmissionGroupID = table.Column<string>(type: "varchar(255)", nullable: false),
+                    CorrectedWritingFileID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WritingCorrectionFiles", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_WritingCorrectionFiles_WritingCorrectionSubmissionGroups_Wri~",
+                        column: x => x.WritingCorrectionSubmissionGroupID,
+                        principalTable: "WritingCorrectionSubmissionGroups",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WritingCorrectionFiles_WritingTypes_ApplicationWritingTypeID",
+                        column: x => x.ApplicationWritingTypeID,
+                        principalTable: "WritingTypes",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "PaymentPictures",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Data = table.Column<string>(type: "longtext", nullable: false),
+                    FileSuffix = table.Column<string>(type: "longtext", nullable: false),
+                    IsVerified = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    IsVerificationPending = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Message = table.Column<string>(type: "longtext", nullable: false),
+                    UploadDateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    PaymentGroupID = table.Column<string>(type: "varchar(255)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentPictures", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_PaymentPictures_PaymentGroups_PaymentGroupID",
+                        column: x => x.PaymentGroupID,
+                        principalTable: "PaymentGroups",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -269,6 +454,11 @@ namespace HadisIelts.Server.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_CorrectedWritingFiles_WritingCorrectionSubmissionGroupID",
+                table: "CorrectedWritingFiles",
+                column: "WritingCorrectionSubmissionGroupID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_DeviceCode",
                 table: "DeviceCodes",
                 column: "DeviceCode",
@@ -283,6 +473,16 @@ namespace HadisIelts.Server.Migrations
                 name: "IX_Keys_Use",
                 table: "Keys",
                 column: "Use");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentGroups_ServiceID",
+                table: "PaymentGroups",
+                column: "ServiceID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentPictures_PaymentGroupID",
+                table: "PaymentPictures",
+                column: "PaymentGroupID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_ConsumedTime",
@@ -303,6 +503,26 @@ namespace HadisIelts.Server.Migrations
                 name: "IX_PersistedGrants_SubjectId_SessionId_Type",
                 table: "PersistedGrants",
                 columns: new[] { "SubjectId", "SessionId", "Type" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WritingCorrectionFiles_ApplicationWritingTypeID",
+                table: "WritingCorrectionFiles",
+                column: "ApplicationWritingTypeID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WritingCorrectionFiles_WritingCorrectionSubmissionGroupID",
+                table: "WritingCorrectionFiles",
+                column: "WritingCorrectionSubmissionGroupID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WritingCorrectionServicePrices_WritingTypeID",
+                table: "WritingCorrectionServicePrices",
+                column: "WritingTypeID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WritingCorrectionSubmissionGroups_UserID",
+                table: "WritingCorrectionSubmissionGroups",
+                column: "UserID");
         }
 
         /// <inheritdoc />
@@ -324,16 +544,40 @@ namespace HadisIelts.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CorrectedWritingFiles");
+
+            migrationBuilder.DropTable(
                 name: "DeviceCodes");
 
             migrationBuilder.DropTable(
                 name: "Keys");
 
             migrationBuilder.DropTable(
+                name: "PaymentPictures");
+
+            migrationBuilder.DropTable(
                 name: "PersistedGrants");
 
             migrationBuilder.DropTable(
+                name: "WritingCorrectionFiles");
+
+            migrationBuilder.DropTable(
+                name: "WritingCorrectionServicePrices");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "PaymentGroups");
+
+            migrationBuilder.DropTable(
+                name: "WritingCorrectionSubmissionGroups");
+
+            migrationBuilder.DropTable(
+                name: "WritingTypes");
+
+            migrationBuilder.DropTable(
+                name: "Services");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

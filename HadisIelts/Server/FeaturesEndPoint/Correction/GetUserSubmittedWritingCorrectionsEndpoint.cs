@@ -42,7 +42,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                     if (_userServices.IsUserOwnerOrSpecificRoles
                         (claims: User.Claims.ToList(), roles: new List<string> { "Administrator", "Teacher" }, userID: user.Id))
                     {
-                        var submissions = _dbContext.SubmittedWritingCorrectionFiles.Where(x => x.UserID == user.Id).ToList();
+                        var submissions = _dbContext.WritingCorrectionSubmissionGroups.Where(x => x.UserID == user.Id).ToList();
                         if (submissions is not null)
                         {
                             var submissionSummary = new List<SubmittedServiceSummarySharedModel>();

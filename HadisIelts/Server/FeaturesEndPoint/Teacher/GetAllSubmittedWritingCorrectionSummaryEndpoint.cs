@@ -34,12 +34,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                 var submissions = new List<WritingCorrectionSubmissionGroup>();
                 if (request.SearchPhrase is null || request.SearchPhrase == string.Empty)
                 {
-                    submissions = _dbContext.SubmittedWritingCorrectionFiles.ToList();
+                    submissions = _dbContext.WritingCorrectionSubmissionGroups.ToList();
                 }
                 else
                 {
                     var foundUsersID = _userServices.FindUsers(request.SearchPhrase).Select(x => x.Id);
-                    submissions = _dbContext.SubmittedWritingCorrectionFiles
+                    submissions = _dbContext.WritingCorrectionSubmissionGroups
                         .Where(x => foundUsersID.Contains(x.UserID)).ToList();
                 }
                 if (submissions is not null)

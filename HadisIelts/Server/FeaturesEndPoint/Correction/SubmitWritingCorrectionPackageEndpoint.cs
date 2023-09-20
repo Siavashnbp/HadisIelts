@@ -70,8 +70,8 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
                                 Price = item.PriceGroup.Price,
                                 PriceName = item.PriceGroup.PriceName,
                                 ApplicationWritingTypeID = item.WritingFile.WritingTypeID,
-                                SubmittedWritingCorrectionFiles = writingCorrectionGroup,
-                                SubmittedWritingCorecionFilesID = writingCorrectionGroup.ID,
+                                WritingCorrectionSubmissionGroup = writingCorrectionGroup,
+                                WritingCorrectionSubmissionGroupID = writingCorrectionGroup.ID,
                             };
                             writingCorrectionFiles.Add(writingFile);
                             var addedWritingFile = _writingCorrectionFileRepository.Insert(writingFile);

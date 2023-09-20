@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HadisIelts.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230903103905_PaymentGroupForeignKey")]
-    partial class PaymentGroupForeignKey
+    [Migration("20230920083219_SetupDb")]
+    partial class SetupDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -256,6 +256,41 @@ namespace HadisIelts.Server.Migrations
                     b.ToTable("WritingTypes");
                 });
 
+            modelBuilder.Entity("HadisIelts.Server.Models.Entities.CorrectedWritingFile", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CorrectorID")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UploadDateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("WritingCorrectionFileID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WritingCorrectionSubmissionGroupID")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("WritingCorrectionSubmissionGroupID");
+
+                    b.ToTable("CorrectedWritingFiles");
+                });
+
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.PaymentGroup", b =>
                 {
                     b.Property<string>("ID")
@@ -268,6 +303,9 @@ namespace HadisIelts.Server.Migrations
                     b.Property<bool>("IsPaymentCheckPending")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<DateTime>("LastUpdateDateTime")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -279,10 +317,9 @@ namespace HadisIelts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("UploadDateTime")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2023, 9, 3, 10, 39, 4, 929, DateTimeKind.Utc).AddTicks(6858));
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("ID");
 
@@ -305,6 +342,9 @@ namespace HadisIelts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("IsVerificationPending")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<bool>("IsVerified")
                         .HasColumnType("tinyint(1)");
 
@@ -319,6 +359,9 @@ namespace HadisIelts.Server.Migrations
                     b.Property<string>("PaymentGroupID")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("UploadDateTime")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("ID");
 
@@ -354,6 +397,9 @@ namespace HadisIelts.Server.Migrations
                     b.Property<int>("ApplicationWritingTypeID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CorrectedWritingFileID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Data")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -369,18 +415,18 @@ namespace HadisIelts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("SubmittedWritingCorecionFilesID")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
                     b.Property<int>("WordCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("WritingCorrectionSubmissionGroupID")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("ID");
 
                     b.HasIndex("ApplicationWritingTypeID");
 
-                    b.HasIndex("SubmittedWritingCorecionFilesID");
+                    b.HasIndex("WritingCorrectionSubmissionGroupID");
 
                     b.ToTable("WritingCorrectionFiles");
                 });
@@ -419,8 +465,14 @@ namespace HadisIelts.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<bool>("IsCorrected")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("PaymentGroupID")
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("SubmissionDateTime")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<uint>("TotalPrice")
                         .HasColumnType("int unsigned");
@@ -433,7 +485,7 @@ namespace HadisIelts.Server.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("SubmittedWritingCorrectionFiles");
+                    b.ToTable("WritingCorrectionSubmissionGroups");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -568,6 +620,17 @@ namespace HadisIelts.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HadisIelts.Server.Models.Entities.CorrectedWritingFile", b =>
+                {
+                    b.HasOne("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", "WritingCorrectionSubmissionGroup")
+                        .WithMany("CorrectedWritingFiles")
+                        .HasForeignKey("WritingCorrectionSubmissionGroupID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WritingCorrectionSubmissionGroup");
+                });
+
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.PaymentGroup", b =>
                 {
                     b.HasOne("HadisIelts.Server.Models.Entities.Service", "Service")
@@ -598,15 +661,15 @@ namespace HadisIelts.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", "SubmittedWritingCorrectionFiles")
+                    b.HasOne("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", "WritingCorrectionSubmissionGroup")
                         .WithMany("WritingCorrectionFiles")
-                        .HasForeignKey("SubmittedWritingCorecionFilesID")
+                        .HasForeignKey("WritingCorrectionSubmissionGroupID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationWritingType");
 
-                    b.Navigation("SubmittedWritingCorrectionFiles");
+                    b.Navigation("WritingCorrectionSubmissionGroup");
                 });
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.WritingCorrectionServicePrice", b =>
@@ -701,6 +764,8 @@ namespace HadisIelts.Server.Migrations
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", b =>
                 {
+                    b.Navigation("CorrectedWritingFiles");
+
                     b.Navigation("WritingCorrectionFiles");
                 });
 #pragma warning restore 612, 618

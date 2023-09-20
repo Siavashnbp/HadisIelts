@@ -18,7 +18,10 @@
             </th>
             <th>
                 <h5>Price</h5>
-            </th>           
+            </th>
+            <th>
+                <h5>Correction</h5>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -33,7 +36,7 @@
                     </td>
                     <td>
                         @file.WritingFile.Name
-                        <button class="btn btn-secondary" @onclick="(()=>DownloadFileFromStream(file.WritingFile))">
+                        <button class="btn btn-secondary" @onclick="(()=>DownloadFileFromStream(file.WritingFile.Data,file.WritingFile.Name))">
                             <i class="fa fa-download"></i>
                         </button>
                     </td>
@@ -51,7 +54,32 @@
                         <h6>
                             @($"{file.PriceGroup.Price:n0}")
                         </h6>
-                    </td>                    
+                    </td>
+                    <td>
+                        <AuthorizeView Roles="Administrator,Teacher">
+                            <Authorized>
+                                @if (file.CorrectedWriting is null)
+                                {
+                                    <button class="btn btn-primary">Upload</button>
+                                }
+                                else
+                        {
+                                    <button @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))">Download</button>
+                                    <button>Delete</button>
+                        }
+                            </Authorized>
+                            <NotAuthorized>
+                                @if (file.CorrectedWriting is null)
+                                {
+                                    <h5>Not Corrected</h5>
+                                }
+                                else
+                                {
+                                    <button @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))"> Download</button>
+                                }
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </td>
                 </tr>
             }
         }
@@ -66,10 +94,10 @@
         return fileStream;
     }
 
-    private async Task DownloadFileFromStream(WritingFileSharedModel writingFile)
+    private async Task DownloadFileFromStream(string data, string name)
     {
-        var fileStream = GetFileStream(writingFile.Data);
-        var fileName = $"{writingFile.Name}.docx";
+        var fileStream = GetFileStream(data);
+        var fileName = $"{name}.docx";
 
         using var streamRef = new DotNetStreamReference(stream: fileStream);
 
