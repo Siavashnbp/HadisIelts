@@ -54,7 +54,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                                     PaymentID = submission.PaymentGroupID,
                                     PaymentStatus = payment is null ? "payment not submitted" : payment.Message,
                                     SubmissionDateTime = submission.SubmissionDateTime,
-                                    SubmittedServiceID = submission.ID
+                                    SubmittedServiceID = submission.ID,
+                                    IsCorrected = submission.IsCorrected,
                                 });
                             }
                             submissionSummary.Reverse();

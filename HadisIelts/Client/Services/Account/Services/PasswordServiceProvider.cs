@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
-namespace HadisIelts.Client.RequestHandlers.Account.Services
+
+namespace HadisIelts.Client.Services.Account.Services
 {
     public class PasswordServiceProvider : IPasswordService
     {

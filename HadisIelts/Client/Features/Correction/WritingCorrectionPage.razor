@@ -123,7 +123,7 @@
     private List<PriceGroupSharedModel> _writingCorrectionPrices = new List<PriceGroupSharedModel>();
     protected override async Task OnInitializedAsync()
     {
-        var response = await Mediator.Send(new UploadWritingCorrectionAllowanceRequest());
+        var response = await Mediator.Send(new UploadWritingCorrectionAllowanceRequest());        
         if (response.IsAllowed)
         {
             _writingTypes = await ClientWritingServices.GetWritingTypesAsync();
@@ -310,7 +310,7 @@
         _areFilesProcessed = false;
         StateHasChanged();
     }
-    private async Task HandleModalCloesButtonIsClicked()
+    private void HandleModalCloesButtonIsClicked()
     {
         _showPricesModal = false;
     }

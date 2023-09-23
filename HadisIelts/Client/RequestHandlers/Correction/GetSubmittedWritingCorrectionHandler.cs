@@ -1,32 +1,13 @@
-﻿using HadisIelts.Shared.Models;
-using HadisIelts.Shared.Requests.Correction;
-using MediatR;
-using System.Net.Http.Json;
+﻿using HadisIelts.Shared.Requests.Correction;
 
 namespace HadisIelts.Client.RequestHandlers.Correction
 {
-    public class GetSubmittedWritingCorrectionHandler : IRequestHandler
+    public class GetSubmittedWritingCorrectionHandler : BaseMediatorRequestHandler
         <GetSubmittedWritingCorrectionFilesRequest, GetSubmittedWritingCorrectionFilesRequest.Response>
     {
-        private readonly HttpClient _httpClient;
         public GetSubmittedWritingCorrectionHandler(HttpClient httpClient)
+            : base(httpClient, GetSubmittedWritingCorrectionFilesRequest.EndpointUri)
         {
-            _httpClient = httpClient;
-        }
-        public async Task<GetSubmittedWritingCorrectionFilesRequest.Response> Handle(GetSubmittedWritingCorrectionFilesRequest request, CancellationToken cancellationToken)
-        {
-            var response = await _httpClient.PostAsJsonAsync
-                (GetSubmittedWritingCorrectionFilesRequest.EndpointUri, request, cancellationToken);
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<GetSubmittedWritingCorrectionFilesRequest.Response>();
-                return result;
-            }
-            return new GetSubmittedWritingCorrectionFilesRequest.Response(new Shared.Models.WritingCorrectionPackageSharedModel
-            {
-                ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>(),
-
-            }, Message: "There was a problem with the request");
         }
     }
 }

@@ -1,5 +1,5 @@
 using HadisIelts.Client;
-using HadisIelts.Client.RequestHandlers.Account.Services;
+using HadisIelts.Client.Services.Account.Services;
 using HadisIelts.Client.Services.Authorization;
 using HadisIelts.Client.Services.File;
 using HadisIelts.Client.Services.User;

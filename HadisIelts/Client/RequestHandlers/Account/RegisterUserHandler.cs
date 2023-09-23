@@ -1,4 +1,4 @@
-﻿using HadisIelts.Client.RequestHandlers.Account.Services;
+﻿using HadisIelts.Client.Services.Account.Services;
 using HadisIelts.Shared.Requests.Account;
 using MediatR;
 using System.Net.Http.Json;

@@ -1,4 +1,4 @@
-﻿namespace HadisIelts.Client.RequestHandlers.Account.Services
+﻿namespace HadisIelts.Client.Services.Account.Services
 {
     public interface IPasswordService
     {
