@@ -19,7 +19,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
         {
             _writingCorrectionPriceRepository = writingCorrectionRepository;
         }
-        [HttpPost(GetWritingCorrectionPricesRequest.EndPointUri)]
+        [HttpGet(GetWritingCorrectionPricesRequest.EndPointUri)]
         public override async Task<ActionResult<GetWritingCorrectionPricesRequest.Response>> HandleAsync(CancellationToken cancellationToken = default)
         {
             try

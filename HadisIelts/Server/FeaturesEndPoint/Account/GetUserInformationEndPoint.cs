@@ -1,5 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Models;
+using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Account;
 using Microsoft.AspNetCore.Authorization;
@@ -13,9 +14,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         .WithActionResult<UserInformationSharedModel>
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        public GetUserInformationEndPoint(UserManager<ApplicationUser> userManager)
+        private readonly IUserServices _userServices;
+        public GetUserInformationEndPoint(UserManager<ApplicationUser> userManager,
+            IUserServices userServices)
         {
             _userManager = userManager;
+            _userServices = userServices;
         }
         /// <summary>
         /// gets user information if requesting user and requested user are the same
@@ -41,14 +45,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                 var user = await _userManager.FindByIdAsync(request.UserID);
                 if (user is not null)
                 {
-                    bool userIsAuthorized = user.Id == request.RequestedUserID ? true : false; ;
-                    if (!userIsAuthorized)
+                    var isUserAuthorized = _userServices.IsUserOwnerOrSpecificRoles
+                        (User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, request.UserID);
+                    if (isUserAuthorized)
                     {
-                        userIsAuthorized = await _userManager.IsInRoleAsync(user, "Admin,Teacher");
-                    }
-                    if (userIsAuthorized)
-                    {
-                        var requestedUser = await _userManager.FindByIdAsync(request.RequestedUserID);
+                        var requestedUser = await _userManager.FindByIdAsync(request.UserID);
                         if (requestedUser is not null)
                         {
                             var response = new UserInformationSharedModel(requestedUser.UserName!, requestedUser.Email!)

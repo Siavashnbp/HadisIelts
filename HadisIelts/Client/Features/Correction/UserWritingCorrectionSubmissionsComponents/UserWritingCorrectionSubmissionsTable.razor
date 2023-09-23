@@ -1,4 +1,4 @@
-﻿<table class="table table-striped">
+﻿<table class="table table-hover">
     <thead>
         <tr>
             <th>Submission Date</th>
@@ -9,13 +9,20 @@
     <tbody>
         @foreach (var item in SubmittedServices)
         {
-            <tr>                
+            <tr class="@(item.IsCorrected?"table-success":"table-info")">                
                 <td>@item.SubmissionDateTime</td>
                 <td>
                     @item.PaymentStatus
                 </td>
                 <td>
-                    Correction status
+                    @if (item.IsCorrected)
+                    {
+                        <h6>Corrected</h6>
+                    }
+                    else
+                    {
+                        <h6>Not Corrected</h6>
+                    }
                 </td>
                 <td>
                     <a class="btn btn-primary" href=@($"/payment/writingCorrection/{item.PaymentID}")>View</a>

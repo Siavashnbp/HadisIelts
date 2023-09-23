@@ -7,5 +7,6 @@
         public string? PaymentStatus { get; set; }
         public string? SubmittedServiceID { get; set; }
         public DateTime? SubmissionDateTime { get; set; }
+        public bool IsCorrected { get; set; }
     }
 }

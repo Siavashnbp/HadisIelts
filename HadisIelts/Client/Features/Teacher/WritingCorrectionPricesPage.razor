@@ -166,7 +166,7 @@
     {
         var request = new GetWritingTypesRequest();
         var response = await Mediator.Send(request);
-        if (response.WritingTypes is not null && response.WritingTypes.Count > 0)
+        if (response?.WritingTypes is not null && response.WritingTypes.Count > 0)
         {
             _writingTypes = new List<WritingTypeSharedModel>();
             foreach (var item in response.WritingTypes)
@@ -184,7 +184,7 @@
     {
         var request = new AddWritingTypeRequest(name);
         var response = await Mediator.Send(request);
-        if (response.WritingType is not null)
+        if (response?.WritingType is not null)
         {
             _writingTypes.Add(new WritingTypeSharedModel
                 {

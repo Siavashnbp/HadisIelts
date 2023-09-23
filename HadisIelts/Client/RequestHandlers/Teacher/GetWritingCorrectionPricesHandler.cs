@@ -14,7 +14,7 @@ namespace HadisIelts.Client.RequestHandlers.Teacher
         }
         public async Task<GetWritingCorrectionPricesRequest.Response> Handle(GetWritingCorrectionPricesRequest request, CancellationToken cancellationToken)
         {
-            var response = await _httpClient.PostAsJsonAsync(GetWritingCorrectionPricesRequest.EndPointUri, request, cancellationToken);
+            var response = await _httpClient.GetAsync(GetWritingCorrectionPricesRequest.EndPointUri, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<GetWritingCorrectionPricesRequest.Response>();

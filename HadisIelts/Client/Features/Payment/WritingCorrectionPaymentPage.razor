@@ -29,7 +29,9 @@
                     </div>
                 </div>
             }
-
+            <div class="row text-center">
+                <h5 class="text-info">@_paymentGroup!.Message</h5>
+            </div>
             <div class="row">
                 @if (_paymentFiles is not null && _paymentFiles.Count > 0)
                 {
@@ -137,7 +139,6 @@
         {
             _paymentGroup.Service = new WritingCorrectionPackageSharedModel();
             var result = await ClientWritingSevices.GetSubmittedWritingCorrectionFiles(_paymentGroup.SubmittedServiceID);
-            _paymentGroup.Message = result.Message;
             _paymentGroup.Service.TotalPrice = result.WritingCorrectionPackage.TotalPrice;
             _paymentGroup.Service.ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>();
             _paymentGroup.Service.ProcessedWritingFiles = result.WritingCorrectionPackage.ProcessedWritingFiles;
@@ -209,6 +210,7 @@
                 var response = await Mediator.Send(request);
                 _paymentFiles = response.PaymentPictures;
                 _pendingToUploadPaymentFiles.Clear();
+                _paymentGroup.Message = response.Message;
                 StateHasChanged();
             }
         }

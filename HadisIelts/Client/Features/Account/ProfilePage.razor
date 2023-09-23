@@ -35,7 +35,7 @@
                         <InputText class="form-control" @bind-Value="_userInformation.Skype" typeof="text" id="floatingSkype" />
                         <label for="floatingSkype">Skype ID</label>
                     </div>
-                    @if (_currentUserID == RequestedUserID)
+                    @if (_currentUserID == UserID)
                     {
                         <button>Edit</button>
                     }
@@ -50,7 +50,7 @@
 
 @code {
     [Parameter]
-    public string RequestedUserID { get; set; } = string.Empty;
+    public string UserID { get; set; } = string.Empty;
     private string _currentUserID;
     private UserInformationSharedModel _userInformation { get; set; }
     protected override async Task OnInitializedAsync()
@@ -58,9 +58,9 @@
         try
         {
             _currentUserID = await UserServices.GetUserIDAsync();
-            if (RequestedUserID == string.Empty)
+            if (UserID == string.Empty)
             {
-                RequestedUserID = _currentUserID;
+                UserID = _currentUserID;
             }
             await GetUserInformation();
         }
@@ -74,7 +74,7 @@
     {
         try
         {
-            var userInfoRequest = new GetUserInformationRequest(_currentUserID, RequestedUserID);
+            var userInfoRequest = new GetUserInformationRequest(UserID);
             var result = await Mediator.Send(userInfoRequest);
             if (result is not null)
             {

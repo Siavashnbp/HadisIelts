@@ -4,10 +4,10 @@ using MediatR;
 
 namespace HadisIelts.Shared.Requests.Account
 {
-    public record GetUserInformationRequest(string UserID, string RequestedUserID) :
+    public record GetUserInformationRequest(string UserID) :
         IRequest<GetUserInformationRequest.Response>
     {
-        public const string EndPointUri = "/api/getUserInfo";
+        public const string EndPointUri = "/api/user/getUserInfo";
         public record Response(UserInformationSharedModel userInformation);
     }
     public class GetUserInformationRequestValidator : AbstractValidator<GetUserInformationRequest>
@@ -15,7 +15,6 @@ namespace HadisIelts.Shared.Requests.Account
         public GetUserInformationRequestValidator()
         {
             RuleFor(x => x.UserID).NotEmpty().NotNull();
-            RuleFor(x => x.RequestedUserID).NotEmpty().NotNull();
         }
     }
 }
