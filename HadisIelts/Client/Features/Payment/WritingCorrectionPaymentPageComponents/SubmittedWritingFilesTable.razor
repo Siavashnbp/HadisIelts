@@ -1,6 +1,8 @@
 ﻿@using HadisIelts.Client.Features.Correction.Models;
 @using System.IO
-@inject IJSRuntime JS
+@using HadisIelts.Client.Services.File;
+@inject IJSRuntime JS;
+@inject IFileServices FileServices;
 <table class="table table-success text-center">
     <thead>
         <tr>
@@ -60,13 +62,25 @@
                             <Authorized>
                                 @if (file.CorrectedWriting is null)
                                 {
-                                    <button class="btn btn-primary">Upload</button>
+                                    @if (_pendingCorrectedWriting is null)
+                                    {
+                                        <InputFile class="btn btn-primary" type="file" accept=".docx" style="width:100px;padding-left:6px;"
+                                        OnChange="(e)=>OnCorrectedFileIsSelected(e,file.WritingFile.ID)"/>
+                                    }
+                                    else
+                                    {
+                                        @if (_pendingCorrectedWriting.ID == file.WritingFile.ID)
+                                        {
+                                            <button @onclick="(async()=>await OnCorrectedWritingUpload.InvokeAsync(_pendingCorrectedWriting))">Upload</button>
+                                            <button @onclick="(()=>OnCancleButtonIsClicked())">Cancle</button>
+                                        }
+                                    }
                                 }
                                 else
-                        {
+                                {
                                     <button @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))">Download</button>
                                     <button>Delete</button>
-                        }
+                                }
                             </Authorized>
                             <NotAuthorized>
                                 @if (file.CorrectedWriting is null)
@@ -88,19 +102,34 @@
 @code {
     [Parameter, EditorRequired]
     public List<ProcessedWritingFileSharedModel> ProcessedFiles { get; set; } = new List<ProcessedWritingFileSharedModel>();
+    [Parameter,EditorRequired]
+    public EventCallback<WritingFileModel> OnCorrectedWritingUpload { get; set; }
+    private WritingFileModel? _pendingCorrectedWriting;
     private Stream GetFileStream(string data)
     {
         var fileStream = new MemoryStream(Convert.FromBase64String(data));
         return fileStream;
     }
-
     private async Task DownloadFileFromStream(string data, string name)
     {
         var fileStream = GetFileStream(data);
-        var fileName = $"{name}.docx";
-
+        var fileName = $"{name}";
         using var streamRef = new DotNetStreamReference(stream: fileStream);
-
         await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+    private async Task OnCorrectedFileIsSelected(InputFileChangeEventArgs eventArgs, int writingID)
+    {
+        _pendingCorrectedWriting = new WritingFileModel
+            {
+                ID = writingID,
+                Name = eventArgs.File.Name,
+                FileSize = eventArgs.File.Size,
+                FileData = await FileServices.ReadUploadedFileDataAsync(eventArgs.File),
+                WritingType = new WritingTypeSharedModel()
+            };
+    }
+    private void OnCancleButtonIsClicked()
+    {
+        _pendingCorrectedWriting = null;
     }
 }

@@ -3,11 +3,12 @@ using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Teacher;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Teacher
 {
-    public class AddWritingTypeEndpoint : EndpointBaseAsync
+    public class AddWritingTypeEndpoint : EndpointBaseSync
         .WithRequest<AddWritingTypeRequest>
         .WithActionResult<AddWritingTypeRequest.Response>
     {
@@ -16,24 +17,33 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         {
             _writingTypeRepository = writingTypeRepository;
         }
+        [Authorize(Roles = "Administrator")]
         [HttpPost(AddWritingTypeRequest.EndPointUri)]
-        public override async Task<ActionResult<AddWritingTypeRequest.Response>> HandleAsync(AddWritingTypeRequest request, CancellationToken cancellationToken = default)
+        public override ActionResult<AddWritingTypeRequest.Response> Handle(AddWritingTypeRequest request)
         {
-            if (request is not null)
+            try
             {
-                var writingTypeEntity = new ApplicationWritingType { Name = request.WritingName };
-                var addedWritingType = _writingTypeRepository.Insert(writingTypeEntity);
-                if (addedWritingType != null)
+                if (request is not null)
                 {
-                    return Ok(new AddWritingTypeRequest.Response(new WritingTypeSharedModel
+                    var writingTypeEntity = new ApplicationWritingType { Name = request.WritingName };
+                    var addedWritingType = _writingTypeRepository.Insert(writingTypeEntity);
+                    if (addedWritingType != null)
                     {
-                        ID = addedWritingType.ID,
-                        Name = request.WritingName,
-                    }));
+                        return Ok(new AddWritingTypeRequest.Response(new WritingTypeSharedModel
+                        {
+                            ID = addedWritingType.ID,
+                            Name = request.WritingName,
+                        }));
+                    }
+                    return Problem(null);
                 }
-                return Problem(null);
+                return BadRequest(null);
             }
-            return BadRequest(null);
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

@@ -3,11 +3,12 @@ using HadisIelts.Server.Services.Files;
 using HadisIelts.Server.Services.Payment;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Payment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Payment
 {
-    public class ProcessWritingFilesEndPoint : EndpointBaseAsync
+    public class ProcessWritingFilesEndPoint : EndpointBaseSync
         .WithRequest<ProcessWritingFilesRequest>
         .WithActionResult<ProcessWritingFilesRequest.Response>
     {
@@ -19,8 +20,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
             _wordFileServices = wordFileServices;
             _writingCorrrectionServices = writingCorrectionPayment;
         }
+        [Authorize]
         [HttpPost(ProcessWritingFilesRequest.EndPointUri)]
-        public override async Task<ActionResult<ProcessWritingFilesRequest.Response>> HandleAsync(ProcessWritingFilesRequest request, CancellationToken cancellationToken = default)
+        public override ActionResult<ProcessWritingFilesRequest.Response> Handle(ProcessWritingFilesRequest request)
         {
             try
             {

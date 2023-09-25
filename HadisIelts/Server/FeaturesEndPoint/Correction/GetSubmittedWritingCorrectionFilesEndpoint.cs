@@ -73,6 +73,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                                 {
                                     WritingFile = new WritingFileSharedModel
                                     {
+                                        ID = file.ID,
                                         Name = file.Name,
                                         Data = file.Data,
                                         WordCount = file.WordCount,

@@ -1,4 +1,5 @@
 ﻿@page "/teacher/services/writingCorrection/submittedFiles/{PaymentID}"
+@using HadisIelts.Client.Features.Correction.Models;
 @using HadisIelts.Client.Features.Correction.WritingCorrectionComponents
 @using HadisIelts.Client.Features.Payment.WritingCorrectionPaymentPageComponents
 @using HadisIelts.Client.Features.Teacher.SubmittedWritingAndPaymentComponents
@@ -17,7 +18,8 @@
             {
                 <div class="row">
                     <div class="col">
-                        <SubmittedWritingFilesTable ProcessedFiles="_paymentGroup.Service.ProcessedWritingFiles" />
+                        <SubmittedWritingFilesTable ProcessedFiles="_paymentGroup.Service.ProcessedWritingFiles"
+                                                OnCorrectedWritingUpload="HandleOnCorrectedWritingUpload" />
                     </div>
 
                 </div>
@@ -149,28 +151,63 @@
     }
     private async Task ChangePaymentGroupApprovement()
     {
-        var request = new EditPaymentGroupApprovementRequest(PaymentID!);
-        var response = await Mediator.Send(request);
-        if (response.WasSauccessful)
+        try
         {
-            _paymentGroup.IsPaymentCheckPending = true;
-            _paymentGroup.Message = "Verification pending";
-            StateHasChanged();
+            var request = new EditPaymentGroupApprovementRequest(PaymentID!);
+            var response = await Mediator.Send(request);
+            if (response.WasSauccessful)
+            {
+                _paymentGroup.IsPaymentCheckPending = true;
+                _paymentGroup.Message = "Verification pending";
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
         }
     }
     private async Task UploadCorrectedFile(int writingFileID)
     {
-        var request = new UploadCorrectedWritingRequest(WritingFileID: writingFileID,
-            Name: _correctedWriting.Name, Data: _correctedWriting.Data);
-        var response = await Mediator.Send(request);
-        if (response.CorrectedFile is not null)
+        try
         {
-            var processedWritingFile = _paymentGroup.Service.ProcessedWritingFiles.FirstOrDefault(x => x.WritingFile.ID == writingFileID);
-            processedWritingFile!.CorrectedWriting= response.CorrectedFile;
-            StateHasChanged();
+            var request = new UploadCorrectedWritingRequest(WritingFileID: writingFileID,
+                Name: _correctedWriting.Name, Data: _correctedWriting.Data);
+            var response = await Mediator.Send(request);
+            if (response.CorrectedFile is not null)
+            {
+                var processedWritingFile = _paymentGroup.Service.ProcessedWritingFiles.FirstOrDefault(x => x.WritingFile.ID == writingFileID);
+                processedWritingFile!.CorrectedWriting = response.CorrectedFile;
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
         }
     }
 
+    private async Task HandleOnCorrectedWritingUpload(WritingFileModel correctedFile)
+    {
+        try
+        {
+            var request = new UploadCorrectedWritingRequest(WritingFileID: correctedFile.ID,
+                Name: correctedFile.Name, Data: correctedFile.FileData);
+            var response = await Mediator.Send(request);
+            if (response.CorrectedFile is not null)
+            {
+                var writingIndex = _paymentGroup.Service.ProcessedWritingFiles.FindIndex(x=>x.WritingFile.ID == request.WritingFileID);
+                _paymentGroup.Service.ProcessedWritingFiles[writingIndex].CorrectedWriting = response.CorrectedFile;
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
     //Handlers
     private void HandleOnThumbnailIsClicked(string data)
     {
@@ -215,5 +252,4 @@
         _modalImageData = string.Empty;
         _showModal = false;
     }
-
 }

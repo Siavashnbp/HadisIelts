@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HadisIelts.Server.FeaturesEndPoint.General
 {
-    public class GetWritingCorrectionServicePrices : EndpointBaseAsync
+    public class GetWritingCorrectionServicePrices : EndpointBaseSync
         .WithoutRequest
         .WithActionResult<GetWritingCorrectionPricesRequest.Response>
     {
@@ -19,8 +19,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
         {
             _writingCorrectionPriceRepository = writingCorrectionRepository;
         }
+
         [HttpGet(GetWritingCorrectionPricesRequest.EndPointUri)]
-        public override async Task<ActionResult<GetWritingCorrectionPricesRequest.Response>> HandleAsync(CancellationToken cancellationToken = default)
+        public override ActionResult<GetWritingCorrectionPricesRequest.Response> Handle()
         {
             try
             {
@@ -41,5 +42,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
                 throw;
             }
         }
+
+
     }
 }
