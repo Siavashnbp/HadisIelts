@@ -31,7 +31,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                     {
                         return Ok(new AddWritingTypeRequest.Response(new WritingTypeSharedModel
                         {
-                            ID = addedWritingType.ID,
+                            Id = addedWritingType.Id,
                             Name = request.WritingName,
                         }));
                     }

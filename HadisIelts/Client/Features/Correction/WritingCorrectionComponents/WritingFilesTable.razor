@@ -25,15 +25,15 @@
                 <tr>
                     <td colspan="2">@item.Name</td>
                     <td>
-                        <InputSelect class="form-select form-control" @bind-Value="item.WritingType.ID"
-                             @onselect="(async()=>await OnWritingTypeIsSelected.InvokeAsync(new(item.WritingType.ID,item.ID)))">
+                        <InputSelect class="form-select form-control" @bind-Value="item.WritingType.Id"
+                             @onselect="(async()=>await OnWritingTypeIsSelected.InvokeAsync(new(item.WritingType.Id,item.Id)))">
                             <option value="0">Not Selected</option>
                             @foreach (var writingType in WritingTypes)
                             {
-                                <option value="@(writingType.ID)">@(writingType.Name)</option>
+                                <option value="@(writingType.Id)">@(writingType.Name)</option>
                             }
                         </InputSelect>
-                        @if (item.WritingType.ID ==0)
+                        @if (item.WritingType.Id ==0)
                         {
                             <span class="validation-message"> Please select a writing task</span>
                         }
@@ -46,7 +46,7 @@
                                     ) KB
                             </span>
                             <span class="btn badge bg-primary rounded-pill" style="width:fit-content; min-width:50px;"
-                          @onclick="(async()=>await OnRemoveWritingClick.InvokeAsync(item.ID))">Clear</span>
+                          @onclick="(async()=>await OnRemoveWritingClick.InvokeAsync(item.Id))">Clear</span>
                         </div>
                     </td>
                 </tr>
@@ -61,7 +61,7 @@
     [Parameter]
     public List<WritingTypeSharedModel> WritingTypes { get; set; }
     [Parameter, EditorRequired]
-    public EventCallback<(int WritingTypeID, int WritingID)> OnWritingTypeIsSelected { get; set; }
+    public EventCallback<(int WritingTypeId, int WritingId)> OnWritingTypeIsSelected { get; set; }
     [Parameter, EditorRequired]
     public EventCallback OnRemoveAllClick { get; set; }
     [Parameter, EditorRequired]

@@ -30,7 +30,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var paymentGroup = await _paymentGroupRepository.FindByIDAsync(request.PaymentGroupID);
+                var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentGroupId);
                 if (paymentGroup != null)
                 {
                     if (!paymentGroup.IsPaymentCheckPending)
@@ -38,7 +38,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         return BadRequest(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
                             Message: "Payment group is already checked"));
                     }
-                    var paymentPictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupID == paymentGroup.ID).ToList();
+                    var paymentPictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
                     if (paymentPictures.Any(x => !x.IsVerified && !x.IsVerificationPending))
                     {
                         return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,

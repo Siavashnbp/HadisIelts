@@ -22,7 +22,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var paymentGroup = await _paymentGroupRepository.FindByIDAsync(request.PaymentGroupID);
+                var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentGroupId);
                 if (paymentGroup != null)
                 {
                     paymentGroup.Message = "Verification pending";

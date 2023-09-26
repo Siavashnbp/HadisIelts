@@ -1,9 +1,8 @@
 ﻿@page "/profile"
-@page "/profile/{RequestedUserID}"
+@page "/profile/{UserId}"
 @using HadisIelts.Client.Features.Account.Models;
 @using HadisIelts.Client.Services.User;
 @using HadisIelts.Shared.Requests.Account;
-@using System.Security.Claims;
 @inject IMediator Mediator;
 @inject NavigationManager NavMan;
 @inject IUserServices UserServices;
@@ -16,51 +15,48 @@
                 </div>
                 <div class="d-flex col-8" style="flex-direction:column;">
                     <div class="form-floating">
-                        <InputText class="form-control" placeholder="_userInformation.Username" type="text" id="floatingUsername" disabled/>
+                        <input class="form-control" value="@(_userInformation.Username)" type="text" Id="floatingUsername" disabled/>
                         <label for="floatingUsername">Username</label>
                     </div>
                     <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_userInformation.FirstName" typeof="text" id="floatingFirstName" />
-                        <label for="floatingName">First Name</label>
-                    </div>
-                    <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_userInformation.LastName" typeof="text" id="floatingLastName" />
-                        <label for="floatingName">Last Name</label>
-                    </div>
-                    <div class="form-floating">
-                        <InputText class="form-control" placeholder="_userInformation.Email" typeof="email" id="floatingEmail" disabled/>
+                        <input class="form-control" value="@(_userInformation.Email)" typeof="email" Id="floatingEmail" disabled/>
                         <label for="floatingEmail">Email</label>
                     </div>
                     <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_userInformation.Skype" typeof="text" id="floatingSkype" />
-                        <label for="floatingSkype">Skype ID</label>
+                        <InputText class="form-control" @bind-Value="_userInformation.FirstName" typeof="text" Id="floatingFirstName" />
+                        <label for="floatingName">First Name</label>
                     </div>
-                    @if (_currentUserID == UserID)
+                    <div class="form-floating">
+                        <InputText class="form-control" @bind-Value="_userInformation.LastName" typeof="text" Id="floatingLastName" />
+                        <label for="floatingName">Last Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <InputText class="form-control" @bind-Value="_userInformation.Skype" typeof="text" Id="floatingSkype" />
+                        <label for="floatingSkype">Skype Id</label>
+                    </div>
+                    @if (_currentUserId == UserId)
                     {
                         <button>Edit</button>
                     }
                 </div>
             </div>
         </div>        
-    </Authorized>
-    <NotAuthorized>
-        <NotAuthorizedComponent />
-    </NotAuthorized>
+    </Authorized>   
 </AuthorizeView>
 
 @code {
     [Parameter]
-    public string UserID { get; set; } = string.Empty;
-    private string _currentUserID;
-    private UserInformationSharedModel _userInformation { get; set; }
+    public string UserId { get; set; } = string.Empty;
+    private string _currentUserId;
+    private UserInformationSharedModel _userInformation = new UserInformationSharedModel("test",string.Empty);
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _currentUserID = await UserServices.GetUserIDAsync();
-            if (UserID == string.Empty)
+            _currentUserId = await UserServices.GetUserIdAsync();
+            if (UserId is null)
             {
-                UserID = _currentUserID;
+                UserId = _currentUserId;
             }
             await GetUserInformation();
         }
@@ -74,7 +70,7 @@
     {
         try
         {
-            var userInfoRequest = new GetUserInformationRequest(UserID);
+            var userInfoRequest = new GetUserInformationRequest(UserId);
             var result = await Mediator.Send(userInfoRequest);
             if (result is not null)
             {
@@ -94,5 +90,16 @@
             NavMan.NavigateTo("/BadRequest");
         }
     }
-
+    private async Task UpdateUserInformation()
+    {
+        try
+        {
+            var request = new UpdateAccountInformationRequest(_userInformation);
+        }
+        catch (Exception)
+        {
+            
+            throw;
+        }
+    }
 }

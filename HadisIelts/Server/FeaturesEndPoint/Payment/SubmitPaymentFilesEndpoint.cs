@@ -33,7 +33,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         /// </summary>
         /// <param name="request">
         /// PaymentPictures: Payment Pictures uploaded by user 
-        /// PaymentID: Payment Group ID created on submitting writig correction files 
+        /// PaymentId: Payment Group Id created on submitting writig correction files 
         /// </param>
         /// <param name="cancellationToken"></param>
         /// <returns>
@@ -46,10 +46,10 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var paymentGroup = await _paymentGroupRepository.FindByIDAsync(request.PaymentID);
+                var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentId);
                 if (paymentGroup is not null)
                 {
-                    var paymentFiles = _dbContext.PaymentPictures.Where(x => x.PaymentGroupID == paymentGroup.ID).ToList();
+                    var paymentFiles = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
                     foreach (var payment in request.PaymentPictures)
                     {
                         var paymentFile = new PaymentPicture
@@ -57,14 +57,14 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             Name = payment.Name,
                             Data = payment.Data,
                             FileSuffix = payment.FileSuffix,
-                            PaymentGroupID = request.PaymentID,
+                            PaymentGroupId = request.PaymentId,
                             IsVerified = false,
                             IsVerificationPending = true,
                             Message = "Verification pending",
                             UploadDateTime = DateTime.UtcNow,
                         };
                         var addedPayment = _paymentPictureRepository.Insert(paymentFile);
-                        paymentFile.ID = addedPayment.ID;
+                        paymentFile.Id = addedPayment.Id;
                         paymentFiles.Add(paymentFile);
                     }
                     paymentGroup.Message = "Verification Pending";

@@ -31,14 +31,14 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var paymentGroup = await _paymentGroupRepository.FindByIDAsync(request.PaymentID);
+                var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentId);
                 if (paymentGroup is not null)
                 {
-                    if (_userServices.IsUserOwnerOrSpecificRoles(userID: paymentGroup.UserID, claims: User.Claims.ToList(),
+                    if (_userServices.IsUserOwnerOrSpecificRoles(userId: paymentGroup.UserId, claims: User.Claims.ToList(),
                         roles: new List<string> { "Administrator", "Teacher" }))
                     {
 
-                        var pictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupID == paymentGroup.ID).ToList();
+                        var pictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
                         var payments = new List<PaymentPictureSharedModel>();
                         foreach (var item in pictures)
                         {
@@ -46,7 +46,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             {
                                 Data = item.Data,
                                 FileSuffix = item.FileSuffix,
-                                ID = item.ID,
+                                Id = item.Id,
                                 IsVerified = item.IsVerified,
                                 IsVerificationPending = item.IsVerificationPending,
                                 Message = item.Message,
@@ -62,8 +62,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                                 Message = paymentGroup.Message,
                                 IsPaymentCheckPending = paymentGroup.IsPaymentCheckPending,
                                 PaymentPictures = payments,
-                                ID = paymentGroup.ID,
-                                SubmittedServiceID = paymentGroup.SubmittedServiceID,
+                                Id = paymentGroup.Id,
+                                SubmittedServiceId = paymentGroup.SubmittedServiceId,
                             }));
                     }
                     return Unauthorized();
@@ -71,7 +71,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 return Ok(new GetPaymentGroupRequest.Response(
                     new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>
                     {
-                        ID = "NotFound",
+                        Id = "NotFound",
                         Message = "Payment Group wan not found"
                     }));
             }

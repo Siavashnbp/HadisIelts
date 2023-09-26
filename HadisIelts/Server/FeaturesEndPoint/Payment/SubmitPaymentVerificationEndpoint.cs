@@ -23,7 +23,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var picture = await _paymentPictureRepossitory.FindByIDAsync(request.PictureID);
+                var picture = await _paymentPictureRepossitory.FindByIdAsync(request.PictureId);
                 if (picture != null)
                 {
                     picture.IsVerified = request.IsVerfifed;
@@ -37,7 +37,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             Name = picture.Name,
                             Data = picture.Data,
                             FileSuffix = picture.FileSuffix,
-                            ID = picture.ID,
+                            Id = picture.Id,
                             IsVerified = picture.IsVerified,
                             IsVerificationPending = false,
                             UploadDateTime = picture.UploadDateTime,

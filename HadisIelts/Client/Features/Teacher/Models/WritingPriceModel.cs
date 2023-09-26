@@ -5,7 +5,7 @@ namespace HadisIelts.Client.Features.Teacher.Models
 {
     public class WritingPriceModel
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public int? Price { get; set; }
         public int? WordCount { get; set; }
@@ -18,7 +18,7 @@ namespace HadisIelts.Client.Features.Teacher.Models
             {
                 _writingType = new WritingTypeSharedModel
                 {
-                    ID = value.ID,
+                    Id = value.Id,
                     Name = value.Name,
                 };
             }

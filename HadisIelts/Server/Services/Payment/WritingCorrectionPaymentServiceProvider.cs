@@ -16,9 +16,9 @@ namespace HadisIelts.Server.Services.Payment
         /// 
         /// </summary>
         /// <param name="wordCount">file word count submitted by user and processed by WordFileServiceProvider</param>
-        /// <param name="writingTypeID">task selected by user</param>
+        /// <param name="writingTypeId">task selected by user</param>
         /// <returns>ProcessedWritingFile with no message if price is found or appropriate message for errors</returns>
-        public ProcessedWritingFileSharedModel CalculateFilePriceAsync(int wordCount, int writingTypeID)
+        public ProcessedWritingFileSharedModel CalculateFilePriceAsync(int wordCount, int writingTypeId)
         {
             var allPrices = _writingCorrectionPriceRepository.GetAll();
             if (allPrices is null)
@@ -28,7 +28,7 @@ namespace HadisIelts.Server.Services.Payment
                     Message = "Writing task was not found"
                 };
             }
-            var price = allPrices.Where(x => x.WritingTypeID == writingTypeID && x.WordCount > wordCount)
+            var price = allPrices.Where(x => x.WritingTypeId == writingTypeId && x.WordCount > wordCount)
                 .MinBy(x => x.WordCount);
             if (price is not null)
             {

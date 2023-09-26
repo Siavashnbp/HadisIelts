@@ -26,13 +26,13 @@
                                     <td>@(rowCounter++)</td>
                                     <td><InputText class="form-control" @bind-Value="_editWritingPriceModel.Name" /></td>
                                     <td>
-                                        <InputSelect class="form-select form-control" @bind-Value="_editWritingPriceModel.WritingType.ID">
+                                        <InputSelect class="form-select form-control" @bind-Value="_editWritingPriceModel.WritingType.Id">
                                             <option selected value="0">Not Selected</option>
                                             @if (WritingTypes is not null)
                                             {
                                                 @foreach (var item in WritingTypes)
                                                 {
-                                                    <option value="@(item.ID)">@(item.Name)</option>
+                                                    <option value="@(item.Id)">@(item.Name)</option>
                                                 }
                                             }
 
@@ -60,7 +60,7 @@
                                     <td>@($"{item.Price:n0}")</td>
                                     <td>
                                         <button class="btn btn-outline-secondary" @onclick="(()=>SetEditWritingPriceModel(item))"><i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-outline-danger" @onclick="(()=>RemoveWritingCorrectionPrice(item.ID))"><i class="fa fa-remove"></i></button>
+                                        <button class="btn btn-outline-danger" @onclick="(()=>RemoveWritingCorrectionPrice(item.Id))"><i class="fa fa-remove"></i></button>
                                     </td>
                                 }
                             </Authorized>
@@ -106,7 +106,7 @@
     {
         _editWritingPriceModel = new WritingPriceModel
             {
-                ID = model.ID,
+                Id = model.Id,
                 Name = model.Name,
                 Price = model.Price,
                 WordCount = model.WordCount,
@@ -126,21 +126,21 @@
             {
                 var request = new EditWritingCorrectionPriceRequest(new WritingCorrectionServicePriceSharedModel
                     {
-                        ID = _editWritingPriceModel.ID,
+                        Id = _editWritingPriceModel.Id,
                         Name = _editWritingPriceModel.Name,
                         Price = (uint)_editWritingPriceModel.Price!,
                         WordCount = (int)_editWritingPriceModel.WordCount!,
-                        WritingTypeID = _editWritingPriceModel.WritingType.ID
+                        WritingTypeId = _editWritingPriceModel.WritingType.Id
                     });
                 var result = await Mediator.Send(request);
                 if (result.UpdatedWritingCorrectionPrice is not null)
                 {
-                    var updatedItem = WritingCorrectionPrices.FirstOrDefault(x => x.ID == result.UpdatedWritingCorrectionPrice.ID);
+                    var updatedItem = WritingCorrectionPrices.FirstOrDefault(x => x.Id == result.UpdatedWritingCorrectionPrice.Id);
                     updatedItem.Name = result.UpdatedWritingCorrectionPrice.Name;
                     updatedItem.Price = (int)result.UpdatedWritingCorrectionPrice.Price;
                     updatedItem.WordCount = result.UpdatedWritingCorrectionPrice.WordCount;
                     updatedItem.WritingType = WritingTypes.FirstOrDefault(
-                        x => x.ID == result.UpdatedWritingCorrectionPrice.WritingTypeID);
+                        x => x.Id == result.UpdatedWritingCorrectionPrice.WritingTypeId);
                 }
                 _editWritingPriceModel = new WritingPriceModel();
                 StateHasChanged();

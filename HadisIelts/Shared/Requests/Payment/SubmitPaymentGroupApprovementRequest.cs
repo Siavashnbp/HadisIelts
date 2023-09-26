@@ -3,7 +3,7 @@ using MediatR;
 
 namespace HadisIelts.Shared.Requests.Payment
 {
-    public record SubmitPaymentGroupApprovementRequest(string PaymentGroupID, bool IsApproved)
+    public record SubmitPaymentGroupApprovementRequest(string PaymentGroupId, bool IsApproved)
         : IRequest<SubmitPaymentGroupApprovementRequest.Response>
     {
         public const string EndpointUri = "/api/payment/ApprovePaymentGroup";
@@ -14,7 +14,7 @@ namespace HadisIelts.Shared.Requests.Payment
     {
         public SubmitPaymentGroupApprovementRequestValidator()
         {
-            RuleFor(x => x.PaymentGroupID).NotEmpty().NotNull();
+            RuleFor(x => x.PaymentGroupId).NotEmpty().NotNull();
         }
     }
 }

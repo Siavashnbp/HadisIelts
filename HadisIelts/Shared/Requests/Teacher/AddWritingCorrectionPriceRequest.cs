@@ -15,12 +15,12 @@ namespace HadisIelts.Shared.Requests.Teacher
     {
         public WritingCorrectionServicePriceValidator()
         {
-            RuleFor(x => x.ID).Null();
+            RuleFor(x => x.Id).Null();
             RuleFor(x => x.Name).NotNull();
             RuleFor(x => x.Price).NotNull().NotEmpty();
             RuleFor(x => x.WordCount).NotNull().NotEmpty();
             RuleFor(x => x.WordCount).GreaterThan(0);
-            RuleFor(x => x.WritingTypeID).NotNull().NotEmpty();
+            RuleFor(x => x.WritingTypeId).NotNull().NotEmpty();
         }
     }
 }

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace HadisIelts.Shared.Requests.Payment
 {
-    public record EditPaymentPictureVerificationRequest(int PictureID)
+    public record EditPaymentPictureVerificationRequest(int PictureId)
         : IRequest<EditPaymentPictureVerificationRequest.Response>
     {
         public const string EndpointUri = "/api/teacher/payment/editVerification";
@@ -14,8 +14,8 @@ namespace HadisIelts.Shared.Requests.Payment
     {
         public EditPaymentVerficationRequestValidator()
         {
-            RuleFor(x => x.PictureID).NotEmpty().NotNull();
-            RuleFor(x => x.PictureID).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.PictureId).NotEmpty().NotNull();
+            RuleFor(x => x.PictureId).GreaterThanOrEqualTo(0);
         }
     }
 }

@@ -31,7 +31,7 @@
                 @if (!PaymentFile.IsVerified)
                 {
                     <button type="button" class="btn btn-sm btn-outline-danger"
-                        @onclick="(()=>OnRemoveButtonIsClicked.InvokeAsync(PaymentFile.ID))">
+                        @onclick="(()=>OnRemoveButtonIsClicked.InvokeAsync(PaymentFile.Id))">
                         <i class="fa fa-remove"></i>
                     </button>
                 }

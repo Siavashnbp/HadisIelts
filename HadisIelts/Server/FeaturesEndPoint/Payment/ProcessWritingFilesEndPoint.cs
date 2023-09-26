@@ -44,7 +44,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     else
                     {
                         file.WordCount = wordCount;
-                        var filePrice = _writingCorrrectionServices.CalculateFilePriceAsync(wordCount, file.WritingTypeID);
+                        var filePrice = _writingCorrrectionServices.CalculateFilePriceAsync(wordCount, file.WritingTypeId);
                         if (filePrice.PriceGroup.Price > 0)
                         {
                             price += filePrice.PriceGroup.Price;

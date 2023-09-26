@@ -2,8 +2,8 @@
 {
     public class PaymentGroupSharedModel<TService>
     {
-        public string ID { get; set; }
-        public string SubmittedServiceID { get; set; }
+        public string Id { get; set; }
+        public string SubmittedServiceId { get; set; }
         public TService Service { get; set; }
         public DateTime UploadDateTime { get; set; }
         public bool IsPaymentApproved { get; set; }

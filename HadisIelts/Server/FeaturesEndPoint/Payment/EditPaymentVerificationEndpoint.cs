@@ -26,10 +26,10 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var payment = await _paymentPictureRepository.FindByIDAsync(request.PictureID);
+                var payment = await _paymentPictureRepository.FindByIdAsync(request.PictureId);
                 if (payment is not null)
                 {
-                    var paymentGroup = await _paymentGroupRepository.FindByIDAsync(payment.PaymentGroupID);
+                    var paymentGroup = await _paymentGroupRepository.FindByIdAsync(payment.PaymentGroupId);
                     if (paymentGroup is not null && paymentGroup.IsPaymentCheckPending)
                     {
                         payment.IsVerificationPending = true;

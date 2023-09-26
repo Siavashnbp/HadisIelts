@@ -23,7 +23,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         {
             try
             {
-                var item = await _writingCorrectionPriceRepository.FindByIDAsync(request.ID);
+                var item = await _writingCorrectionPriceRepository.FindByIdAsync(request.Id);
                 var result = _writingCorrectionPriceRepository.Delete(item);
                 return Ok(new RemoveWritingCorrectionPriceRequest.Response(result));
             }

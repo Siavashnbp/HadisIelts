@@ -18,9 +18,9 @@ namespace HadisIelts.Server.Services.DbServices
             return result > 0 ? true : false;
         }
 
-        public async Task<TEntity?> FindByIDAsync(TKey id)
+        public async Task<TEntity?> FindByIdAsync(TKey Id)
         {
-            return await _dbContext.FindAsync<TEntity>(id);
+            return await _dbContext.FindAsync<TEntity>(Id);
         }
 
         public List<TEntity> GetAll()

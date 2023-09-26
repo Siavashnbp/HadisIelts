@@ -65,21 +65,26 @@
                                     @if (_pendingCorrectedWriting is null)
                                     {
                                         <InputFile class="btn btn-primary" type="file" accept=".docx" style="width:100px;padding-left:6px;"
-                                        OnChange="(e)=>OnCorrectedFileIsSelected(e,file.WritingFile.ID)"/>
+                                   OnChange="(e)=>OnCorrectedFileIsSelected(e,file.WritingFile.Id)" />
                                     }
                                     else
                                     {
-                                        @if (_pendingCorrectedWriting.ID == file.WritingFile.ID)
+                                        @if (_pendingCorrectedWriting.Id == file.WritingFile.Id)
                                         {
-                                            <button @onclick="(async()=>await OnCorrectedWritingUpload.InvokeAsync(_pendingCorrectedWriting))">Upload</button>
-                                            <button @onclick="(()=>OnCancleButtonIsClicked())">Cancle</button>
+                                            <button class="btn btn-primary" @onclick="(async()=>await OnCorrectedWritingUpload.InvokeAsync(_pendingCorrectedWriting))">Upload</button>
+                                            <button class="btn btn-outline-danger" @onclick="(()=>OnCancleButtonIsClicked())">Cancle</button>
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    <button @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))">Download</button>
-                                    <button>Delete</button>
+                                    <button class="btn btn-secondary" @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))"> Download <i class="fa fa-download"></i></button>
+                                    <button class="btn btn-danger" @onclick="(async()=>{
+                                        await OnDeleteButtonClick.InvokeAsync(file.CorrectedWriting.Id);
+                                        _pendingCorrectedWriting=null;
+                                    })">
+                                        Delete
+                                    </button>
                                 }
                             </Authorized>
                             <NotAuthorized>
@@ -89,7 +94,7 @@
                                 }
                                 else
                                 {
-                                    <button @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))"> Download</button>
+                                    <button @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))"> <i class="fa fa-download"> Download</i></button>
                                 }
                             </NotAuthorized>
                         </AuthorizeView>
@@ -102,8 +107,10 @@
 @code {
     [Parameter, EditorRequired]
     public List<ProcessedWritingFileSharedModel> ProcessedFiles { get; set; } = new List<ProcessedWritingFileSharedModel>();
-    [Parameter,EditorRequired]
+    [Parameter, EditorRequired]
     public EventCallback<WritingFileModel> OnCorrectedWritingUpload { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDeleteButtonClick { get; set; }
     private WritingFileModel? _pendingCorrectedWriting;
     private Stream GetFileStream(string data)
     {
@@ -117,18 +124,18 @@
         using var streamRef = new DotNetStreamReference(stream: fileStream);
         await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
     }
-    private async Task OnCorrectedFileIsSelected(InputFileChangeEventArgs eventArgs, int writingID)
+    private async Task OnCorrectedFileIsSelected(InputFileChangeEventArgs eventArgs, int writingId)
     {
         _pendingCorrectedWriting = new WritingFileModel
             {
-                ID = writingID,
+                Id = writingId,
                 Name = eventArgs.File.Name,
                 FileSize = eventArgs.File.Size,
                 FileData = await FileServices.ReadUploadedFileDataAsync(eventArgs.File),
                 WritingType = new WritingTypeSharedModel()
             };
     }
-    private void OnCancleButtonIsClicked()
+    public void OnCancleButtonIsClicked()
     {
         _pendingCorrectedWriting = null;
     }

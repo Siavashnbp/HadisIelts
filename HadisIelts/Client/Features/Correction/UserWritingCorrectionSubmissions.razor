@@ -42,10 +42,10 @@
     }
     private async Task GetUserWritingCorrections()
     {
-        var userID = await UserServices.GetUserIDAsync();
-        if (userID is not null)
+        var userId = await UserServices.GetUserIdAsync();
+        if (userId is not null)
         {
-            var response = await Mediator.Send(new GetUserSubmittedWritingCorrectionRequest(userID));
+            var response = await Mediator.Send(new GetUserSubmittedWritingCorrectionRequest(userId));
             _submittedServices = response.SubmittedServices;
         }
     }

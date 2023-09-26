@@ -5,7 +5,7 @@ using MediatR;
 namespace HadisIelts.Shared.Requests.Payment
 {
     public record UploadPaymentPackageRequest(List<PaymentPictureSharedModel> PaymentPictures,
-        string PaymentID)
+        string PaymentId)
         : IRequest<UploadPaymentPackageRequest.Response>
     {
         public const string EndpointUri = "/api/payment/submitWritingCorrectionPayment";
@@ -15,7 +15,7 @@ namespace HadisIelts.Shared.Requests.Payment
     {
         public UploadPaymentPackageRequestValidator()
         {
-            RuleFor(x => x.PaymentID).NotEmpty().NotNull();
+            RuleFor(x => x.PaymentId).NotEmpty().NotNull();
             RuleFor(x => x.PaymentPictures).NotEmpty().NotNull();
             RuleFor(x => x.PaymentPictures.Count).GreaterThan(0);
             RuleForEach(x => x.PaymentPictures).ChildRules(picture =>

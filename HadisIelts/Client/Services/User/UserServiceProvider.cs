@@ -9,7 +9,7 @@ namespace HadisIelts.Client.Services.User
         {
             _authenticationProvider = authenticationProvider;
         }
-        public async Task<string> GetUserIDAsync()
+        public async Task<string> GetUserIdAsync()
         {
             var claims = await _authenticationProvider.GetAuthenticationStateAsync();
             var claim = claims.User.Claims.FirstOrDefault(claim => claim.Type == "sub");

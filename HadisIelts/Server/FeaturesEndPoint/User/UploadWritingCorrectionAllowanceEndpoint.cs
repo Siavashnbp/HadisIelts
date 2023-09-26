@@ -26,10 +26,10 @@ namespace HadisIelts.Server.FeaturesEndPoint.User
         {
             try
             {
-                var userID = _userServices.GetUserIDFromClaims(User.Claims.ToList());
-                if (userID is not null)
+                var userId = _userServices.GetUserIdFromClaims(User.Claims.ToList());
+                if (userId is not null)
                 {
-                    var HasCorrectionPending = _userServices.HasWritingCorrectionPending(_dbContext, userID);
+                    var HasCorrectionPending = _userServices.HasWritingCorrectionPending(_dbContext, userId);
                     return Ok(new UploadWritingCorrectionAllowanceRequest.Response(IsAllowed: !HasCorrectionPending));
                 }
                 return Problem("User was not found");

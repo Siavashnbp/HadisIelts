@@ -25,7 +25,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
                 var writingTypes = new List<WritingTypeSharedModel>();
                 foreach (var item in result)
                 {
-                    writingTypes.Add(new WritingTypeSharedModel { ID = item.ID, Name = item.Name });
+                    writingTypes.Add(new WritingTypeSharedModel { Id = item.Id, Name = item.Name });
                 }
                 return Ok(new GetWritingTypesRequest.Response(writingTypes));
             }

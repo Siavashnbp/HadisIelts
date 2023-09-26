@@ -24,24 +24,24 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
             try
             {
                 var writingCorrectionPriceEntity =
-                    await _writingCorrectionPriceRepository.FindByIDAsync(request.WritingCorrectionPrice.ID);
+                    await _writingCorrectionPriceRepository.FindByIdAsync(request.WritingCorrectionPrice.Id);
                 if (writingCorrectionPriceEntity is not null)
                 {
                     writingCorrectionPriceEntity.Name = request.WritingCorrectionPrice.Name;
                     writingCorrectionPriceEntity.Price = request.WritingCorrectionPrice.Price;
                     writingCorrectionPriceEntity.WordCount = request.WritingCorrectionPrice.WordCount;
-                    writingCorrectionPriceEntity.WritingTypeID = request.WritingCorrectionPrice.WritingTypeID;
+                    writingCorrectionPriceEntity.WritingTypeId = request.WritingCorrectionPrice.WritingTypeId;
                     var result = _writingCorrectionPriceRepository.Update(writingCorrectionPriceEntity);
                     if (result)
                     {
                         return Ok(new EditWritingCorrectionPriceRequest.Response(
                             new Shared.Models.WritingCorrectionServicePriceSharedModel
                             {
-                                ID = writingCorrectionPriceEntity.ID,
+                                Id = writingCorrectionPriceEntity.Id,
                                 Name = writingCorrectionPriceEntity.Name,
                                 Price = writingCorrectionPriceEntity.Price,
                                 WordCount = writingCorrectionPriceEntity.WordCount,
-                                WritingTypeID = writingCorrectionPriceEntity.WritingTypeID
+                                WritingTypeId = writingCorrectionPriceEntity.WritingTypeId
                             }));
                     }
                 }

@@ -27,8 +27,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         {
             try
             {
-                var writingType = await _writingTypeRepository.FindByIDAsync
-                    (request.WritingCorrectionServicePrice.WritingTypeID);
+                var writingType = await _writingTypeRepository.FindByIdAsync
+                    (request.WritingCorrectionServicePrice.WritingTypeId);
                 if (writingType is not null)
                 {
                     var writingCorrectionPriceEntity = new WritingCorrectionServicePrice
@@ -42,11 +42,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                     return Ok(new AddWritingCorrectionPriceRequest.Response(
                         new WritingCorrectionServicePriceSharedModel
                         {
-                            ID = addedWritingCorrectionPrice.ID,
+                            Id = addedWritingCorrectionPrice.Id,
                             Name = addedWritingCorrectionPrice.Name,
                             Price = addedWritingCorrectionPrice.Price,
                             WordCount = addedWritingCorrectionPrice.WordCount,
-                            WritingTypeID = addedWritingCorrectionPrice.WritingTypeID
+                            WritingTypeId = addedWritingCorrectionPrice.WritingTypeId
                         }));
 
                 }

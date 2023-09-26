@@ -42,17 +42,18 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
         {
             try
             {
-                var userID = _userServices.GetUserIDFromClaims(User.Claims.ToList());
-                if (_userServices.HasWritingCorrectionPending(_dbContext, userID))
+                var userId = _userServices.GetUserIdFromClaims(User.Claims.ToList());
+                if (_userServices.HasWritingCorrectionPending(_dbContext, userId))
                 {
                     return Problem("You have another writing correction pending");
                 }
                 var writingCorrectionGroup = _submittedCorrectionFilesRepository.Insert(
                     new WritingCorrectionSubmissionGroup
                     {
-                        UserID = userID!,
+                        UserId = userId!,
                         TotalPrice = request.WritingCorrectionPackage.TotalPrice,
-                        SubmissionDateTime = DateTime.UtcNow
+                        SubmissionDateTime = DateTime.UtcNow,
+                        IsCorrected = false,
                     });
                 if (writingCorrectionGroup != null)
                 {
@@ -69,29 +70,29 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
                                 WordCount = (int)item.WritingFile.WordCount!,
                                 Price = item.PriceGroup.Price,
                                 PriceName = item.PriceGroup.PriceName,
-                                ApplicationWritingTypeID = item.WritingFile.WritingTypeID,
+                                ApplicationWritingTypeId = item.WritingFile.WritingTypeId,
                                 WritingCorrectionSubmissionGroup = writingCorrectionGroup,
-                                WritingCorrectionSubmissionGroupID = writingCorrectionGroup.ID,
+                                WritingCorrectionSubmissionGroupId = writingCorrectionGroup.Id,
                             };
                             writingCorrectionFiles.Add(writingFile);
                             var addedWritingFile = _writingCorrectionFileRepository.Insert(writingFile);
-                            writingFile.ID = addedWritingFile.ID;
+                            writingFile.Id = addedWritingFile.Id;
                         }
                         var paymentGroup = new PaymentGroup
                         {
-                            ServiceID = service.ID,
-                            UserID = userID,
+                            ServiceId = service.Id,
+                            UserId = userId,
                             IsPaymentApproved = false,
                             IsPaymentCheckPending = false,
-                            SubmittedServiceID = writingCorrectionGroup.ID,
+                            SubmittedServiceId = writingCorrectionGroup.Id,
                             Message = "No payment files are uploaded"
                         };
                         var addedPaymentGroup = _paymentGroupRepository.Insert(paymentGroup);
                         if (addedPaymentGroup is not null)
                         {
-                            writingCorrectionGroup.PaymentGroupID = addedPaymentGroup.ID;
+                            writingCorrectionGroup.PaymentGroupId = addedPaymentGroup.Id;
                             _submittedCorrectionFilesRepository.Update(writingCorrectionGroup);
-                            return Ok(new UploadProcessedWritingFilesRequest.Response(writingCorrectionGroup.PaymentGroupID));
+                            return Ok(new UploadProcessedWritingFilesRequest.Response(writingCorrectionGroup.PaymentGroupId));
                         }
                     }
                 }

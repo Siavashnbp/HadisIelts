@@ -15,7 +15,7 @@ namespace HadisIelts.Client.Services.File
                 {
                     Data = file.FileData,
                     Name = file.Name,
-                    WritingTypeID = file.WritingType.ID
+                    WritingTypeId = file.WritingType.Id
                 });
             }
             return writingFiles;

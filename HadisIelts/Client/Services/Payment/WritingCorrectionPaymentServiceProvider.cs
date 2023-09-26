@@ -3,7 +3,7 @@ namespace HadisIelts.Client.Services.Payment
 {
     public class WritingCorrectionPaymentServiceProvider : IPaymentServices<WritingCorrectionPackageSharedModel>
     {
-        public PaymentGroupSharedModel<WritingCorrectionPackageSharedModel> GetPaymentData(string paymentID)
+        public PaymentGroupSharedModel<WritingCorrectionPackageSharedModel> GetPaymentData(string paymentId)
         {
             throw new NotImplementedException();
         }

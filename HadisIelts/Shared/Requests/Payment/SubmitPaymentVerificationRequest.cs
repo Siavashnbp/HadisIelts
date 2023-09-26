@@ -4,7 +4,7 @@ using MediatR;
 
 namespace HadisIelts.Shared.Requests.Payment
 {
-    public record SubmitPaymentVerificationRequest(int PictureID, bool IsVerfifed)
+    public record SubmitPaymentVerificationRequest(int PictureId, bool IsVerfifed)
         : IRequest<SubmitPaymentVerificationRequest.Response>
     {
         public const string EndpointUri = "/api/teacher/payment/verification";
@@ -14,8 +14,8 @@ namespace HadisIelts.Shared.Requests.Payment
     {
         public VerifyingPaymentRequestValidator()
         {
-            RuleFor(x => x.PictureID).NotEmpty().NotNull();
-            RuleFor(x => x.PictureID).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.PictureId).NotEmpty().NotNull();
+            RuleFor(x => x.PictureId).GreaterThanOrEqualTo(0);
         }
     }
 }

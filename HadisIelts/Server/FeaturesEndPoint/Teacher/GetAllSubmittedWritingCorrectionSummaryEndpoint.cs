@@ -38,23 +38,24 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                 }
                 else
                 {
-                    var foundUsersID = _userServices.FindUsers(request.SearchPhrase).Select(x => x.Id);
+                    var foundUsersId = _userServices.FindUsers(request.SearchPhrase).Select(x => x.Id);
                     submissions = _dbContext.WritingCorrectionSubmissionGroups
-                        .Where(x => foundUsersID.Contains(x.UserID)).ToList();
+                        .Where(x => foundUsersId.Contains(x.UserId)).ToList();
                 }
                 if (submissions is not null)
                 {
                     var submissionSummary = new List<SubmittedServiceSummarySharedModel>();
                     foreach (var submission in submissions)
                     {
-                        var payment = await _paymentGroupRepository.FindByIDAsync(submission.PaymentGroupID);
+                        var payment = await _paymentGroupRepository.FindByIdAsync(submission.PaymentGroupId);
                         submissionSummary.Add(new SubmittedServiceSummarySharedModel
                         {
-                            UserDetails = await _userServices.GetUserInformationAsync(submission.UserID),
-                            PaymentID = submission.PaymentGroupID,
+                            UserDetails = await _userServices.GetUserInformationAsync(submission.UserId),
+                            PaymentId = submission.PaymentGroupId,
                             PaymentStatus = payment is null ? "payment not submitted" : payment.Message,
                             SubmissionDateTime = submission.SubmissionDateTime,
-                            SubmittedServiceID = submission.ID
+                            SubmittedServiceId = submission.Id,
+                            IsCorrected = submission.IsCorrected,
                         });
                     }
                     submissionSummary.Reverse();

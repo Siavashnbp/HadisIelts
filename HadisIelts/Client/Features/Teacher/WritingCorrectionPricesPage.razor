@@ -43,12 +43,13 @@
                                     @foreach (var item in _writingTypes)
                                     {
                                         <option value="@(item.ID)">@(item.Name)</option>
+                                        <option value="@(item.Id)">@(item.Name)</option>
                                     }
                                 }
                             </InputSelect>
                             <label for="floatingWritingTypeSelect" style="margin-left:10px;">Writing Type</label>
                             <ValidationMessage For="(()=>_writingPriceModel.WritingType)" />
-                            <ValidationMessage For="(()=>_writingPriceModel.WritingType.ID)" />
+                            <ValidationMessage For="(()=>_writingPriceModel.WritingType.Id)" />
                         </div>
                         <div class="col text-center">
                             <div class="row justify-content-center">
@@ -118,12 +119,12 @@
         var result = await Mediator.Send(request);
         if (result is not null)
         {
-            var writingType = _writingTypes.FirstOrDefault(x => x.ID == result.AddedWritingCorrectionServicePrice.WritingTypeID);
+            var writingType = _writingTypes.FirstOrDefault(x => x.Id == result.AddedWritingCorrectionServicePrice.WritingTypeId);
             if (writingType is not null)
             {
                 _writingCorrectionPrices.Add(new WritingPriceModel
                     {
-                        ID = result.AddedWritingCorrectionServicePrice.ID,
+                        Id = result.AddedWritingCorrectionServicePrice.Id,
                         Name = result.AddedWritingCorrectionServicePrice.Name,
                         Price = (int)result.AddedWritingCorrectionServicePrice.Price,
                         WordCount = result.AddedWritingCorrectionServicePrice.WordCount,
@@ -143,10 +144,10 @@
             {
                 foreach (var item in result.WritingCorrectionPrices)
                 {
-                    var writingType = _writingTypes.FirstOrDefault(x => x.ID == item.WritingTypeID);
+                    var writingType = _writingTypes.FirstOrDefault(x => x.Id == item.WritingTypeId);
                     _writingCorrectionPrices.Add(new WritingPriceModel
                         {
-                            ID = item.ID,
+                            Id = item.Id,
                             Name = item.Name,
                             Price = (int)item.Price,
                             WordCount = item.WordCount,
@@ -173,7 +174,7 @@
             {
                 _writingTypes.Add(new WritingTypeSharedModel
                     {
-                        ID = item.ID,
+                        Id = item.Id,
                         Name = item.Name
                     });
             }
@@ -188,7 +189,7 @@
         {
             _writingTypes.Add(new WritingTypeSharedModel
                 {
-                    ID = response.WritingType.ID,
+                    Id = response.WritingType.Id,
                     Name = response.WritingType.Name
                 });
             StateHasChanged();

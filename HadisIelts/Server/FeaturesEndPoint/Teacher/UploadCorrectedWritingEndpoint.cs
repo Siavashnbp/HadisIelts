@@ -34,31 +34,31 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         {
             try
             {
-                var writingFile = await _writingCorrectionRepository.FindByIDAsync(request.WritingFileID);
+                var writingFile = await _writingCorrectionRepository.FindByIdAsync(request.WritingFileId);
                 if (writingFile != null)
                 {
-                    var userID = _userServices.GetUserIDFromClaims(User.Claims.ToList());
+                    var userId = _userServices.GetUserIdFromClaims(User.Claims.ToList());
                     var correctedFile = new CorrectedWritingFile
                     {
-                        CorrectorID = userID,
+                        CorrectorId = userId,
                         Data = request.Data,
                         Name = request.Name,
                         UploadDateTime = DateTime.UtcNow,
-                        WritingCorrectionFileID = writingFile.ID,
-                        WritingCorrectionSubmissionGroupID = writingFile.WritingCorrectionSubmissionGroupID
+                        WritingCorrectionFileId = writingFile.Id,
+                        WritingCorrectionSubmissionGroupId = writingFile.WritingCorrectionSubmissionGroupId
                     };
                     var submittedCorrectedFile = _dbContext.CorrectedWritingFiles.Add(correctedFile);
                     if (submittedCorrectedFile is not null)
                     {
-                        writingFile.CorrectedWritingFileID = submittedCorrectedFile.Entity.ID;
+                        writingFile.CorrectedWritingFileId = submittedCorrectedFile.Entity.Id;
                         _writingCorrectionRepository.Update(writingFile);
                         return Ok(new UploadCorrectedWritingRequest.Response(new CorrectedWritingSharedModel
                         {
-                            ID = submittedCorrectedFile.Entity.ID,
+                            Id = submittedCorrectedFile.Entity.Id,
                             Data = submittedCorrectedFile.Entity.Data,
                             Name = submittedCorrectedFile.Entity.Name,
                             UploadDateTime = submittedCorrectedFile.Entity.UploadDateTime,
-                            WritingFileID = submittedCorrectedFile.Entity.WritingCorrectionFileID
+                            WritingFileId = submittedCorrectedFile.Entity.WritingCorrectionFileId
                         }));
                     }
                 }

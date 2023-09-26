@@ -2,6 +2,6 @@
 {
     public interface IEntity<TKey>
     {
-        public TKey ID { get; set; }
+        public TKey Id { get; set; }
     }
 }

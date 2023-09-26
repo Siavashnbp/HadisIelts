@@ -30,11 +30,11 @@
                             @if (PaymentFile.IsVerificationPending)
                             {
                                 <button type="button" class="btn btn-sm btn-outline-success"
-                                    @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.ID,true)))">
+                                    @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.Id,true)))">
                                     <i class="fa fa-check-square">  Approve</i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-outline-danger"
-                                    @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.ID,false)))">
+                                    @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.Id,false)))">
                                     <i class="fa fa-remove">  Reject</i>
                                 </button>
                             }
@@ -43,7 +43,7 @@
                                 if (IsEditEnabled)
                                 {                                    
                                 <button type="button" class="btn btn-sm btn-outline-warning"
-                                    @onclick="(async()=>await OnEditButtonIsClicked.InvokeAsync(PaymentFile.ID))">
+                                    @onclick="(async()=>await OnEditButtonIsClicked.InvokeAsync(PaymentFile.Id))">
                                     <i class="fa fa-edit">  Edit</i>
                                 </button>
                                 }
@@ -62,7 +62,7 @@
     [Parameter, EditorRequired]
     public EventCallback<string> OnThumbnailIsClicked { get; set; }
     [Parameter, EditorRequired]
-    public EventCallback<(int pictureID,bool isVerified)> OnVerificationButtonIsClicked { get; set; }
+    public EventCallback<(int pictureId,bool isVerified)> OnVerificationButtonIsClicked { get; set; }
     [Parameter, EditorRequired]
     public EventCallback<int> OnEditButtonIsClicked { get; set; }
     [Parameter]

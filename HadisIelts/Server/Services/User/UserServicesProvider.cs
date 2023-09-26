@@ -28,14 +28,14 @@ namespace HadisIelts.Server.Services.User
             return _dbContext.Users.ToList();
         }
 
-        public string GetUserIDFromClaims(List<Claim> claims)
+        public string GetUserIdFromClaims(List<Claim> claims)
         {
             return claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value;
         }
 
-        public async Task<UserInformationSharedModel> GetUserInformationAsync(string userID)
+        public async Task<UserInformationSharedModel> GetUserInformationAsync(string userId)
         {
-            var user = await _userManager.FindByIdAsync(userID);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
                 return new UserInformationSharedModel(username: user.UserName!, email: user.Email!)
@@ -76,15 +76,15 @@ namespace HadisIelts.Server.Services.User
         }
 
 
-        public bool HasWritingCorrectionPending(ApplicationDbContext dbContext, string userID)
+        public bool HasWritingCorrectionPending(ApplicationDbContext dbContext, string userId)
         {
-            return _dbContext.WritingCorrectionSubmissionGroups.Where(x => x.UserID == userID).Any(x => !x.IsCorrected);
+            return _dbContext.WritingCorrectionSubmissionGroups.Where(x => x.UserId == userId).Any(x => !x.IsCorrected);
         }
 
-        public bool IsUserOwnerOrSpecificRoles(List<Claim> claims, List<string> roles, string userID)
+        public bool IsUserOwnerOrSpecificRoles(List<Claim> claims, List<string> roles, string userId)
         {
             //is user owner
-            var isUserOwner = GetUserIDFromClaims(claims) == userID;
+            var isUserOwner = GetUserIdFromClaims(claims) == userId;
             if (isUserOwner)
             {
                 return true;

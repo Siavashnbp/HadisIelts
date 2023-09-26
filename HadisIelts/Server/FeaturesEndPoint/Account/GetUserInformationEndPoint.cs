@@ -11,7 +11,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
 {
     public class GetUserInformationEndPoint : EndpointBaseAsync
         .WithRequest<GetUserInformationRequest>
-        .WithActionResult<UserInformationSharedModel>
+        .WithActionResult<GetUserInformationRequest.Response>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserServices _userServices;
@@ -26,8 +26,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         /// or user is in roles admin or teacher
         /// </summary>
         /// <param name="request">
-        /// UserID: Requesting User ID
-        /// RequestedserID: Requested User ID
+        /// UserId: Requesting User Id
+        /// RequestedserId: Requested User Id
         /// </param>
         /// <param name="cancellationToken"></param>
         /// <returns>
@@ -37,19 +37,19 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         /// </returns>
         [Authorize]
         [HttpPost(GetUserInformationRequest.EndPointUri)]
-        public override async Task<ActionResult<UserInformationSharedModel>> HandleAsync(GetUserInformationRequest request, CancellationToken cancellationToken = default)
+        public override async Task<ActionResult<GetUserInformationRequest.Response>> HandleAsync(GetUserInformationRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
 
-                var user = await _userManager.FindByIdAsync(request.UserID);
+                var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user is not null)
                 {
                     var isUserAuthorized = _userServices.IsUserOwnerOrSpecificRoles
-                        (User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, request.UserID);
+                        (User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, request.UserId);
                     if (isUserAuthorized)
                     {
-                        var requestedUser = await _userManager.FindByIdAsync(request.UserID);
+                        var requestedUser = await _userManager.FindByIdAsync(request.UserId);
                         if (requestedUser is not null)
                         {
                             var response = new UserInformationSharedModel(requestedUser.UserName!, requestedUser.Email!)
@@ -58,9 +58,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                                 LastName = requestedUser.LastName,
                                 Skype = requestedUser.Skype,
                             };
-                            return Ok(response);
+                            return Ok(new GetUserInformationRequest.Response(response));
                         }
-                        return Ok(new UserInformationSharedModel(null!, null!));
+                        return Ok(new GetUserInformationRequest.Response(new UserInformationSharedModel(null!, null!)));
                     }
                 }
                 return Unauthorized();

@@ -1,4 +1,4 @@
-﻿@page "/teacher/services/writingCorrection/submittedFiles/{PaymentID}"
+﻿@page "/teacher/services/writingCorrection/submittedFiles/{PaymentId}"
 @using HadisIelts.Client.Features.Correction.Models;
 @using HadisIelts.Client.Features.Correction.WritingCorrectionComponents
 @using HadisIelts.Client.Features.Payment.WritingCorrectionPaymentPageComponents
@@ -18,8 +18,8 @@
             {
                 <div class="row">
                     <div class="col">
-                        <SubmittedWritingFilesTable ProcessedFiles="_paymentGroup.Service.ProcessedWritingFiles"
-                                                OnCorrectedWritingUpload="HandleOnCorrectedWritingUpload" />
+                        <SubmittedWritingFilesTable ProcessedFiles="_paymentGroup.Service.ProcessedWritingFiles" OnCorrectedWritingUpload="HandleOnCorrectedWritingUpload"
+                                                OnDeleteButtonClick="HandleOnDeleteButtonClick" />
                     </div>
 
                 </div>
@@ -90,7 +90,7 @@
 </AuthorizeView>
 @code {
     [Parameter]
-    public string? PaymentID { get; set; }
+    public string? PaymentId { get; set; }
     private PaymentGroupSharedModel<WritingCorrectionPackageSharedModel> _paymentGroup = new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>();
     private List<PaymentPictureSharedModel> _paymentFiles = new List<PaymentPictureSharedModel>();
     private string? _modalImageData;
@@ -102,18 +102,19 @@
         if (_paymentGroup is not null)
         {
             _paymentGroup.Service = new WritingCorrectionPackageSharedModel();
-            var result = await ClientWritingSevices.GetSubmittedWritingCorrectionFiles(_paymentGroup.SubmittedServiceID);
-            _paymentGroup.Service.TotalPrice = result.WritingCorrectionPackage.TotalPrice;
-            _paymentGroup.Service.ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>();
-            _paymentGroup.Service.ProcessedWritingFiles = result.WritingCorrectionPackage.ProcessedWritingFiles;
+            var result = await ClientWritingSevices.GetSubmittedWritingCorrectionFiles(_paymentGroup.SubmittedServiceId);
+            //_paymentGroup.Service.TotalPrice = result.WritingCorrectionPackage.TotalPrice;
+            //_paymentGroup.Service.ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>();
+            //_paymentGroup.Service.ProcessedWritingFiles = result.WritingCorrectionPackage.ProcessedWritingFiles;
+            _paymentGroup.Service = result.WritingCorrectionPackage;
         }
     }
     private async Task GetWritingCorrectionPaymentPackage()
     {
-        if (PaymentID is not null)
+        if (PaymentId is not null)
         {
             _paymentGroup = new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>();
-            var request = new GetPaymentGroupRequest(PaymentID);
+            var request = new GetPaymentGroupRequest(PaymentId);
             var result = await Mediator.Send(request);
             _paymentGroup = result.PaymentGroup;
             _paymentFiles = _paymentGroup.PaymentPictures;
@@ -125,7 +126,7 @@
         {
             if (_paymentGroup.IsPaymentCheckPending)
             {
-                var request = new SubmitPaymentGroupApprovementRequest(PaymentID!, isApproved);
+                var request = new SubmitPaymentGroupApprovementRequest(PaymentId!, isApproved);
                 var response = await Mediator.Send(request);
                 if (response.WasSuccessful)
                 {
@@ -153,7 +154,7 @@
     {
         try
         {
-            var request = new EditPaymentGroupApprovementRequest(PaymentID!);
+            var request = new EditPaymentGroupApprovementRequest(PaymentId!);
             var response = await Mediator.Send(request);
             if (response.WasSauccessful)
             {
@@ -168,16 +169,16 @@
             throw;
         }
     }
-    private async Task UploadCorrectedFile(int writingFileID)
+    private async Task UploadCorrectedFile(int writingFileId)
     {
         try
         {
-            var request = new UploadCorrectedWritingRequest(WritingFileID: writingFileID,
+            var request = new UploadCorrectedWritingRequest(WritingFileId: writingFileId,
                 Name: _correctedWriting.Name, Data: _correctedWriting.Data);
             var response = await Mediator.Send(request);
             if (response.CorrectedFile is not null)
             {
-                var processedWritingFile = _paymentGroup.Service.ProcessedWritingFiles.FirstOrDefault(x => x.WritingFile.ID == writingFileID);
+                var processedWritingFile = _paymentGroup.Service.ProcessedWritingFiles.FirstOrDefault(x => x.WritingFile.Id == writingFileId);
                 processedWritingFile!.CorrectedWriting = response.CorrectedFile;
                 StateHasChanged();
             }
@@ -189,17 +190,22 @@
         }
     }
 
+    //Handlers
     private async Task HandleOnCorrectedWritingUpload(WritingFileModel correctedFile)
     {
         try
         {
-            var request = new UploadCorrectedWritingRequest(WritingFileID: correctedFile.ID,
+            var request = new UploadCorrectedWritingRequest(WritingFileId: correctedFile.Id,
                 Name: correctedFile.Name, Data: correctedFile.FileData);
             var response = await Mediator.Send(request);
             if (response.CorrectedFile is not null)
             {
-                var writingIndex = _paymentGroup.Service.ProcessedWritingFiles.FindIndex(x=>x.WritingFile.ID == request.WritingFileID);
+                var writingIndex = _paymentGroup.Service.ProcessedWritingFiles.FindIndex(x => x.WritingFile.Id == request.WritingFileId);
                 _paymentGroup.Service.ProcessedWritingFiles[writingIndex].CorrectedWriting = response.CorrectedFile;
+                if (!_paymentGroup.Service.ProcessedWritingFiles.Any(x => x.CorrectedWriting == null))
+                {
+                    ChangeWritingGroupCorrectionStatus(_paymentGroup.Id);
+                }
             }
         }
         catch (Exception)
@@ -208,22 +214,56 @@
             throw;
         }
     }
-    //Handlers
+    private async void HandleOnDeleteButtonClick(int Id)
+    {
+        try
+        {
+            var response = await Mediator.Send(new DeleteCorrectedWritingRequest(Id));
+            if (response.WasSuccessful)
+            {
+                var index = _paymentGroup.Service.ProcessedWritingFiles.FindIndex(x => x.CorrectedWriting!.Id == Id);
+                _paymentGroup.Service.ProcessedWritingFiles[index].CorrectedWriting = null;
+                if (_paymentGroup.Service.IsCorrected)
+                {
+                    ChangeWritingGroupCorrectionStatus(_paymentGroup.Id);
+                }
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    private async void ChangeWritingGroupCorrectionStatus(string Id)
+    {
+        try
+        {
+            var response = await Mediator.Send(new ChangeWritingGroupCorrectionStatusRequest(_paymentGroup.SubmittedServiceId));
+            _paymentGroup.Service.IsCorrected = response.CorrectionStatus;
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
     private void HandleOnThumbnailIsClicked(string data)
     {
         _modalImageData = data;
         _showModal = true;
     }
-    private async Task HandleOnVerificationButtonIsClicked((int pictureID, bool isVerified) paymentVerification)
+    private async Task HandleOnVerificationButtonIsClicked((int pictureId, bool isVerified) paymentVerification)
     {
         try
         {
             var request = new SubmitPaymentVerificationRequest
-            (PictureID: paymentVerification.pictureID, IsVerfifed: paymentVerification.isVerified);
+            (PictureId: paymentVerification.pictureId, IsVerfifed: paymentVerification.isVerified);
             var response = await Mediator.Send(request);
             if (response.VerifiedPayment is not null)
             {
-                var paymentIndex = _paymentFiles.FindIndex(payment => payment.ID == paymentVerification.pictureID);
+                var paymentIndex = _paymentFiles.FindIndex(payment => payment.Id == paymentVerification.pictureId);
                 if (paymentIndex != -1)
                 {
                     _paymentFiles[paymentIndex] = response.VerifiedPayment;
@@ -236,13 +276,13 @@
             throw;
         }
     }
-    private async Task HandeOnEditButtonIsClicked(int paymentID)
+    private async Task HandeOnEditButtonIsClicked(int paymentId)
     {
-        var request = new EditPaymentPictureVerificationRequest(paymentID);
+        var request = new EditPaymentPictureVerificationRequest(paymentId);
         var response = await Mediator.Send(request);
         if (response.WasSuccessful)
         {
-            var updatePayment = _paymentFiles.Find(x => x.ID == paymentID);
+            var updatePayment = _paymentFiles.Find(x => x.Id == paymentId);
             updatePayment!.IsVerificationPending = true;
             updatePayment!.Message = "Verification pending";
         }

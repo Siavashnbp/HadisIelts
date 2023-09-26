@@ -17,15 +17,15 @@ namespace HadisIelts.Client.Services.Writing
             _authenticationStateProvider = authenticationStateProvider;
         }
 
-        public async Task<GetSubmittedWritingCorrectionFilesRequest.Response> GetSubmittedWritingCorrectionFiles(string submissionID)
+        public async Task<GetSubmittedWritingCorrectionFilesRequest.Response> GetSubmittedWritingCorrectionFiles(string submissionId)
         {
-            var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            var userID = authenticationState.User.Claims.FirstOrDefault(x => x.Type == "sub").Value;
-            if (userID is not null)
+            var authenticationState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userId = authenticationState.User.Claims.FirstOrDefault(x => x.Type == "sub").Value;
+            if (userId is not null)
             {
                 var request = new GetSubmittedWritingCorrectionFilesRequest(
-                    UserID: userID,
-                    SubmissionID: submissionID
+                    UserId: userId,
+                    SubmissionId: submissionId
                 );
                 var response = await _mediator.Send(request);
                 return response;
@@ -48,7 +48,7 @@ namespace HadisIelts.Client.Services.Writing
                 {
                     writingTypes.Add(new WritingTypeSharedModel
                     {
-                        ID = item.ID,
+                        Id = item.Id,
                         Name = item.Name,
                     });
                 }

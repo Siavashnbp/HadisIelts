@@ -8,7 +8,7 @@ namespace HadisIelts.Shared.Requests.Correction
         : IRequest<UploadProcessedWritingFilesRequest.Response>
     {
         public const string EndpointUri = "/api/services/submitProcessedWritingFiles";
-        public record Response(string PaymentID);
+        public record Response(string PaymentId);
     }
     public class UploadProcessedWritingFilesRequestValidator
         : AbstractValidator<UploadProcessedWritingFilesRequest>

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace HadisIelts.Shared.Requests.Teacher
 {
-    public record RemoveWritingCorrectionPriceRequest(int ID) : IRequest
+    public record RemoveWritingCorrectionPriceRequest(int Id) : IRequest
         <RemoveWritingCorrectionPriceRequest.Response>
     {
         public const string EndPointUri = "/api/teacher/removeWritingCorrectionPrice";
@@ -13,7 +13,7 @@ namespace HadisIelts.Shared.Requests.Teacher
     {
         public RemoveWritingCorrectionPriceRequestValidator()
         {
-            RuleFor(x => x.ID).NotEmpty().NotNull();
+            RuleFor(x => x.Id).NotEmpty().NotNull();
         }
     }
 }

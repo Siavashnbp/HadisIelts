@@ -36,25 +36,25 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
         {
             try
             {
-                var user = await _userManager.FindByIdAsync(request.UserID);
+                var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user is not null)
                 {
                     if (_userServices.IsUserOwnerOrSpecificRoles
-                        (claims: User.Claims.ToList(), roles: new List<string> { "Administrator", "Teacher" }, userID: user.Id))
+                        (claims: User.Claims.ToList(), roles: new List<string> { "Administrator", "Teacher" }, userId: user.Id))
                     {
-                        var submissions = _dbContext.WritingCorrectionSubmissionGroups.Where(x => x.UserID == user.Id).ToList();
+                        var submissions = _dbContext.WritingCorrectionSubmissionGroups.Where(x => x.UserId == user.Id).ToList();
                         if (submissions is not null)
                         {
                             var submissionSummary = new List<SubmittedServiceSummarySharedModel>();
                             foreach (var submission in submissions)
                             {
-                                var payment = await _paymentGroupRepository.FindByIDAsync(submission.PaymentGroupID);
+                                var payment = await _paymentGroupRepository.FindByIdAsync(submission.PaymentGroupId);
                                 submissionSummary.Add(new SubmittedServiceSummarySharedModel
                                 {
-                                    PaymentID = submission.PaymentGroupID,
+                                    PaymentId = submission.PaymentGroupId,
                                     PaymentStatus = payment is null ? "payment not submitted" : payment.Message,
                                     SubmissionDateTime = submission.SubmissionDateTime,
-                                    SubmittedServiceID = submission.ID,
+                                    SubmittedServiceId = submission.Id,
                                     IsCorrected = submission.IsCorrected,
                                 });
                             }

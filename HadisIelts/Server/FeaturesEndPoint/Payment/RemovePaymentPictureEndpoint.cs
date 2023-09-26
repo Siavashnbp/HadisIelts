@@ -29,14 +29,14 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var payment = await _paymentPictureRepository.FindByIDAsync(request.PaymentID);
+                var payment = await _paymentPictureRepository.FindByIdAsync(request.PaymentId);
                 if (payment != null && !payment.IsVerified)
                 {
-                    var paymentGroup = await _paymentGroupRepository.FindByIDAsync(payment.PaymentGroupID);
+                    var paymentGroup = await _paymentGroupRepository.FindByIdAsync(payment.PaymentGroupId);
                     if (paymentGroup != null)
                     {
                         if (_userServices.IsUserOwnerOrSpecificRoles(
-                            claims: User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, paymentGroup.UserID))
+                            claims: User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, paymentGroup.UserId))
                         {
                             var wasRemoveSuccessful = _paymentPictureRepository.Delete(payment);
                             if (wasRemoveSuccessful)

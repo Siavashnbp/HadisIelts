@@ -31,8 +31,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
         /// gets submitted writing correction files of a user
         /// </summary>
         /// <param name="request">
-        /// UserID: ID of issuer user
-        /// SubmissionID: ID of submitted group
+        /// UserId: Id of issuer user
+        /// SubmissionId: Id of submitted group
         /// </param>
         /// <param name="cancellationToken"></param>
         /// <returns>
@@ -45,39 +45,39 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
         {
             try
             {
-                var user = await _userManager.FindByIdAsync(request.UserID);
+                var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user != null)
                 {
                     var isUserTeacher = await _userManager.IsInRoleAsync(user, "Administrator,Teacher");
-                    var submission = await _submittedWritingCorrectionFilesRepository.FindByIDAsync(request.SubmissionID);
+                    var submission = await _submittedWritingCorrectionFilesRepository.FindByIdAsync(request.SubmissionId);
                     if (submission != null)
                     {
                         if (!isUserTeacher)
                         {
-                            if (submission.UserID != request.UserID)
+                            if (submission.UserId != request.UserId)
                             {
                                 return Unauthorized();
                             }
                         }
                         var files = _dbContext.WritingCorrectionFiles.ToList().FindAll
-                            (x => x.WritingCorrectionSubmissionGroupID == submission.ID);
+                            (x => x.WritingCorrectionSubmissionGroupId == submission.Id);
                         var correctedFiles = _dbContext.CorrectedWritingFiles.ToList().FindAll
-                            (x => x.WritingCorrectionSubmissionGroupID == submission.ID);
+                            (x => x.WritingCorrectionSubmissionGroupId == submission.Id);
                         if (files is not null && files.Count > 0)
                         {
                             var writingFiles = new List<ProcessedWritingFileSharedModel>();
                             foreach (var file in files)
                             {
-                                var correctedFile = correctedFiles.FirstOrDefault(x => x.WritingCorrectionFileID == file.ID);
+                                var correctedFile = correctedFiles.FirstOrDefault(x => x.WritingCorrectionFileId == file.Id);
                                 writingFiles.Add(new ProcessedWritingFileSharedModel
                                 {
                                     WritingFile = new WritingFileSharedModel
                                     {
-                                        ID = file.ID,
+                                        Id = file.Id,
                                         Name = file.Name,
                                         Data = file.Data,
                                         WordCount = file.WordCount,
-                                        WritingTypeID = file.ApplicationWritingTypeID
+                                        WritingTypeId = file.ApplicationWritingTypeId
                                     },
                                     PriceGroup = new PriceGroupSharedModel
                                     {
@@ -86,19 +86,21 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                                     },
                                     CorrectedWriting = correctedFile is not null ? new CorrectedWritingSharedModel
                                     {
-                                        ID = correctedFile.ID,
+                                        Id = correctedFile.Id,
                                         Data = correctedFile.Data,
                                         Name = correctedFile.Name,
                                         UploadDateTime = correctedFile.UploadDateTime,
-                                        WritingFileID = correctedFile.WritingCorrectionFileID
+                                        WritingFileId = correctedFile.WritingCorrectionFileId
                                     } : null
                                 });
                             }
                             return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(
                                 new WritingCorrectionPackageSharedModel
                                 {
+                                    Id = submission.Id,
                                     ProcessedWritingFiles = writingFiles,
                                     TotalPrice = submission.TotalPrice,
+                                    IsCorrected = submission.IsCorrected,
                                 }
                                 , Message: string.Empty));
                         }

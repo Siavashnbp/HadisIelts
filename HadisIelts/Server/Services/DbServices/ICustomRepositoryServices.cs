@@ -5,7 +5,7 @@ namespace HadisIelts.Server.Services.DbServices
     public interface ICustomRepositoryServices<TEntity, TKey>
         where TEntity : class, IEntity<TKey>
     {
-        Task<TEntity?> FindByIDAsync(TKey id);
+        Task<TEntity?> FindByIdAsync(TKey Id);
         List<TEntity> GetAll();
         bool Delete(TEntity entity);
         TEntity Insert(TEntity entity);

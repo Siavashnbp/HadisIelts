@@ -1,4 +1,4 @@
-﻿@page "/Payment/WritingCorrection/{PaymentID}"
+﻿@page "/Payment/WritingCorrection/{PaymentId}"
 @using HadisIelts.Client.Features.Correction.Models;
 @using HadisIelts.Client.Features.Correction.WritingCorrectionComponents
 @using HadisIelts.Client.Features.Payment;
@@ -125,20 +125,20 @@
 </AuthorizeView>
 @code {
     [Parameter]
-    public string? PaymentID { get; set; }
+    public string? PaymentId { get; set; }
     private PaymentGroupSharedModel<WritingCorrectionPackageSharedModel> _paymentGroup = new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>();
     private string? _modalImageData;
     private bool _showModal = false;
-    private int _paymentFileID = 0;
+    private int _paymentFileId = 0;
     private List<PaymentPictureSharedModel> _paymentFiles = new List<PaymentPictureSharedModel>();
     private List<PaymentPictureSharedModel> _pendingToUploadPaymentFiles = new List<PaymentPictureSharedModel>();
     protected override async Task OnInitializedAsync()
     {
         await GetWritingCorrectionPaymentPackage();
-        if (_paymentGroup.ID != "NotFound")
+        if (_paymentGroup.Id != "NotFound")
         {
             _paymentGroup.Service = new WritingCorrectionPackageSharedModel();
-            var result = await ClientWritingSevices.GetSubmittedWritingCorrectionFiles(_paymentGroup.SubmittedServiceID);
+            var result = await ClientWritingSevices.GetSubmittedWritingCorrectionFiles(_paymentGroup.SubmittedServiceId);
             _paymentGroup.Service.TotalPrice = result.WritingCorrectionPackage.TotalPrice;
             _paymentGroup.Service.ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>();
             _paymentGroup.Service.ProcessedWritingFiles = result.WritingCorrectionPackage.ProcessedWritingFiles;
@@ -157,7 +157,7 @@
         {
             _pendingToUploadPaymentFiles.Add(new PaymentPictureSharedModel
                 {
-                    ID = _paymentFileID++,
+                    Id = _paymentFileId++,
                     Name = e.File.Name,
                     FileSuffix = e.File.ContentType,
                     Data = await FileServices.ReadUploadedFileDataAsync(e.File),
@@ -206,7 +206,7 @@
         {
             if (_pendingToUploadPaymentFiles is not null && _pendingToUploadPaymentFiles.Count > 0)
             {
-                var request = new UploadPaymentPackageRequest(_pendingToUploadPaymentFiles, PaymentID);
+                var request = new UploadPaymentPackageRequest(_pendingToUploadPaymentFiles, PaymentId);
                 var response = await Mediator.Send(request);
                 _paymentFiles = response.PaymentPictures;
                 _pendingToUploadPaymentFiles.Clear();
@@ -222,10 +222,10 @@
     }
     private async Task GetWritingCorrectionPaymentPackage()
     {
-        if (PaymentID is not null)
+        if (PaymentId is not null)
         {
             _paymentGroup = new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>();
-            var request = new GetPaymentGroupRequest(PaymentID);
+            var request = new GetPaymentGroupRequest(PaymentId);
             var result = await Mediator.Send(request);
             _paymentGroup = result.PaymentGroup;
             _paymentFiles = _paymentGroup.PaymentPictures;
