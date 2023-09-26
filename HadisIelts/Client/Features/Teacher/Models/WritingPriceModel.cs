@@ -47,7 +47,7 @@ namespace HadisIelts.Client.Features.Teacher.Models
                 .WithMessage("Word count must be greater than 0");
             RuleFor(x => x.WritingType).NotNull().NotEmpty()
                 .WithMessage("Please select a writing type");
-            RuleFor(x => x.WritingType.ID).NotEqual(0)
+            RuleFor(x => x.WritingType.Id).NotEqual(0)
                 .WithMessage("Please select a writing type");
         }
     }

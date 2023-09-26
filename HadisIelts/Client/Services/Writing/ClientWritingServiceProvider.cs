@@ -19,7 +19,7 @@ namespace HadisIelts.Client.Services.Writing
 
         public async Task<GetSubmittedWritingCorrectionFilesRequest.Response> GetSubmittedWritingCorrectionFiles(string submissionId)
         {
-            var authenticationState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var userId = authenticationState.User.Claims.FirstOrDefault(x => x.Type == "sub").Value;
             if (userId is not null)
             {

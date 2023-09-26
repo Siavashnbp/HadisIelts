@@ -181,7 +181,7 @@
     }
     private async Task HandleImageRemovebuttonIsClicked(int id)
     {
-        var file = _paymentFiles.FirstOrDefault(x => x.ID == id);
+        var file = _paymentFiles.FirstOrDefault(x => x.Id == id);
         if (file is not null)
         {
             var request = new RemovePaymentPictureRequest(id);
@@ -193,7 +193,7 @@
         }
         else
         {
-            file = _pendingToUploadPaymentFiles.FirstOrDefault(x => x.ID == id);
+            file = _pendingToUploadPaymentFiles.FirstOrDefault(x => x.Id == id);
             if (file is not null)
             {
                 _pendingToUploadPaymentFiles.Remove(file);

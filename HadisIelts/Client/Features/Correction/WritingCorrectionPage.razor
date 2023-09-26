@@ -141,7 +141,7 @@
         {
             _processRequest = new ProcessWritingCorrectionFilesModel();
             if (_userWritingFiles is not null && _userWritingFiles.Count > 0 &&
-                _userWritingFiles.All(x => x.WritingType.ID != 0))
+                _userWritingFiles.All(x => x.WritingType.Id != 0))
             {
                 _processRequest.WritingFiles = FileServices.ConvertWritingFileModelToWritingFilesAsync(_userWritingFiles);
                 var request = new ProcessWritingFilesRequest(WritingFiles: _processRequest.WritingFiles);
@@ -197,7 +197,7 @@
                             {
                                 Name = item.WritingFile.Name,
                                 Data = item.WritingFile.Data,
-                                WritingTypeID = item.WritingFile.WritingTypeID,
+                                WritingTypeId = item.WritingFile.WritingTypeId,
                                 WordCount = item.WritingFile.WordCount
                             },
                             PriceGroup = new PriceGroupSharedModel
@@ -265,7 +265,7 @@
                 _userWritingFiles.Add(
                     new WritingFileModel
                         {
-                            ID = _id,
+                            Id = _id,
                             Name = file.Name,
                             FileSize = file.Size,
                             WritingType = new WritingTypeSharedModel(),

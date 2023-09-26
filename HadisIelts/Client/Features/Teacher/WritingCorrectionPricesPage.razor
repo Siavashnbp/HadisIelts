@@ -35,14 +35,14 @@
                             <ValidationMessage For="(()=>_writingPriceModel.Name)" />
                         </div>
                         <div class="col form-floating">
-                            <InputSelect class="form-select form-control" @bind-Value="_writingPriceModel.WritingType.ID"
+                            <InputSelect class="form-select form-control" @bind-Value="_writingPriceModel.WritingType.Id"
                                          style="text-align:center; min-width:max-content;" id="floatingWritingTypeSelect">
                                 <option selected value="0">Not Selected</option>
                                 @if (_writingTypes is not null)
                                 {
                                     @foreach (var item in _writingTypes)
                                     {
-                                        <option value="@(item.ID)">@(item.Name)</option>
+                                        <option value="@(item.Id)">@(item.Name)</option>
                                         <option value="@(item.Id)">@(item.Name)</option>
                                     }
                                 }
@@ -114,7 +114,7 @@
                 Name = _writingPriceModel.Name,
                 Price = (uint)_writingPriceModel.Price!,
                 WordCount = (int)_writingPriceModel.WordCount!,
-                WritingTypeID = _writingPriceModel.WritingType.ID
+                WritingTypeId = _writingPriceModel.WritingType.Id
             });
         var result = await Mediator.Send(request);
         if (result is not null)

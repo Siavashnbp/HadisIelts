@@ -21,7 +21,7 @@
                     <tr>
                         <AuthorizeView Roles="Administrator,Teacher">
                             <Authorized>
-                                @if (_editWritingPriceModel is not null && _editWritingPriceModel.ID == item.ID)
+                                @if (_editWritingPriceModel is not null && _editWritingPriceModel.Id == item.Id)
                                 {
                                     <td>@(rowCounter++)</td>
                                     <td><InputText class="form-control" @bind-Value="_editWritingPriceModel.Name" /></td>
@@ -92,7 +92,7 @@
             var result = await Mediator.Send(request);
             if (result.WasSuccessful)
             {
-                WritingCorrectionPrices.RemoveAll(x => x.ID == id);
+                WritingCorrectionPrices.RemoveAll(x => x.Id == id);
                 StateHasChanged();
             }
         }
