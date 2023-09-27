@@ -8,47 +8,65 @@
 @inject IUserServices UserServices;
 <AuthorizeView>
     <Authorized>
-        <div class="container main-form col-lg-6">
-            <div class="row">
-                <div class="col-4">
-                    profile image
-                </div>
-                <div class="d-flex col-8" style="flex-direction:column;">
-                    <div class="form-floating">
-                        <input class="form-control" value="@(_userInformation.Username)" type="text" Id="floatingUsername" disabled/>
-                        <label for="floatingUsername">Username</label>
+        <EditForm Model="_userInformation" OnValidSubmit="UpdateUserInformation" Context="UpdateUserInformation">
+            <div class="container main-form col-lg-6">
+                <div class="row">
+                    <div class="col-4">
+                        profile image
                     </div>
-                    <div class="form-floating">
-                        <input class="form-control" value="@(_userInformation.Email)" typeof="email" Id="floatingEmail" disabled/>
-                        <label for="floatingEmail">Email</label>
+                    <div class="d-flex col-8" style="flex-direction:column;">
+                        <div class="form-floating">
+                            <input class="form-control" value="@(_userInformation.Username)" type="text" Id="floatingUsername" disabled />
+                            <label for="floatingUsername">Username</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" value="@(_userInformation.Email)" typeof="email" Id="floatingEmail" disabled />
+                            <label for="floatingEmail">Email</label>
+                        </div>
+                        <div class="form-floating">
+                            <InputText class="form-control" @bind-Value="_userInformation.FirstName" typeof="text" Id="floatingFirstName" disabled="@(!_isEditEnabled)" />
+                            <label for="floatingName">First Name</label>
+                        </div>
+                        <div class="form-floating">
+                            <InputText class="form-control" @bind-Value="_userInformation.LastName" typeof="text" Id="floatingLastName" disabled="@(!_isEditEnabled)" />
+                            <label for="floatingName">Last Name</label>
+                        </div>
+                        <div class="form-floating">
+                            <InputText class="form-control" @bind-Value="_userInformation.Skype" typeof="text" Id="floatingSkype" disabled="@(!_isEditEnabled)" />
+                            <label for="floatingSkype">Skype Id</label>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="btn-group col-lg-6">
+
+                                @if (_currentUserId == UserId)
+                                {
+                                    @if (!_isEditEnabled)
+                                    {
+                                        <button class="btn btn-light" type="button" @onclick="(()=>_isEditEnabled = true)">Edit</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-success" type="submit" style="margin:2px;">Update</button>
+                                        <button class="btn btn-danger" type="button" style="margin:2px;"
+                                        @onclick="(()=>ResetUserInformation())">Cancle</button>
+                                    }
+                                }
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_userInformation.FirstName" typeof="text" Id="floatingFirstName" />
-                        <label for="floatingName">First Name</label>
-                    </div>
-                    <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_userInformation.LastName" typeof="text" Id="floatingLastName" />
-                        <label for="floatingName">Last Name</label>
-                    </div>
-                    <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_userInformation.Skype" typeof="text" Id="floatingSkype" />
-                        <label for="floatingSkype">Skype Id</label>
-                    </div>
-                    @if (_currentUserId == UserId)
-                    {
-                        <button>Edit</button>
-                    }
                 </div>
             </div>
-        </div>        
-    </Authorized>   
+        </EditForm>
+    </Authorized>
 </AuthorizeView>
 
 @code {
     [Parameter]
     public string UserId { get; set; } = string.Empty;
     private string _currentUserId;
-    private UserInformationSharedModel _userInformation = new UserInformationSharedModel("test",string.Empty);
+    private UserInformationSharedModel _userInformation = new UserInformationSharedModel(string.Empty, string.Empty);
+    private UserInformationSharedModel _defaultInformation;
+    private bool _isEditEnabled = false;
     protected override async Task OnInitializedAsync()
     {
         try
@@ -82,6 +100,13 @@
                         LastName = result.userInformation.LastName,
                         Skype = result.userInformation.Skype,
                     };
+                _defaultInformation = new UserInformationSharedModel(username: result.userInformation.Username,
+                email: result.userInformation.Email)
+                    {
+                        FirstName = result.userInformation.FirstName,
+                        LastName = result.userInformation.LastName,
+                        Skype = result.userInformation.Skype,
+                    };
             }
             StateHasChanged();
         }
@@ -95,11 +120,27 @@
         try
         {
             var request = new UpdateAccountInformationRequest(_userInformation);
+            var response = await Mediator.Send(request);
+            if (response?.UpdatedUserInformation is not null)
+            {
+                _userInformation = response.UpdatedUserInformation;
+                _defaultInformation = response.UpdatedUserInformation;
+                _isEditEnabled = false;
+                StateHasChanged();
+            }
         }
         catch (Exception)
         {
-            
+
             throw;
         }
+    }
+    private void ResetUserInformation()
+    {
+        _userInformation.FirstName = _defaultInformation.FirstName;
+        _userInformation.LastName = _defaultInformation.LastName;
+        _userInformation.Skype = _defaultInformation.Skype;
+        _isEditEnabled = false;
+        StateHasChanged();
     }
 }
