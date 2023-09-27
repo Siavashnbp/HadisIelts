@@ -1,0 +1,37 @@
+﻿<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Submission Date</th>
+            <th>Payment Status</th>
+            <th>Correction Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in SubmittedServices)
+        {
+            <tr class="@(item.IsCorrected?"table-success":"table-info")">                
+                <td>@item.SubmissionDateTime</td>
+                <td>
+                    @item.PaymentStatus
+                </td>
+                <td>
+                    @if (item.IsCorrected)
+                    {
+                        <h6>Corrected</h6>
+                    }
+                    else
+                    {
+                        <h6>Not Corrected</h6>
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-primary" href=@($"/payment/writingCorrection/{item.PaymentId}")>View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    [Parameter, EditorRequired]
+    public List<SubmittedServiceSummarySharedModel> SubmittedServices { get; set; }
+}

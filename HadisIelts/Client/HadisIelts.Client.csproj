@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
+    <Content Remove="wwwroot\js\downloadFileFromStream.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,17 +31,19 @@
     <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\lint.yml" />
     <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\node-sass.yml" />
     <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\release-notes.yml" />
+    <None Include="wwwroot\js\downloadFileFromStream.js" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazored.FluentValidation" Version="2.1.0" />
-    <PackageReference Include="MediatR" Version="12.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.5" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="7.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.8" />
+    <PackageReference Include="MediatR" Version="12.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="7.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.10" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\Administrator\Models\" />
+    <Folder Include="Features\Payment\Models\" />
   </ItemGroup>
   <Target Name="CheckForNpm" BeforeTargets="RunNpmInstall">
     <Exec Command="npm --version" ContinueOnError="true">

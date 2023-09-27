@@ -1,0 +1,7 @@
+﻿<InputFile accept=".jpg,.jpeg,.png,.pdf" OnChange="(async(e) => await OnInputFilesChange.InvokeAsync(e))" 
+    class="form-control"/>
+
+@code {
+    [Parameter,EditorRequired]
+    public EventCallback<InputFileChangeEventArgs> OnInputFilesChange { get; set; }
+}

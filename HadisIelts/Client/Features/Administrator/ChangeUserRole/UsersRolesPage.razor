@@ -96,7 +96,7 @@
 </AuthorizeView>
 @code {
     private AuthenticationState _authenticationState { get; set; }
-    private List<UserRoles>? _usersRoles { get; set; }
+    private List<UserRolesSharedModel>? _usersRoles { get; set; }
     public int _pageNumber { get; set; } = 1;
     private bool _isFirstPage { get; set; } = true;
     private bool _isLastPage { get; set; }
@@ -115,21 +115,15 @@
     }
     private async Task GetRolesAsync(int pageNumber)
     {
-        var request = new GetUsersRolesRequest(new UsersRolesRequest
-            {
-                UserSearchPhrase = _searchPhrase,
-                PageNumber = (pageNumber - 1)
-            });
+        var request = new GetUsersRolesRequest(UserSearchPhrase : _searchPhrase);
         var response = await Mediator.Send(request);
         if (response is not null)
         {
-            _usersRoles = response.UsersRolesResponse.UsersRoles;
-            _pageNumber = response.UsersRolesResponse.PageNumber + 1;
+            _usersRoles = response.UsersRoles;
             if (_pageNumber ==1)
             {
                 _isFirstPage = true;
             }
-            _isLastPage = response.UsersRolesResponse.IsLastPage;
             StateHasChanged();
         }
     }    

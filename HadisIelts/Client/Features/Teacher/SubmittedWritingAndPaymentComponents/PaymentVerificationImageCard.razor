@@ -1,0 +1,72 @@
+﻿@using HadisIelts.Client.Features.Payment;
+@using HadisIelts.Client.Services.File;
+@inject IFileServices FileServices;
+<div class="card shadow-sm">
+    @if (PaymentFile.FileSuffix == "application/pdf")
+    {
+        <svg class="bd-placeholder-img card-img-top" width="100%" height="150px;" xmlns="http://www.w3.org/2000/svg"
+             role="img" aria-label="Placeholder: Pdf File" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <title>Placeholder</title>
+            <rect width="100%" height="100%" fill="#55595c"></rect>
+            <text x="50%" y="50%" fill="#eceeef" dy=".3em">Pdf File</text>
+        </svg>
+    }
+    else
+    {
+        <img class="card-img-top" alt="English Class" src="@(FileServices.ViewImageData(PaymentFile.Data))"
+         @onclick="(async()=>await OnThumbnailIsClicked.InvokeAsync(PaymentFile.Data))"
+             style="cursor:pointer; height:200px; object-fit:contain;" />
+    }
+    <div class="card-body">
+        <p class="card-text">@(PaymentFile.Name)</p>
+        <div class="card-footer">
+            <medium class="text-primary">@PaymentFile.Message</medium>
+        </div>
+        <div class="d-flex justify-content-between align-items-center" style="margin-top:5px;">
+            <div class="btn-group">
+                <div class="container justify-content-around">
+                    <div class="row">
+                        <div class="col">
+                            @if (PaymentFile.IsVerificationPending)
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-success"
+                                    @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.Id,true)))">
+                                    <i class="fa fa-check-square">  Approve</i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.Id,false)))">
+                                    <i class="fa fa-remove">  Reject</i>
+                                </button>
+                            }
+                            else
+                            {
+                                if (IsEditEnabled)
+                                {                                    
+                                <button type="button" class="btn btn-sm btn-outline-warning"
+                                    @onclick="(async()=>await OnEditButtonIsClicked.InvokeAsync(PaymentFile.Id))">
+                                    <i class="fa fa-edit">  Edit</i>
+                                </button>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <small class="text-muted">@PaymentFile.UploadDateTime</small>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter, EditorRequired]
+    public PaymentPictureSharedModel PaymentFile { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<string> OnThumbnailIsClicked { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<(int pictureId,bool isVerified)> OnVerificationButtonIsClicked { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnEditButtonIsClicked { get; set; }
+    [Parameter]
+    public bool IsEditEnabled { get; set; }
+}
+
+

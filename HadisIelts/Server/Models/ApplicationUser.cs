@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using HadisIelts.Server.Models.BaseModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace HadisIelts.Server.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser, IEntity<string>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

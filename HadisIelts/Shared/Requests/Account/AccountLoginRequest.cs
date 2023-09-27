@@ -1,22 +1,34 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using HadisIelts.Shared.Models;
+using MediatR;
 
 namespace HadisIelts.Shared.Requests.Account
 {
-    public record AccountLoginRequest(LoginRequest Request) :
+    public record AccountLoginRequest(LoginSharedModel LoginRequest) :
         IRequest<AccountLoginRequest.Response>
     {
         public const string EndPointUri = "/api/account/login";
-        public record Response(LoginResponse LoginResponse);
+        public record Response(bool LoginSuccess, string? Message);
     }
-    public class LoginRequest
+    public class AccountLoginRequestValidator : AbstractValidator<AccountLoginRequest>
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public bool KeepSignedIn { get; set; }
+        public AccountLoginRequestValidator()
+        {
+            RuleFor(x => x.LoginRequest).SetValidator(new LoginModelValidator());
+        }
     }
-    public class LoginResponse
+    public class LoginModelValidator : AbstractValidator<LoginSharedModel>
     {
-        public bool LoginSucess { get; set; }
-        public string Message { get; set; }
+        public LoginModelValidator()
+        {
+            //Email rules
+            RuleFor(x => x.Email).NotNull().NotEmpty()
+                .WithMessage("Email field cannot be empty");
+            RuleFor(x => x.Email).EmailAddress()
+                .WithMessage("Email is not in correct format");
+            //Password rules
+            RuleFor(x => x.Password).NotNull().NotEmpty()
+                .WithMessage("Passwrod cannot be empty");
+        }
     }
 }

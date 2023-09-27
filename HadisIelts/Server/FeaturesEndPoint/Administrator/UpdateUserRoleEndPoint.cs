@@ -1,7 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Models;
 using HadisIelts.Server.Services.User;
-using HadisIelts.Shared.Requests.Admin;
+using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Administrator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -26,41 +26,34 @@ namespace HadisIelts.Server.FeaturesEndPoint.Administrator
         {
             try
             {
-                if (request.Request is not null)
+                var user = await _userManager.FindByEmailAsync(request.Email);
+                if (user is not null)
                 {
-                    var admin = User.Claims;
-                    var user = await _userManager.FindByEmailAsync(request.Request.Email);
-                    if (user is not null)
+                    var isUserInRole = await _userManager.IsInRoleAsync(user, request.Role.ToString());
+                    if (!isUserInRole && request.Value)
                     {
-                        var isUserInRole = await _userManager.IsInRoleAsync(user, request.Request.Role.ToString());
-                        if (!isUserInRole && request.Request.Value)
-                        {
-                            await _userManager.AddToRoleAsync(user, request.Request.Role.ToString());
-                        }
-                        else if (isUserInRole && !request.Request.Value)
-                        {
-                            await _userManager.RemoveFromRoleAsync(user, request.Request.Role.ToString());
-                        }
-                        var userRoles = await _userServices.GetUserRolesAsync(user);
-                        return Ok(new UpdateUserRoleRequest.Response(new UpdatedUserRole
-                        {
-                            UserRoles = new UserRoles
-                            {
-                                Email = user.Email,
-                                FirstName = user.FirstName,
-                                LastName = user.LastName,
-                                Roles = userRoles
-                            },
-                            Message = "Role Updated"
-                        })); ;
+                        await _userManager.AddToRoleAsync(user, request.Role.ToString());
                     }
-                    return Ok(new UpdateUserRoleRequest.Response(new UpdatedUserRole
+                    else if (isUserInRole && !request.Value)
                     {
-                        UserRoles = default,
-                        Message = "User was not found"
-                    }));
+                        await _userManager.RemoveFromRoleAsync(user, request.Role.ToString());
+                    }
+                    var userRoles = await _userServices.GetUserRolesAsync(user);
+                    return Ok(new UpdateUserRoleRequest.Response(
+
+                        UserRoles: new UserRolesSharedModel(email: user.Email!)
+                        {
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Roles = userRoles
+                        },
+                        Message: "Role Updated"));
                 }
-                return BadRequest();
+                return Ok(new UpdateUserRoleRequest.Response(
+
+                    UserRoles: null!,
+                    Message: "User was not found"));
+
             }
             catch (Exception)
             {

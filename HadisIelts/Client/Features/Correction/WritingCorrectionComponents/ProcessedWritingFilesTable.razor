@@ -1,0 +1,78 @@
+﻿@using HadisIelts.Client.Features.Correction.Models;
+@using System.IO
+@inject IJSRuntime JS
+<table class="table table-success text-center">
+    <thead>
+        <tr>
+            <th>
+                <h5>Row</h5>
+            </th>
+            <th>
+                <h5>Name</h5>
+            </th>
+            <th>
+                <h5>Price Type</h5>
+            </th>
+            <th>
+                <h5>Word Count</h5>
+            </th>
+            <th>
+                <h5>Price</h5>
+            </th>           
+        </tr>
+    </thead>
+    <tbody>
+        @if (ProcessedFiles is not null)
+        {
+            int i = 1;
+            @foreach (var file in ProcessedFiles)
+            {
+                <tr>
+                    <td>
+                        <h6>@(i++)</h6>
+                    </td>
+                    <td>
+                        @file.WritingFile.Name
+                        <button class="btn btn-secondary" @onclick="(()=>DownloadFileFromStream(file.WritingFile))">
+                            <i class="fa fa-download"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <h6>
+                            @file.PriceGroup.PriceName
+                        </h6>
+                    </td>
+                    <td>
+                        <h6>
+                            @file.WritingFile.WordCount
+                        </h6>
+                    </td>
+                    <td>
+                        <h6>
+                            @($"{file.PriceGroup.Price:n0}")
+                        </h6>
+                    </td>                    
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@code {
+    [Parameter, EditorRequired]
+    public List<ProcessedWritingFileSharedModel> ProcessedFiles { get; set; } = new List<ProcessedWritingFileSharedModel>();
+    private Stream GetFileStream(string data)
+    {
+        var fileStream = new MemoryStream(Convert.FromBase64String(data));
+        return fileStream;
+    }
+
+    private async Task DownloadFileFromStream(WritingFileSharedModel writingFile)
+    {
+        var fileStream = GetFileStream(writingFile.Data);
+        var fileName = $"{writingFile.Name}.docx";
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+}

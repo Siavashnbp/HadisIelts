@@ -1,0 +1,198 @@
+﻿@page "/services/writingCorrection/price"
+@using HadisIelts.Client.Features.Teacher.Models;
+@using HadisIelts.Client.Features.Teacher.WritingCorrectionPricesComponents
+@using HadisIelts.Shared.Requests.Correction;
+@using HadisIelts.Shared.Requests.Teacher;
+@inject IMediator Mediator
+<div class="container">
+    <div class="row">
+        <div class="col">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <WritingCorrectionPriceTable WritingCorrectionPrices="_writingCorrectionPrices" WritingTypes="_writingTypes"/>
+        </div>
+    </div>
+    <AuthorizeView Roles="Teacher,Administrator" Context="Auth">
+        <Authorized>
+
+            <EditForm Model="_writingPriceModel" OnValidSubmit="AddWritingCorrectionPrice">
+                <FluentValidationValidator />
+                <div class="container text-center list-group-item-light main-form" style="text-align:center;border:dashed;padding:5px;">
+                    <div class="row justify-content-center">
+                        <div class="col">
+                            <h5 style="margin-top:10px;">Add Price</h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-floating">
+                                <InputText class="form-control" @bind-Value="_writingPriceModel.Name" style="text-align:center;"
+                                           id="floatingNameInput" placeholder="Name" />
+                                <label for="floatingNameInput">Name</label>
+                            </div>
+                            <ValidationMessage For="(()=>_writingPriceModel.Name)" />
+                        </div>
+                        <div class="col form-floating">
+                            <InputSelect class="form-select form-control" @bind-Value="_writingPriceModel.WritingType.Id"
+                                         style="text-align:center; min-width:max-content;" id="floatingWritingTypeSelect">
+                                <option selected value="0">Not Selected</option>
+                                @if (_writingTypes is not null)
+                                {
+                                    @foreach (var item in _writingTypes)
+                                    {
+                                        <option value="@(item.Id)">@(item.Name)</option>
+                                        <option value="@(item.Id)">@(item.Name)</option>
+                                    }
+                                }
+                            </InputSelect>
+                            <label for="floatingWritingTypeSelect" style="margin-left:10px;">Writing Type</label>
+                            <ValidationMessage For="(()=>_writingPriceModel.WritingType)" />
+                            <ValidationMessage For="(()=>_writingPriceModel.WritingType.Id)" />
+                        </div>
+                        <div class="col text-center">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-10 form-floating">
+                                    <InputNumber class="form-control" TValue="int?" @bind-Value="_writingPriceModel.WordCount"
+                                                 id="floatingWordCount" placeholder="Word Count" EnableMinMax="true" Min="0"
+                                                 style="text-align:center;" />
+                                    <label for="floatingWordCountInput" style="margin-left:10px;">Word Count</label>
+                                </div>
+                                <ValidationMessage For="(()=>_writingPriceModel.WordCount)" />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-10 form-floating">
+                                    <InputNumber class="form-control" TValue="int?" @bind-Value="_writingPriceModel.Price"
+                                                 style="text-align:center;" id="floatingPriceInput" placeholder="Price" 
+                                                 EnableMinMax="true" Min="0" />
+                                    <label for="floatingPriceInput" style="margin-left:10px;">Price</label>
+                                </div>
+                            </div>
+                            <ValidationMessage For="(()=>_writingPriceModel.Price)" />
+                        </div>
+                    </div>
+                    <div class="row justify-content-center" style="margin-top:10px;">
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-secondary">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+            <div class="container secondary-form col-lg-4">
+                <div class="row">
+                    <h5>Add Writing Type</h5>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <InputText class="form-control" @bind-Value="_addWritingTypeName" />
+                        <button class="btn btn-warning" @onclick="(()=>AddWritingTypeAsync(_addWritingTypeName))">Add</button>
+                    </div>
+                </div>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+</div>
+@code {
+    private List<WritingPriceModel> _writingCorrectionPrices = new List<WritingPriceModel>();
+    private List<WritingTypeSharedModel> _writingTypes = new();
+    private WritingPriceModel _writingPriceModel = new WritingPriceModel();
+    private string? _addWritingTypeName;
+    protected override async Task OnInitializedAsync()
+    {
+        await GetWritingTypes();
+        await GetWritingCorrectionPrices();
+    }
+    private async Task AddWritingCorrectionPrice()
+    {
+        var request = new AddWritingCorrectionPriceRequest(new WritingCorrectionServicePriceSharedModel
+            {
+                Name = _writingPriceModel.Name,
+                Price = (uint)_writingPriceModel.Price!,
+                WordCount = (int)_writingPriceModel.WordCount!,
+                WritingTypeId = _writingPriceModel.WritingType.Id
+            });
+        var result = await Mediator.Send(request);
+        if (result is not null)
+        {
+            var writingType = _writingTypes.FirstOrDefault(x => x.Id == result.AddedWritingCorrectionServicePrice.WritingTypeId);
+            if (writingType is not null)
+            {
+                _writingCorrectionPrices.Add(new WritingPriceModel
+                    {
+                        Id = result.AddedWritingCorrectionServicePrice.Id,
+                        Name = result.AddedWritingCorrectionServicePrice.Name,
+                        Price = (int)result.AddedWritingCorrectionServicePrice.Price,
+                        WordCount = result.AddedWritingCorrectionServicePrice.WordCount,
+                        WritingType = writingType
+                    });
+                    _writingPriceModel = new WritingPriceModel();
+            }
+            StateHasChanged();
+        }
+    }
+    private async Task GetWritingCorrectionPrices()
+    {
+        try
+        {
+            var result = await Mediator.Send(new GetWritingCorrectionPricesRequest());
+            if (result is not null)
+            {
+                foreach (var item in result.WritingCorrectionPrices)
+                {
+                    var writingType = _writingTypes.FirstOrDefault(x => x.Id == item.WritingTypeId);
+                    _writingCorrectionPrices.Add(new WritingPriceModel
+                        {
+                            Id = item.Id,
+                            Name = item.Name,
+                            Price = (int)item.Price,
+                            WordCount = item.WordCount,
+                            WritingType = writingType
+                        });
+                }
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    private async Task GetWritingTypes()
+    {
+        var request = new GetWritingTypesRequest();
+        var response = await Mediator.Send(request);
+        if (response?.WritingTypes is not null && response.WritingTypes.Count > 0)
+        {
+            _writingTypes = new List<WritingTypeSharedModel>();
+            foreach (var item in response.WritingTypes)
+            {
+                _writingTypes.Add(new WritingTypeSharedModel
+                    {
+                        Id = item.Id,
+                        Name = item.Name
+                    });
+            }
+            StateHasChanged();
+        }
+    }
+    private async Task AddWritingTypeAsync(string name)
+    {
+        var request = new AddWritingTypeRequest(name);
+        var response = await Mediator.Send(request);
+        if (response?.WritingType is not null)
+        {
+            _writingTypes.Add(new WritingTypeSharedModel
+                {
+                    Id = response.WritingType.Id,
+                    Name = response.WritingType.Name
+                });
+            StateHasChanged();
+        }
+    }
+}

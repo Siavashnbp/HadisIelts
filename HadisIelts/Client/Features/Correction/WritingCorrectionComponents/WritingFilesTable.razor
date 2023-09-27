@@ -1,0 +1,72 @@
+﻿@using HadisIelts.Client.Features.Correction.Models;
+@using HadisIelts.Client.Features.Teacher
+@using HadisIelts.Client.Features.Teacher.Models;
+@using HadisIelts.Shared.Requests.Correction;
+<table class="table table-hover" style="margin:auto;">
+    <thead>
+        <tr class="table-secondary">
+            <th colspan="2">Name</th>
+            <th>Writing Task</th>
+            <th>
+                <div class="row justify-content-end" style="right:auto; margin-right:auto;">
+                    <span class="badge bg-info rounded-pill" style="color:black; max-width:50px;">Size</span>
+                    <span class="btn badge bg-primary rounded-pill" style="max-width:50px;"
+                          @onclick="(async()=>await OnRemoveAllClick.InvokeAsync())">Clear all</span>
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (WritingFiles is not null)
+        {
+
+            @foreach (var item in WritingFiles)
+            {
+                <tr>
+                    <td colspan="2">@item.Name</td>
+                    <td>
+                        <InputSelect class="form-select form-control" @bind-Value="item.WritingType.Id"
+                             @onselect="(async()=>await OnWritingTypeIsSelected.InvokeAsync(new(item.WritingType.Id,item.Id)))">
+                            <option value="0">Not Selected</option>
+                            @foreach (var writingType in WritingTypes)
+                            {
+                                <option value="@(writingType.Id)">@(writingType.Name)</option>
+                            }
+                        </InputSelect>
+                        @if (item.WritingType.Id ==0)
+                        {
+                            <span class="validation-message"> Please select a writing task</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="row justify-content-end" style="right:0; margin-right:auto;">
+                            <span class="badge bg-info rounded-pill" style="color:black;width:max-content; ">
+                                @(
+                                    item.FileSize / 1000
+                                    ) KB
+                            </span>
+                            <span class="btn badge bg-primary rounded-pill" style="width:fit-content; min-width:50px;"
+                          @onclick="(async()=>await OnRemoveWritingClick.InvokeAsync(item.Id))">Clear</span>
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<WritingFileModel> WritingFiles { get; set; }
+    [Parameter]
+    public List<WritingTypeSharedModel> WritingTypes { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<(int WritingTypeId, int WritingId)> OnWritingTypeIsSelected { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback OnRemoveAllClick { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnRemoveWritingClick { get; set; }
+
+
+
+}

@@ -11,12 +11,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         .WithActionResult<int>
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ILogger<RegisterUserEndPoint> _logger;
-        public RegisterUserEndPoint(UserManager<ApplicationUser> userManager
-            , ILogger<RegisterUserEndPoint> logger)
+        public RegisterUserEndPoint(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
-            _logger = logger;
         }
 
         [HttpPost(RegisterAccountRequest.EndpointUri)]
@@ -25,21 +22,25 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         {
             try
             {
-                var user = new ApplicationUser
+                var user = await _userManager.FindByEmailAsync(request.Email);
+                if (user is null)
                 {
-                    FirstName = "test",
-                    LastName = "test",
-                    UserName = request.Request.Email,
-                    Email = request.Request.Email,
-                    EmailConfirmed = true
-                };
-                var result = await _userManager.CreateAsync(user, request.Request.Password);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation($"User: {user.Email} registered at {DateTime.UtcNow}");
-                    return Ok(true);
+
+                    user = new ApplicationUser
+                    {
+                        FirstName = string.Empty,
+                        LastName = string.Empty,
+                        UserName = request.Email,
+                        Email = request.Email,
+                        EmailConfirmed = true
+                    };
+                    var result = await _userManager.CreateAsync(user, request.Password);
+                    if (result.Succeeded)
+                    {
+                        return Ok(true);
+                    }
                 }
-                return BadRequest(false);
+                return Problem("Failed to create user");
             }
             catch (Exception)
             {

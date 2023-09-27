@@ -1,23 +1,21 @@
-﻿using HadisIelts.Shared.Requests.Admin;
+﻿using FluentValidation;
+using HadisIelts.Shared.Models;
 using MediatR;
 using static HadisIelts.Shared.Enums.UserRelatedEnums;
 
 namespace HadisIelts.Shared.Requests.Administrator
 {
-    public record UpdateUserRoleRequest(UserNewRole Request) : IRequest<UpdateUserRoleRequest.Response>
+    public record UpdateUserRoleRequest(string Email, ApplicationRoles Role, bool Value)
+        : IRequest<UpdateUserRoleRequest.Response>
     {
         public const string EndPointUri = "/api/administrator/updateUserRole";
-        public record Response(UpdatedUserRole UpdatedUserRole);
+        public record Response(UserRolesSharedModel UserRoles, string Message);
     }
-    public class UserNewRole
+    public class UpdateUserRoleRequestValidator : AbstractValidator<UpdateUserRoleRequest>
     {
-        public string Email { get; set; }
-        public ApplicationRoles Role { get; set; }
-        public bool Value { get; set; }
-    }
-    public class UpdatedUserRole
-    {
-        public UserRoles UserRoles { get; set; }
-        public string Message { get; set; }
+        public UpdateUserRoleRequestValidator()
+        {
+            RuleFor(x => x.Email).EmailAddress().NotEmpty().NotNull();
+        }
     }
 }

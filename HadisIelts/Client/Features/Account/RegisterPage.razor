@@ -3,7 +3,7 @@
 @using HadisIelts.Shared.Requests.Account;
 @using MediatR;
 @inject IMediator Mediator;
-
+@attribute [AllowAnonymous]
 <div class="container col-lg-4 col-md-6 main-form">
     <EditForm Model="@_registerModel" OnValidSubmit="UploadRegisterForm">
         <FluentValidationValidator />
@@ -57,14 +57,9 @@
     {
         try
         {
-            var request = new RegisterAccountRequest
-            (
-                new RegiterRequest
-                    {
-                        Email = _registerModel.Email,
-                        Password = _registerModel.Password
-                    }
-            );
+            var request = new RegisterAccountRequest(
+                Email: _registerModel.Email,
+                Password: _registerModel.Password);
             var response = await Mediator.Send(request);
             if (response.registerSuccess)
             {

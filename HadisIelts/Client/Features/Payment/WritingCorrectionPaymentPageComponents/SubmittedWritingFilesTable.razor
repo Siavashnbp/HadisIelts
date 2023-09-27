@@ -1,0 +1,142 @@
+﻿@using HadisIelts.Client.Features.Correction.Models;
+@using System.IO
+@using HadisIelts.Client.Services.File;
+@inject IJSRuntime JS;
+@inject IFileServices FileServices;
+<table class="table table-success text-center">
+    <thead>
+        <tr>
+            <th>
+                <h5>Row</h5>
+            </th>
+            <th>
+                <h5>Name</h5>
+            </th>
+            <th>
+                <h5>Price Type</h5>
+            </th>
+            <th>
+                <h5>Word Count</h5>
+            </th>
+            <th>
+                <h5>Price</h5>
+            </th>
+            <th>
+                <h5>Correction</h5>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ProcessedFiles is not null)
+        {
+            int i = 1;
+            @foreach (var file in ProcessedFiles)
+            {
+                <tr>
+                    <td>
+                        <h6>@(i++)</h6>
+                    </td>
+                    <td>
+                        @file.WritingFile.Name
+                        <button class="btn btn-secondary" @onclick="(()=>DownloadFileFromStream(file.WritingFile.Data,file.WritingFile.Name))">
+                            <i class="fa fa-download"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <h6>
+                            @file.PriceGroup.PriceName
+                        </h6>
+                    </td>
+                    <td>
+                        <h6>
+                            @file.WritingFile.WordCount
+                        </h6>
+                    </td>
+                    <td>
+                        <h6>
+                            @($"{file.PriceGroup.Price:n0}")
+                        </h6>
+                    </td>
+                    <td>
+                        <AuthorizeView Roles="Administrator,Teacher">
+                            <Authorized>
+                                @if (file.CorrectedWriting is null)
+                                {
+                                    @if (_pendingCorrectedWriting is null)
+                                    {
+                                        <InputFile class="btn btn-primary" type="file" accept=".docx" style="width:100px;padding-left:6px;"
+                                   OnChange="(e)=>OnCorrectedFileIsSelected(e,file.WritingFile.Id)" />
+                                    }
+                                    else
+                                    {
+                                        @if (_pendingCorrectedWriting.Id == file.WritingFile.Id)
+                                        {
+                                            <button class="btn btn-primary" @onclick="(async()=>await OnCorrectedWritingUpload.InvokeAsync(_pendingCorrectedWriting))">Upload</button>
+                                            <button class="btn btn-outline-danger" @onclick="(()=>OnCancleButtonIsClicked())">Cancle</button>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <button class="btn btn-secondary" @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))"> Download <i class="fa fa-download"></i></button>
+                                    <button class="btn btn-danger" @onclick="(async()=>{
+                                        await OnDeleteButtonClick.InvokeAsync(file.CorrectedWriting.Id);
+                                        _pendingCorrectedWriting=null;
+                                    })">
+                                        Delete
+                                    </button>
+                                }
+                            </Authorized>
+                            <NotAuthorized>
+                                @if (file.CorrectedWriting is null)
+                                {
+                                    <h5>Not Corrected</h5>
+                                }
+                                else
+                                {
+                                    <button @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))"> <i class="fa fa-download"> Download</i></button>
+                                }
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@code {
+    [Parameter, EditorRequired]
+    public List<ProcessedWritingFileSharedModel> ProcessedFiles { get; set; } = new List<ProcessedWritingFileSharedModel>();
+    [Parameter, EditorRequired]
+    public EventCallback<WritingFileModel> OnCorrectedWritingUpload { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDeleteButtonClick { get; set; }
+    private WritingFileModel? _pendingCorrectedWriting;
+    private Stream GetFileStream(string data)
+    {
+        var fileStream = new MemoryStream(Convert.FromBase64String(data));
+        return fileStream;
+    }
+    private async Task DownloadFileFromStream(string data, string name)
+    {
+        var fileStream = GetFileStream(data);
+        var fileName = $"{name}";
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+    private async Task OnCorrectedFileIsSelected(InputFileChangeEventArgs eventArgs, int writingId)
+    {
+        _pendingCorrectedWriting = new WritingFileModel
+            {
+                Id = writingId,
+                Name = eventArgs.File.Name,
+                FileSize = eventArgs.File.Size,
+                FileData = await FileServices.ReadUploadedFileDataAsync(eventArgs.File),
+                WritingType = new WritingTypeSharedModel()
+            };
+    }
+    public void OnCancleButtonIsClicked()
+    {
+        _pendingCorrectedWriting = null;
+    }
+}

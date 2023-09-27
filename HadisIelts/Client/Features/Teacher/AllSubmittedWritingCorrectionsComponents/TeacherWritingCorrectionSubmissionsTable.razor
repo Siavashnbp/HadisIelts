@@ -1,0 +1,52 @@
+﻿<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Submission Date</th>
+            <th>Payment Status</th>
+            <th>Correction Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in SubmittedServices)
+        {
+            <tr class="@(item.IsCorrected?"table-success":"table-info")">
+                <td>
+                    <div class="container text-center justify-content-center">
+                        <div class="row">
+                            <div class="col">
+                                @item.UserDetails?.FirstName @item.UserDetails?.LastName
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                @item.UserDetails?.Username
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>@item.SubmissionDateTime</td>
+                <td>
+                    @item.PaymentStatus
+                </td>
+                <td>
+                    @if (item.IsCorrected)
+                    {
+                        <h6>Corrected</h6>
+                    }
+                    else
+                    {
+                        <h6>Not Corrected</h6>
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-primary" href=@($"/teacher/services/writingCorrection/submittedFiles/{item.PaymentId}")>View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    [Parameter, EditorRequired]
+    public List<SubmittedServiceSummarySharedModel> SubmittedServices { get; set; }
+}

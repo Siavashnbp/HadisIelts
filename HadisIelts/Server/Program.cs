@@ -1,6 +1,9 @@
 using FluentValidation.AspNetCore;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models;
+using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Server.Services.Files;
+using HadisIelts.Server.Services.Payment;
 using HadisIelts.Server.Services.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -58,6 +61,9 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 builder.Services.AddScoped<IUserServices, UserServicesProvider>();
+builder.Services.AddTransient(typeof(ICustomRepositoryServices<,>), typeof(RepositoryServiceProvider<,>));
+builder.Services.AddScoped<IWordFileServices, WordFileServiceProvider>();
+builder.Services.AddScoped<IWritingCorrectionPayment, WritingCorrectionPaymentServiceProvider>();
 
 var app = builder.Build();
 

@@ -1,20 +1,20 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using HadisIelts.Shared.Models;
+using MediatR;
 
 namespace HadisIelts.Shared.Requests.Account
 {
-    public record GetUserInformationRequest(string userID) :
+    public record GetUserInformationRequest(string UserId) :
         IRequest<GetUserInformationRequest.Response>
     {
-        public const string EndPointUri = "/api/getUserInfo";
-        public record Response(UserInformation userInformation);
+        public const string EndPointUri = "/api/user/getUserInfo";
+        public record Response(UserInformationSharedModel userInformation);
     }
-    public class UserInformation
+    public class GetUserInformationRequestValidator : AbstractValidator<GetUserInformationRequest>
     {
-        public string Username { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string Email { get; set; }
-        public string? Skype { get; set; }
-
+        public GetUserInformationRequestValidator()
+        {
+            RuleFor(x => x.UserId).NotEmpty().NotNull();
+        }
     }
 }

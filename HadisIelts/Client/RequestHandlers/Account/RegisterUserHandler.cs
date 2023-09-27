@@ -1,4 +1,4 @@
-﻿using HadisIelts.Client.RequestHandlers.Account.Services;
+﻿using HadisIelts.Client.Services.Account.Services;
 using HadisIelts.Shared.Requests.Account;
 using MediatR;
 using System.Net.Http.Json;
@@ -18,9 +18,10 @@ namespace HadisIelts.Client.RequestHandlers.Account
 
         public async Task<RegisterAccountRequest.Response> Handle(RegisterAccountRequest request, CancellationToken cancellationToken)
         {
-            request.Request.Password = _passwordService.HashPassword(request.Request.Password);
+            var hashedPassword = _passwordService.HashPassword(request.Password);
+            var updatedRequest = new RegisterAccountRequest(request.Email, hashedPassword);
             var response = await _httpClient.PostAsJsonAsync
-                (RegisterAccountRequest.EndpointUri, request, cancellationToken);
+                (RegisterAccountRequest.EndpointUri, updatedRequest, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<bool>

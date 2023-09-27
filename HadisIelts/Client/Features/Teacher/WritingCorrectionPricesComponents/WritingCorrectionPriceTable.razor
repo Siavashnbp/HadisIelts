@@ -1,0 +1,155 @@
+﻿@using HadisIelts.Client.Features.Teacher.Models;
+@using HadisIelts.Shared.Requests.Teacher;
+@inject IMediator Mediator;
+<div class="table-responsive">
+    <table class="table table-hover text-center">
+        <thead>
+            <tr>
+                <th>Row</th>
+                <th>Name</th>
+                <th>Task</th>
+                <th>Word Count</th>
+                <th>Price (Rials)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (WritingCorrectionPrices is not null && WritingCorrectionPrices.Count > 0)
+            {
+                int rowCounter = 1;
+                @foreach (var item in WritingCorrectionPrices)
+                {
+                    <tr>
+                        <AuthorizeView Roles="Administrator,Teacher">
+                            <Authorized>
+                                @if (_editWritingPriceModel is not null && _editWritingPriceModel.Id == item.Id)
+                                {
+                                    <td>@(rowCounter++)</td>
+                                    <td><InputText class="form-control" @bind-Value="_editWritingPriceModel.Name" /></td>
+                                    <td>
+                                        <InputSelect class="form-select form-control" @bind-Value="_editWritingPriceModel.WritingType.Id">
+                                            <option selected value="0">Not Selected</option>
+                                            @if (WritingTypes is not null)
+                                            {
+                                                @foreach (var item in WritingTypes)
+                                                {
+                                                    <option value="@(item.Id)">@(item.Name)</option>
+                                                }
+                                            }
+
+                                        </InputSelect>
+                                    </td>
+                                    <td>
+                                        <InputNumber class="form-control text-center" @bind-Value="_editWritingPriceModel.WordCount"
+                                                     EnableMinMax="true" Min="0" />
+                                    </td>
+                                    <td>
+                                        <InputNumber class="form-control text-center" @bind-Value="_editWritingPriceModel.Price"
+                                                     EnableMinMax="true" Min="0" />
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-outline-secondary" @onclick="(()=>EditWritingPrice())">Edit</button>
+                                        <button class="btn btn-outline-dark" @onclick="(()=>ResetEditWritingPriceModel())">Cancle</button>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>@(rowCounter++)</td>
+                                    <td>@item.Name</td>
+                                    <td>@item.WritingType.Name</td>
+                                    <td>@item.WordCount</td>
+                                    <td>@($"{item.Price:n0}")</td>
+                                    <td>
+                                        <button class="btn btn-outline-secondary" @onclick="(()=>SetEditWritingPriceModel(item))"><i class="fa fa-edit"></i></button>
+                                        <button class="btn btn-outline-danger" @onclick="(()=>RemoveWritingCorrectionPrice(item.Id))"><i class="fa fa-remove"></i></button>
+                                    </td>
+                                }
+                            </Authorized>
+                            <NotAuthorized>
+                                <td>@(rowCounter++)</td>
+                                <td>@item.Name</td>
+                                <td>@item.WritingType.Name</td>
+                                <td>@item.WordCount</td>
+                                <td>@item.Price</td>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+@code {
+    [Parameter, EditorRequired]
+    public List<WritingPriceModel> WritingCorrectionPrices { get; set; }
+    [Parameter]
+    public List<WritingTypeSharedModel> WritingTypes { get; set; }
+    private WritingPriceModel _editWritingPriceModel;
+    private async Task RemoveWritingCorrectionPrice(int id)
+    {
+        try
+        {
+            var request = new RemoveWritingCorrectionPriceRequest(id);
+            var result = await Mediator.Send(request);
+            if (result.WasSuccessful)
+            {
+                WritingCorrectionPrices.RemoveAll(x => x.Id == id);
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    private void SetEditWritingPriceModel(WritingPriceModel model)
+    {
+        _editWritingPriceModel = new WritingPriceModel
+            {
+                Id = model.Id,
+                Name = model.Name,
+                Price = model.Price,
+                WordCount = model.WordCount,
+                WritingType = model.WritingType
+            };
+
+    }
+    private void ResetEditWritingPriceModel()
+    {
+        _editWritingPriceModel = new WritingPriceModel();
+    }
+    private async Task EditWritingPrice()
+    {
+        try
+        {
+            if (_editWritingPriceModel is not null)
+            {
+                var request = new EditWritingCorrectionPriceRequest(new WritingCorrectionServicePriceSharedModel
+                    {
+                        Id = _editWritingPriceModel.Id,
+                        Name = _editWritingPriceModel.Name,
+                        Price = (uint)_editWritingPriceModel.Price!,
+                        WordCount = (int)_editWritingPriceModel.WordCount!,
+                        WritingTypeId = _editWritingPriceModel.WritingType.Id
+                    });
+                var result = await Mediator.Send(request);
+                if (result.UpdatedWritingCorrectionPrice is not null)
+                {
+                    var updatedItem = WritingCorrectionPrices.FirstOrDefault(x => x.Id == result.UpdatedWritingCorrectionPrice.Id);
+                    updatedItem.Name = result.UpdatedWritingCorrectionPrice.Name;
+                    updatedItem.Price = (int)result.UpdatedWritingCorrectionPrice.Price;
+                    updatedItem.WordCount = result.UpdatedWritingCorrectionPrice.WordCount;
+                    updatedItem.WritingType = WritingTypes.FirstOrDefault(
+                        x => x.Id == result.UpdatedWritingCorrectionPrice.WritingTypeId);
+                }
+                _editWritingPriceModel = new WritingPriceModel();
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+}
