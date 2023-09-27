@@ -1,6 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
-using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Server.Data;
 using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
@@ -12,16 +11,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         .WithRequest<RemovePaymentPictureRequest>
         .WithActionResult<RemovePaymentPictureRequest.Response>
     {
-        private readonly ICustomRepositoryServices<PaymentPicture, int> _paymentPictureRepository;
-        private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IUserServices _userServices;
-        public RemovePaymentPictureEndpoint(ICustomRepositoryServices<PaymentPicture, int> paymentPictureRepository,
-            IUserServices userServices,
-            ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository)
+        public RemovePaymentPictureEndpoint(ApplicationDbContext dbContext,
+            IUserServices userServices)
         {
-            _paymentPictureRepository = paymentPictureRepository;
             _userServices = userServices;
-            _paymentGroupRepository = paymentGroupRepository;
+            _dbContext = dbContext;
         }
         [Authorize]
         [HttpPost(RemovePaymentPictureRequest.EndpointUri)]
@@ -29,17 +25,18 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var payment = await _paymentPictureRepository.FindByIdAsync(request.PaymentId);
+                var payment = await _dbContext.PaymentPictures.FindAsync(request.PaymentId);
                 if (payment != null && !payment.IsVerified)
                 {
-                    var paymentGroup = await _paymentGroupRepository.FindByIdAsync(payment.PaymentGroupId);
+                    var paymentGroup = await _dbContext.PaymentGroups.FindAsync(payment.PaymentGroupId);
                     if (paymentGroup != null)
                     {
                         if (_userServices.IsUserOwnerOrSpecificRoles(
                             claims: User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, paymentGroup.UserId))
                         {
-                            var wasRemoveSuccessful = _paymentPictureRepository.Delete(payment);
-                            if (wasRemoveSuccessful)
+                            _dbContext.PaymentPictures.Remove(payment);
+                            var changes = _dbContext.SaveChanges();
+                            if (changes > 0)
                             {
                                 return Ok(new RemovePaymentPictureRequest.Response(true));
                             }

@@ -1,6 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
+using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Teacher;
 using Microsoft.AspNetCore.Authorization;
@@ -12,14 +12,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         .WithRequest<AddWritingCorrectionPriceRequest>
         .WithActionResult<AddWritingCorrectionPriceRequest.Response>
     {
-        private readonly ICustomRepositoryServices<WritingCorrectionServicePrice, int> _writingCorrectionRepository;
-        private readonly ICustomRepositoryServices<ApplicationWritingType, int> _writingTypeRepository;
+        private readonly ApplicationDbContext _dbContext;
         public AddWritingCorrectionPriceEndPoint
-            (ICustomRepositoryServices<WritingCorrectionServicePrice, int> writingCorrectionRepository
-            , ICustomRepositoryServices<ApplicationWritingType, int> writingTypeRepository)
+            (ApplicationDbContext dbContext)
         {
-            _writingCorrectionRepository = writingCorrectionRepository;
-            _writingTypeRepository = writingTypeRepository;
+            _dbContext = dbContext;
         }
         [Authorize(Roles = "Administrator,Teacher")]
         [HttpPost(AddWritingCorrectionPriceRequest.EndPointUri)]
@@ -27,8 +24,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         {
             try
             {
-                var writingType = await _writingTypeRepository.FindByIdAsync
-                    (request.WritingCorrectionServicePrice.WritingTypeId);
+                var writingType = await _dbContext.WritingTypes.FindAsync(request.WritingCorrectionServicePrice.WritingTypeId);
                 if (writingType is not null)
                 {
                     var writingCorrectionPriceEntity = new WritingCorrectionServicePrice
@@ -38,17 +34,20 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                         WordCount = request.WritingCorrectionServicePrice.WordCount,
                         WritingType = writingType
                     };
-                    var addedWritingCorrectionPrice = _writingCorrectionRepository.Insert(writingCorrectionPriceEntity);
-                    return Ok(new AddWritingCorrectionPriceRequest.Response(
-                        new WritingCorrectionServicePriceSharedModel
-                        {
-                            Id = addedWritingCorrectionPrice.Id,
-                            Name = addedWritingCorrectionPrice.Name,
-                            Price = addedWritingCorrectionPrice.Price,
-                            WordCount = addedWritingCorrectionPrice.WordCount,
-                            WritingTypeId = addedWritingCorrectionPrice.WritingTypeId
-                        }));
-
+                    var addedWritingCorrectionPrice = _dbContext.WritingCorrectionServicePrices.Add(writingCorrectionPriceEntity).Entity;
+                    var changes = _dbContext.SaveChanges();
+                    if (changes > 0)
+                    {
+                        return Ok(new AddWritingCorrectionPriceRequest.Response(
+                            new WritingCorrectionServicePriceSharedModel
+                            {
+                                Id = addedWritingCorrectionPrice.Id,
+                                Name = addedWritingCorrectionPrice.Name,
+                                Price = addedWritingCorrectionPrice.Price,
+                                WordCount = addedWritingCorrectionPrice.WordCount,
+                                WritingTypeId = addedWritingCorrectionPrice.WritingTypeId
+                            }));
+                    }
                 }
                 return Problem();
             }

@@ -1,6 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
-using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Server.Data;
 using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +10,10 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         .WithRequest<EditPaymentPictureVerificationRequest>
         .WithActionResult<EditPaymentPictureVerificationRequest.Response>
     {
-        private readonly ICustomRepositoryServices<PaymentPicture, int> _paymentPictureRepository;
-        private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
-        public EditPaymentVerificationEndpoint(ICustomRepositoryServices<PaymentPicture, int> paymentPictureRepository,
-            ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository)
+        private readonly ApplicationDbContext _dbContext;
+        public EditPaymentVerificationEndpoint(ApplicationDbContext dbContext)
         {
-            _paymentPictureRepository = paymentPictureRepository;
-            _paymentGroupRepository = paymentGroupRepository;
+            _dbContext = dbContext;
 
         }
         [Authorize(Roles = "Administrator,Teacher")]
@@ -26,16 +22,17 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var payment = await _paymentPictureRepository.FindByIdAsync(request.PictureId);
+                var payment = await _dbContext.PaymentPictures.FindAsync(request.PictureId);
                 if (payment is not null)
                 {
-                    var paymentGroup = await _paymentGroupRepository.FindByIdAsync(payment.PaymentGroupId);
+                    var paymentGroup = await _dbContext.PaymentGroups.FindAsync(payment.PaymentGroupId);
                     if (paymentGroup is not null && paymentGroup.IsPaymentCheckPending)
                     {
                         payment.IsVerificationPending = true;
                         payment.Message = "Verification pending";
-                        var wasSuccessful = _paymentPictureRepository.Update(payment);
-                        return Ok(new EditPaymentPictureVerificationRequest.Response(wasSuccessful));
+                        _dbContext.PaymentPictures.Update(payment);
+                        var changes = _dbContext.SaveChanges();
+                        return Ok(new EditPaymentPictureVerificationRequest.Response(changes > 0));
                     }
                     return Problem("Payment group is already checked");
                 }

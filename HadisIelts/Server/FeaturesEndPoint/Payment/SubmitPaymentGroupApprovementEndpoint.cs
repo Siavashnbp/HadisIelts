@@ -1,7 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
-using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,17 +10,10 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         .WithRequest<SubmitPaymentGroupApprovementRequest>
         .WithActionResult<SubmitPaymentGroupApprovementRequest.Response>
     {
-        private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
-        private readonly ICustomRepositoryServices<PaymentPicture, int> _paymentPictureRepository;
         private readonly ApplicationDbContext _dbContext;
-        public SubmitPaymentGroupApprovementEndpoint(ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
-            ApplicationDbContext dbContext,
-            ICustomRepositoryServices<PaymentPicture, int> paymentPictureRepository)
+        public SubmitPaymentGroupApprovementEndpoint(ApplicationDbContext dbContext)
         {
-            _paymentGroupRepository = paymentGroupRepository;
             _dbContext = dbContext;
-            _paymentPictureRepository = paymentPictureRepository;
-
         }
         [Authorize(Roles = "Administrator,Teacher")]
         [HttpPost(SubmitPaymentGroupApprovementRequest.EndpointUri)]
@@ -30,7 +21,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentGroupId);
+                var paymentGroup = await _dbContext.PaymentGroups.FindAsync(request.PaymentGroupId);
                 if (paymentGroup != null)
                 {
                     if (!paymentGroup.IsPaymentCheckPending)
@@ -45,19 +36,15 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             Message: "One of payments is rejected"));
                     }
                     paymentPictures.Select(x => { x.IsVerified = request.IsApproved; x.IsVerificationPending = false; return x; });
-                    var wasPicturesUpdateSuccessful = _paymentPictureRepository.UpdateAll(paymentPictures);
-                    if (wasPicturesUpdateSuccessful)
-                    {
-                        paymentGroup.IsPaymentApproved = request.IsApproved;
-                        paymentGroup.IsPaymentCheckPending = false;
-                        paymentGroup.Message = request.IsApproved ? "Payment group is approved" : "Payment group is rejected";
-                        paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
-                        var wasPaymentGroupUpdatSuccessful = _paymentGroupRepository.Update(paymentGroup);
-                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: wasPaymentGroupUpdatSuccessful,
-                            Message: paymentGroup.Message));
-                    }
-                    return Problem("Payment pictures could not be updated");
-
+                    _dbContext.PaymentPictures.UpdateRange(paymentPictures);
+                    paymentGroup.IsPaymentApproved = request.IsApproved;
+                    paymentGroup.IsPaymentCheckPending = false;
+                    paymentGroup.Message = request.IsApproved ? "Payment group is approved" : "Payment group is rejected";
+                    paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
+                    _dbContext.PaymentGroups.Update(paymentGroup);
+                    var changes = _dbContext.SaveChanges();
+                    return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: changes > 0,
+                        Message: paymentGroup.Message));
                 }
                 return Problem("Payment group was not found");
             }

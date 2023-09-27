@@ -1,7 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Teacher;
@@ -14,14 +13,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         .WithRequest<GetAllSubmittedWritingCorrectionsSummaryRequest>
         .WithResult<GetAllSubmittedWritingCorrectionsSummaryRequest.Response>
     {
-        private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
         private readonly ApplicationDbContext _dbContext;
         private readonly IUserServices _userServices;
-        public GetAllSubmittedWritingCorrectionSummaryEndpoint(ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
-            ApplicationDbContext dbContext,
+        public GetAllSubmittedWritingCorrectionSummaryEndpoint(ApplicationDbContext dbContext,
             IUserServices userServices)
         {
-            _paymentGroupRepository = paymentGroupRepository;
             _dbContext = dbContext;
             _userServices = userServices;
         }
@@ -47,7 +43,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                     var submissionSummary = new List<SubmittedServiceSummarySharedModel>();
                     foreach (var submission in submissions)
                     {
-                        var payment = await _paymentGroupRepository.FindByIdAsync(submission.PaymentGroupId);
+                        var payment = await _dbContext.PaymentGroups.FindAsync(submission.PaymentGroupId);
                         submissionSummary.Add(new SubmittedServiceSummarySharedModel
                         {
                             UserDetails = await _userServices.GetUserInformationAsync(submission.UserId),

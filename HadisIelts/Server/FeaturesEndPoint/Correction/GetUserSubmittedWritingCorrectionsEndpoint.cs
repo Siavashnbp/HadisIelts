@@ -1,8 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models;
-using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Correction;
@@ -18,16 +16,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
         private readonly IUserServices _userServices;
         public GetUserSubmittedWritingCorrectionsEndpoint(ApplicationDbContext dbContext,
             UserManager<ApplicationUser> userManager,
-            ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
             IUserServices userServices)
         {
             _dbContext = dbContext;
             _userManager = userManager;
-            _paymentGroupRepository = paymentGroupRepository;
             _userServices = userServices;
         }
         [Authorize]
@@ -48,7 +43,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                             var submissionSummary = new List<SubmittedServiceSummarySharedModel>();
                             foreach (var submission in submissions)
                             {
-                                var payment = await _paymentGroupRepository.FindByIdAsync(submission.PaymentGroupId);
+                                var payment = await _dbContext.PaymentGroups.FindAsync(submission.PaymentGroupId);
                                 submissionSummary.Add(new SubmittedServiceSummarySharedModel
                                 {
                                     PaymentId = submission.PaymentGroupId,
