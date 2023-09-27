@@ -1,7 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
-using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Payment;
@@ -14,14 +12,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         .WithRequest<GetPaymentGroupRequest>
         .WithActionResult<GetPaymentGroupRequest.Response>
     {
-        private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
         private readonly ApplicationDbContext _dbContext;
         private readonly IUserServices _userServices;
-        public GetPaymentGroupEndpoint(ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
-            ApplicationDbContext dbContext,
+        public GetPaymentGroupEndpoint(ApplicationDbContext dbContext,
             IUserServices userServices)
         {
-            _paymentGroupRepository = paymentGroupRepository;
             _dbContext = dbContext;
             _userServices = userServices;
         }
@@ -31,7 +26,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentId);
+                var paymentGroup = await _dbContext.PaymentGroups.FindAsync(request.PaymentId);
                 if (paymentGroup is not null)
                 {
                     if (_userServices.IsUserOwnerOrSpecificRoles(userId: paymentGroup.UserId, claims: User.Claims.ToList(),
@@ -72,7 +67,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>
                     {
                         Id = "NotFound",
-                        Message = "Payment Group wan not found"
+                        Message = "Payment Group was not found"
                     }));
             }
             catch (Exception)
