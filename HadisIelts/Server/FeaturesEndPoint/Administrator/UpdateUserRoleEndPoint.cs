@@ -46,13 +46,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Administrator
                             FirstName = user.FirstName,
                             LastName = user.LastName,
                             Roles = userRoles
-                        },
-                        Message: "Role Updated"));
+                        }));
                 }
-                return Ok(new UpdateUserRoleRequest.Response(
-
-                    UserRoles: null!,
-                    Message: "User was not found"));
+                return Ok(new UpdateUserRoleRequest.Response(UserRoles: null!));
 
             }
             catch (Exception)

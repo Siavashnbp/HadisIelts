@@ -35,7 +35,7 @@ namespace HadisIelts.Client.Services.Writing
             {
                 ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>(),
                 TotalPrice = 0
-            }, Message: "User was nor found");
+            });
         }
 
         public async Task<List<WritingTypeSharedModel>> GetWritingTypesAsync()

@@ -7,6 +7,6 @@ namespace HadisIelts.Shared.Requests.Correction
         : IRequest<GetUserSubmittedWritingCorrectionRequest.Response>
     {
         public const string EndpointUri = "/api/services/writingCorrection/GetUserSubmissions";
-        public record Response(List<SubmittedServiceSummarySharedModel> SubmittedServices);
+        public record Response(List<SubmittedServiceSummarySharedModel> SubmittedServices) : ServerResponse;
     }
 }

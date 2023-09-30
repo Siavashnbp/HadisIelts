@@ -1,8 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models;
-using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Correction;
 using Microsoft.AspNetCore.Authorization;
@@ -15,15 +13,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
         .WithRequest<GetSubmittedWritingCorrectionFilesRequest>
         .WithActionResult<GetSubmittedWritingCorrectionFilesRequest.Response>
     {
-        private readonly ICustomRepositoryServices<WritingCorrectionSubmissionGroup, string>
-            _submittedWritingCorrectionFilesRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
         public GetSubmittedWritingCorrectionFilesEndpoint(UserManager<ApplicationUser> userManager
-            , ApplicationDbContext dbContext
-            , ICustomRepositoryServices<WritingCorrectionSubmissionGroup, string> submittedWritingCorrectionFilesRepository)
+            , ApplicationDbContext dbContext)
         {
-            _submittedWritingCorrectionFilesRepository = submittedWritingCorrectionFilesRepository;
             _userManager = userManager;
             _dbContext = dbContext;
         }
@@ -49,7 +43,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                 if (user != null)
                 {
                     var isUserTeacher = await _userManager.IsInRoleAsync(user, "Administrator,Teacher");
-                    var submission = await _submittedWritingCorrectionFilesRepository.FindByIdAsync(request.SubmissionId);
+                    var submission = await _dbContext.WritingCorrectionSubmissionGroups.FindAsync(request.SubmissionId);
                     if (submission != null)
                     {
                         if (!isUserTeacher)
@@ -101,16 +95,14 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                                     ProcessedWritingFiles = writingFiles,
                                     TotalPrice = submission.TotalPrice,
                                     IsCorrected = submission.IsCorrected,
-                                }
-                                , Message: string.Empty));
+                                }));
                         }
                         return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(
                             WritingCorrectionPackage: new WritingCorrectionPackageSharedModel
                             {
                                 ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>(),
                                 TotalPrice = 0,
-                            },
-                            Message: "No files were found"));
+                            }));
 
                     }
                     return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(
@@ -118,8 +110,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                         {
                             ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>(),
                             TotalPrice = 0,
-                        }
-                    , Message: "Submission request was not found"));
+                        }));
                 }
                 return Unauthorized();
             }

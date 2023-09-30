@@ -61,8 +61,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 {
                     ProcessedWritingFiles = processedWritingFiles,
                     TotalPrice = price,
-                },
-                Message: string.Empty));
+                }));
             }
             catch (Exception)
             {

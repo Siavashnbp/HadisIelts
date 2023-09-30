@@ -7,7 +7,7 @@ namespace HadisIelts.Shared.Requests.Payment
         : IRequest<EditPaymentPictureVerificationRequest.Response>
     {
         public const string EndpointUri = "/api/teacher/payment/editVerification";
-        public record Response(bool WasSuccessful);
+        public record Response(bool WasSuccessful) : ServerResponse;
     }
     public class EditPaymentVerficationRequestValidator
         : AbstractValidator<EditPaymentPictureVerificationRequest>

@@ -6,7 +6,7 @@ namespace HadisIelts.Shared.Requests.Teacher
     public record DeleteCorrectedWritingRequest(int Id) : IRequest<DeleteCorrectedWritingRequest.Response>
     {
         public const string EndpointUri = "/api/teacher/deleteCorrectedFile";
-        public record Response(bool WasSuccessful);
+        public record Response(bool WasSuccessful) : ServerResponse;
     }
     public class DeleteCorrectedWritingRequestValidator : AbstractValidator<DeleteCorrectedWritingRequest>
     {

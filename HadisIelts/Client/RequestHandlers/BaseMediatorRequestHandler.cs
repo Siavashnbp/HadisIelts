@@ -1,10 +1,12 @@
-﻿using MediatR;
+﻿using HadisIelts.Shared.Requests;
+using MediatR;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace HadisIelts.Client.RequestHandlers
 {
     public class BaseMediatorRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
-        where TRequest : class, IRequest<TResponse>
+        where TRequest : class, IRequest<TResponse> where TResponse : ServerResponse
     {
         private readonly HttpClient _httpClient;
         private readonly string _endpointUri;
@@ -21,13 +23,15 @@ namespace HadisIelts.Client.RequestHandlers
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<TResponse>();
+                result!.StatusCode = HttpStatusCode.OK;
+                result.Message = "Success";
                 return result;
             }
-            return HandleError(response);
+            return await HandleError(response);
         }
-        public virtual TResponse HandleError(HttpResponseMessage response)
+        public virtual async Task<TResponse> HandleError(HttpResponseMessage response)
         {
-            return default(TResponse);
+            return default(TResponse)!;
         }
     }
 }

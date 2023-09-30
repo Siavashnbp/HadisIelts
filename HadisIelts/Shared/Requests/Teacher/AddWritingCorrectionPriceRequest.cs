@@ -8,7 +8,7 @@ namespace HadisIelts.Shared.Requests.Teacher
         : IRequest<AddWritingCorrectionPriceRequest.Response>
     {
         public const string EndPointUri = "/api/teacher/addWritingCorrectionPrice";
-        public record Response(WritingCorrectionServicePriceSharedModel AddedWritingCorrectionServicePrice);
+        public record Response(WritingCorrectionServicePriceSharedModel AddedWritingCorrectionServicePrice) : ServerResponse;
     }
 
     public class WritingCorrectionServicePriceValidator : AbstractValidator<WritingCorrectionServicePriceSharedModel>

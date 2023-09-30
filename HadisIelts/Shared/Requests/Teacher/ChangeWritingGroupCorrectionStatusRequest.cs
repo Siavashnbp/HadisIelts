@@ -7,7 +7,7 @@ namespace HadisIelts.Shared.Requests.Teacher
         : IRequest<ChangeWritingGroupCorrectionStatusRequest.Response>
     {
         public const string EndpointUri = "/api/services/teacher/writingCorrection/changeGroupCorrectionStatus";
-        public record Response(bool CorrectionStatus);
+        public record Response(bool CorrectionStatus) : ServerResponse;
     }
     public class ChangeWritingGroupCorrectionStatusRequestValidator
         : AbstractValidator<ChangeWritingGroupCorrectionStatusRequest>

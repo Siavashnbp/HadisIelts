@@ -6,7 +6,7 @@ namespace HadisIelts.Shared.Requests.Admin
         : IRequest<GetUsersRolesRequest.Response>
     {
         public const string EndPointUri = "/api/administrator/getRoles";
-        public record Response(List<UserRolesSharedModel>? UsersRoles);
+        public record Response(List<UserRolesSharedModel>? UsersRoles) : ServerResponse;
     }
 
 }

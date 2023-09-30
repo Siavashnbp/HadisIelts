@@ -1,8 +1,10 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
+using HadisIelts.Shared.Requests;
 using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Payment
 {
@@ -26,14 +28,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 {
                     if (!paymentGroup.IsPaymentCheckPending)
                     {
-                        return BadRequest(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
-                            Message: "Payment group is already checked"));
+                        return BadRequest(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false));
                     }
                     var paymentPictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
                     if (paymentPictures.Any(x => !x.IsVerified && !x.IsVerificationPending))
                     {
-                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
-                            Message: "One of payments is rejected"));
+                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false));
                     }
                     paymentPictures.Select(x => { x.IsVerified = request.IsApproved; x.IsVerificationPending = false; return x; });
                     _dbContext.PaymentPictures.UpdateRange(paymentPictures);
@@ -43,10 +43,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
                     _dbContext.PaymentGroups.Update(paymentGroup);
                     var changes = _dbContext.SaveChanges();
-                    return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: changes > 0,
-                        Message: paymentGroup.Message));
+                    return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: changes > 0));
                 }
-                return Problem("Payment group was not found");
+                return NotFound(new ServerResponse(HttpStatusCode.NotFound, "Payment group was not found"));
             }
             catch (Exception)
             {

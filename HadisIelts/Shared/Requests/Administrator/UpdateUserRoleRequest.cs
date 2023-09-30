@@ -9,7 +9,7 @@ namespace HadisIelts.Shared.Requests.Administrator
         : IRequest<UpdateUserRoleRequest.Response>
     {
         public const string EndPointUri = "/api/administrator/updateUserRole";
-        public record Response(UserRolesSharedModel UserRoles, string Message);
+        public record Response(UserRolesSharedModel UserRoles) : ServerResponse;
     }
     public class UpdateUserRoleRequestValidator : AbstractValidator<UpdateUserRoleRequest>
     {
