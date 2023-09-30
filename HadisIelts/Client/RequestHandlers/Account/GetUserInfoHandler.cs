@@ -5,8 +5,7 @@ namespace HadisIelts.Client.RequestHandlers.Account
     public class GetUserInfoHandler : BaseMediatorRequestHandler
         <GetUserInformationRequest, GetUserInformationRequest.Response>
     {
-        public GetUserInfoHandler(HttpClient httpClient)
-            : base(httpClient, GetUserInformationRequest.EndPointUri)
+        public GetUserInfoHandler() : base(GetUserInformationRequest.EndPointUri)
         {
         }
     }

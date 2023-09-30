@@ -5,8 +5,7 @@ namespace HadisIelts.Client.RequestHandlers.Correction
     public class UploadProcessedWritingCorrectionFilesHandler : BaseMediatorRequestHandler
         <UploadProcessedWritingFilesRequest, UploadProcessedWritingFilesRequest.Response>
     {
-        public UploadProcessedWritingCorrectionFilesHandler(HttpClient httpClient)
-            : base(httpClient, UploadProcessedWritingFilesRequest.EndpointUri)
+        public UploadProcessedWritingCorrectionFilesHandler() : base(UploadProcessedWritingFilesRequest.EndpointUri)
         {
         }
     }

@@ -41,6 +41,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         {
             try
             {
+                return NoContent();
                 var isUserAuthorized = _userServices.IsUserOwnerOrSpecificRoles
                     (User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, request.UserId);
                 if (isUserAuthorized)

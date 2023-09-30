@@ -6,8 +6,7 @@ namespace HadisIelts.Client.RequestHandlers.Admininstrator
         <UpdateUserRoleRequest, UpdateUserRoleRequest.Response>
 
     {
-        public UpdateUserRoleHandler(HttpClient httpClient)
-            : base(httpClient, UpdateUserRoleRequest.EndPointUri)
+        public UpdateUserRoleHandler() : base(UpdateUserRoleRequest.EndPointUri)
         {
         }
     }

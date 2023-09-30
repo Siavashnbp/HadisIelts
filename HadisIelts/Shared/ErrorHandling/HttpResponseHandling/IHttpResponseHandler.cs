@@ -7,5 +7,6 @@ namespace HadisIelts.Shared.ErrorHandling.HttpResponseHandling
         public ServerResponse HandleUnAuthorizedResponse();
         public ServerResponse HandleContentNotFound();
         public ServerResponse HandleForbidResponse();
+        public ServerResponse HandleBadRequestResponse();
     }
 }

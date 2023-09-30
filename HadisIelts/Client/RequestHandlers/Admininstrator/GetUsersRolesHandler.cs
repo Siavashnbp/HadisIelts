@@ -5,8 +5,7 @@ namespace HadisIelts.Client.RequestHandlers.Admininstrator
     public class GetUsersRolesHandler : BaseMediatorRequestHandler
         <GetUsersRolesRequest, GetUsersRolesRequest.Response>
     {
-        public GetUsersRolesHandler(HttpClient httpClient)
-            : base(httpClient, GetUsersRolesRequest.EndPointUri)
+        public GetUsersRolesHandler() : base(GetUsersRolesRequest.EndPointUri)
         {
         }
     }
