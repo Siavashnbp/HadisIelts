@@ -1,4 +1,5 @@
-﻿using HadisIelts.Shared.Requests.Administrator;
+﻿using HadisIelts.Shared.ErrorHandling.HttpResponseHandling;
+using HadisIelts.Shared.Requests.Administrator;
 
 namespace HadisIelts.Client.RequestHandlers.Admininstrator
 {
@@ -6,7 +7,8 @@ namespace HadisIelts.Client.RequestHandlers.Admininstrator
         <UpdateUserRoleRequest, UpdateUserRoleRequest.Response>
 
     {
-        public UpdateUserRoleHandler() : base(UpdateUserRoleRequest.EndPointUri)
+        public UpdateUserRoleHandler(HttpClient httpClient, IHttpResponseHandler httpResponseHandler)
+            : base(UpdateUserRoleRequest.EndPointUri, httpClient, httpResponseHandler)
         {
         }
     }

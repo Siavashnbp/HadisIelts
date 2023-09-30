@@ -1,11 +1,13 @@
-﻿using HadisIelts.Shared.Requests.Teacher;
+﻿using HadisIelts.Shared.ErrorHandling.HttpResponseHandling;
+using HadisIelts.Shared.Requests.Teacher;
 
 namespace HadisIelts.Client.RequestHandlers.Teacher
 {
     public class EditWritingCorrectionPriceHandler : BaseMediatorRequestHandler
         <EditWritingCorrectionPriceRequest, EditWritingCorrectionPriceRequest.Response>
     {
-        public EditWritingCorrectionPriceHandler() : base(EditWritingCorrectionPriceRequest.EndpointUri)
+        public EditWritingCorrectionPriceHandler(HttpClient httpClient, IHttpResponseHandler httpResponseHandler)
+            : base(EditWritingCorrectionPriceRequest.EndpointUri, httpClient, httpResponseHandler)
         {
         }
     }
