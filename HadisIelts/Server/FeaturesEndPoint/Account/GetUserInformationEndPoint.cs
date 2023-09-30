@@ -41,33 +41,28 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         {
             try
             {
-
-                var user = await _userManager.FindByIdAsync(request.UserId);
-                if (user is not null)
+                var isUserAuthorized = _userServices.IsUserOwnerOrSpecificRoles
+                    (User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, request.UserId);
+                if (isUserAuthorized)
                 {
-                    var isUserAuthorized = _userServices.IsUserOwnerOrSpecificRoles
-                        (User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, request.UserId);
-                    if (isUserAuthorized)
+                    var requestedUser = await _userManager.FindByIdAsync(request.UserId);
+                    if (requestedUser is not null)
                     {
-                        var requestedUser = await _userManager.FindByIdAsync(request.UserId);
-                        if (requestedUser is not null)
+                        var response = new UserInformationSharedModel(requestedUser.UserName!, requestedUser.Email!)
                         {
-                            var response = new UserInformationSharedModel(requestedUser.UserName!, requestedUser.Email!)
-                            {
-                                FirstName = requestedUser.FirstName,
-                                LastName = requestedUser.LastName,
-                                Skype = requestedUser.Skype,
-                            };
-                            return Ok(new GetUserInformationRequest.Response(response));
-                        }
-                        return Ok(new GetUserInformationRequest.Response(new UserInformationSharedModel(null!, null!)));
+                            FirstName = requestedUser.FirstName,
+                            LastName = requestedUser.LastName,
+                            Skype = requestedUser.Skype,
+                        };
+                        return Ok(new GetUserInformationRequest.Response(response));
                     }
+                    return NoContent();
                 }
                 return Unauthorized();
             }
             catch (Exception)
             {
-                throw;
+                return BadRequest();
             }
 
         }

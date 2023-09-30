@@ -3,10 +3,14 @@ using System.Net;
 
 namespace HadisIelts.Shared.ErrorHandling.HttpResponseHandling
 {
-    public class ExceptionHandler : IExceptionHandler
+    public class HttpResponseHandler : IHttpResponseHandler
     {
         public ServerResponse HandleContentNotFound() =>
             new ServerResponse(httpStatusCode: HttpStatusCode.NoContent, message: "Requested data cannot be founs");
+
+        public ServerResponse HandleForbidResponse() =>
+         new ServerResponse(httpStatusCode: HttpStatusCode.Forbidden, message: "Your request cannot be fulfilled");
+
         public ServerResponse HandleUnAuthorizedResponse() =>
             new ServerResponse(httpStatusCode: HttpStatusCode.Unauthorized, message: "You don't have permission to access this url");
 

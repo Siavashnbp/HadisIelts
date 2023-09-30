@@ -4,6 +4,7 @@ using HadisIelts.Client.Services.Authorization;
 using HadisIelts.Client.Services.File;
 using HadisIelts.Client.Services.User;
 using HadisIelts.Client.Services.Writing;
+using HadisIelts.Shared.ErrorHandling.HttpResponseHandling;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -28,5 +29,6 @@ builder.Services.AddScoped<IPasswordService, PasswordServiceProvider>();
 builder.Services.AddScoped<IFileServices, FileServiceProvider>();
 builder.Services.AddScoped<IClientWritingServices, ClientWritingServiceProvider>();
 builder.Services.AddScoped<IUserServices, UserServiceProvider>();
+builder.Services.AddScoped<IHttpResponseHandler, HttpResponseHandler>();
 
 await builder.Build().RunAsync();
