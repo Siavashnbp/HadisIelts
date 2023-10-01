@@ -5,7 +5,8 @@ namespace HadisIelts.Client.RequestHandlers.Correction
     public class GetUserSubmittedWritingCorrectionsRequestHandler : BaseMediatorRequestHandler
         <GetUserSubmittedWritingCorrectionRequest, GetUserSubmittedWritingCorrectionRequest.Response>
     {
-        public GetUserSubmittedWritingCorrectionsRequestHandler() : base(GetUserSubmittedWritingCorrectionRequest.EndpointUri)
+        public GetUserSubmittedWritingCorrectionsRequestHandler(HttpClient httpClient)
+            : base(httpClient, GetUserSubmittedWritingCorrectionRequest.EndpointUri)
         {
         }
     }

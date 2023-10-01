@@ -5,7 +5,8 @@ namespace HadisIelts.Client.RequestHandlers.Teacher
     public class EditWritingCorrectionPriceHandler : BaseMediatorRequestHandler
         <EditWritingCorrectionPriceRequest, EditWritingCorrectionPriceRequest.Response>
     {
-        public EditWritingCorrectionPriceHandler() : base(EditWritingCorrectionPriceRequest.EndpointUri)
+        public EditWritingCorrectionPriceHandler(HttpClient httpClient)
+            : base(httpClient, EditWritingCorrectionPriceRequest.EndpointUri)
         {
         }
     }

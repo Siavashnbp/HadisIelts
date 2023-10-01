@@ -1,7 +1,6 @@
 ﻿using HadisIelts.Shared.ErrorHandling.HttpResponseHandling;
 using HadisIelts.Shared.Requests;
 using MediatR;
-using Microsoft.AspNetCore.Components;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -10,14 +9,14 @@ namespace HadisIelts.Client.RequestHandlers
     public class BaseMediatorRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
         where TRequest : class, IRequest<TResponse> where TResponse : ServerResponse
     {
-        [Inject]
-        private IHttpResponseHandler _httpResponseHandler { get; set; } = default!;
-        [Inject]
-        private HttpClient _httpClient { get; set; } = default!;
+        private readonly HttpClient _httpClient;
         private readonly string _endpointUri;
-        public BaseMediatorRequestHandler(string endpointUri)
+        private readonly IHttpResponseHandler _httpResponseHandler;
+        public BaseMediatorRequestHandler(HttpClient httpClient, string endpointUri, IHttpResponseHandler httpResponseHandler)
         {
+            _httpClient = httpClient;
             _endpointUri = endpointUri;
+            _httpResponseHandler = httpResponseHandler;
         }
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken)
         {
@@ -36,8 +35,10 @@ namespace HadisIelts.Client.RequestHandlers
                 var result = Activator.CreateInstance<TResponse>();
                 result.StatusCode = error.StatusCode;
                 result.Message = error.Message;
+                result.RedirectUrl = string.Empty;
                 return result;
             }
+
         }
         public virtual ServerResponse HandleError(HttpResponseMessage response)
         {
@@ -49,8 +50,6 @@ namespace HadisIelts.Client.RequestHandlers
                     return _httpResponseHandler.HandleForbidResponse();
                 case HttpStatusCode.NotFound:
                     return _httpResponseHandler.HandleContentNotFound();
-                case HttpStatusCode.BadRequest:
-                    return _httpResponseHandler.HandleBadRequestResponse();
                 default:
                     return new ServerResponse { StatusCode = response.StatusCode, Message = response.ReasonPhrase };
             }

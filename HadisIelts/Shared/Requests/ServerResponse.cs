@@ -16,10 +16,6 @@ namespace HadisIelts.Shared.Requests
             StatusCode = httpStatusCode;
             Message = message;
         }
-        public void AppendToMessage(string newMessage)
-        {
-            Message += "\n" + newMessage;
-        }
     }
 
 }

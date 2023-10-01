@@ -5,7 +5,8 @@ namespace HadisIelts.Client.RequestHandlers.Payment
     public class GetPaymentGroupHandler : BaseMediatorRequestHandler
         <GetPaymentGroupRequest, GetPaymentGroupRequest.Response>
     {
-        public GetPaymentGroupHandler() : base(GetPaymentGroupRequest.EndpointUri)
+        public GetPaymentGroupHandler(HttpClient httpClient)
+            : base(httpClient, GetPaymentGroupRequest.EndpointUri)
         {
         }
     }

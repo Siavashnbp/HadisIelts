@@ -5,7 +5,8 @@ namespace HadisIelts.Client.RequestHandlers.Account
     public class LoginUserHandler : BaseMediatorRequestHandler
         <AccountLoginRequest, AccountLoginRequest.Response>
     {
-        public LoginUserHandler() : base(AccountLoginRequest.EndPointUri)
+        public LoginUserHandler(HttpClient httpClient)
+            : base(httpClient, AccountLoginRequest.EndPointUri)
         {
         }
     }

@@ -5,7 +5,8 @@ namespace HadisIelts.Client.RequestHandlers.Teacher
     public class AddWritingTypeHandler : BaseMediatorRequestHandler
         <AddWritingTypeRequest, AddWritingTypeRequest.Response>
     {
-        public AddWritingTypeHandler() : base(AddWritingTypeRequest.EndPointUri)
+        public AddWritingTypeHandler(HttpClient httpClient)
+            : base(httpClient, AddWritingTypeRequest.EndPointUri)
         {
         }
     }

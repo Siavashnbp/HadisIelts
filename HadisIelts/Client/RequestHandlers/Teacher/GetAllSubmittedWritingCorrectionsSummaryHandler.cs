@@ -5,7 +5,8 @@ namespace HadisIelts.Client.RequestHandlers.Teacher
     public class GetAllSubmittedWritingCorrectionsSummaryHandler : BaseMediatorRequestHandler
         <GetAllSubmittedWritingCorrectionsSummaryRequest, GetAllSubmittedWritingCorrectionsSummaryRequest.Response>
     {
-        public GetAllSubmittedWritingCorrectionsSummaryHandler() : base(GetAllSubmittedWritingCorrectionsSummaryRequest.EndpointUri)
+        public GetAllSubmittedWritingCorrectionsSummaryHandler(HttpClient httpClient)
+            : base(httpClient, GetAllSubmittedWritingCorrectionsSummaryRequest.EndpointUri)
         {
         }
     }

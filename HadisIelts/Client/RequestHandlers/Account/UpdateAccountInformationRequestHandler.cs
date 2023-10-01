@@ -5,7 +5,8 @@ namespace HadisIelts.Client.RequestHandlers.Account
     public class UpdateAccountInformationRequestHandler : BaseMediatorRequestHandler
         <UpdateAccountInformationRequest, UpdateAccountInformationRequest.Response>
     {
-        public UpdateAccountInformationRequestHandler() : base(UpdateAccountInformationRequest.EndpointUri)
+        public UpdateAccountInformationRequestHandler(HttpClient httpClient)
+            : base(httpClient, UpdateAccountInformationRequest.EndpointUri)
         {
         }
     }
