@@ -7,7 +7,7 @@ namespace HadisIelts.Shared.Requests.Teacher
         <RemoveWritingCorrectionPriceRequest.Response>
     {
         public const string EndPointUri = "/api/teacher/removeWritingCorrectionPrice";
-        public record Response(bool WasSuccessful) : ServerResponse;
+        public record Response(bool WasSuccessful);
     }
     public class RemoveWritingCorrectionPriceRequestValidator : AbstractValidator<RemoveWritingCorrectionPriceRequest>
     {

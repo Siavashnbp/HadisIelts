@@ -75,6 +75,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
 
                 throw;
             }
+            throw new NotImplementedException();
         }
     }
 }

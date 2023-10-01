@@ -8,7 +8,7 @@ namespace HadisIelts.Shared.Requests.Account
         IRequest<AccountLoginRequest.Response>
     {
         public const string EndPointUri = "/api/account/login";
-        public record Response(bool LoginSuccess) : ServerResponse;
+        public record Response(bool LoginSuccess, string? Message);
     }
     public class AccountLoginRequestValidator : AbstractValidator<AccountLoginRequest>
     {

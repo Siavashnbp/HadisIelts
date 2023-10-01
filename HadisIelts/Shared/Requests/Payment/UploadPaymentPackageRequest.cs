@@ -9,7 +9,7 @@ namespace HadisIelts.Shared.Requests.Payment
         : IRequest<UploadPaymentPackageRequest.Response>
     {
         public const string EndpointUri = "/api/payment/submitWritingCorrectionPayment";
-        public record Response(List<PaymentPictureSharedModel> PaymentPictures) : ServerResponse;
+        public record Response(List<PaymentPictureSharedModel> PaymentPictures, string Message);
     }
     public class UploadPaymentPackageRequestValidator : AbstractValidator<UploadPaymentPackageRequest>
     {

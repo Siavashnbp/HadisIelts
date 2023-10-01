@@ -26,7 +26,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                     if (user.LockoutEnd > DateTime.UtcNow)
                     {
                         return Ok(new AccountLoginRequest.Response(
-                                LoginSuccess: false
+                                LoginSuccess: false,
+                                Message: $"Too many failed attempts. Try in {(user.LockoutEnd - DateTime.UtcNow).Value.Minutes + 1} minutes"
                             ));
                     }
                     var result = await _signInManager.PasswordSignInAsync(
@@ -38,12 +39,14 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                     {
                         await _signInManager.UserManager.ResetAccessFailedCountAsync(user);
                         return Ok(new AccountLoginRequest.Response(
-                                LoginSuccess: true
+                                LoginSuccess: true,
+                                Message: string.Empty
                             ));
                     }
                 }
                 return Ok(new AccountLoginRequest.Response(
-                    LoginSuccess: false));
+                    LoginSuccess: false,
+                    Message: "Username or password is incorrect"));
             }
             catch (Exception)
             {

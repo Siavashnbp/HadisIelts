@@ -8,7 +8,7 @@ namespace HadisIelts.Shared.Requests.Payment
         : IRequest<SubmitPaymentVerificationRequest.Response>
     {
         public const string EndpointUri = "/api/teacher/payment/verification";
-        public record Response(PaymentPictureSharedModel VerifiedPayment) : ServerResponse;
+        public record Response(PaymentPictureSharedModel VerifiedPayment);
     }
     public class VerifyingPaymentRequestValidator : AbstractValidator<SubmitPaymentVerificationRequest>
     {

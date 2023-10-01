@@ -78,7 +78,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             });
                         }
                         return Ok(new UploadPaymentPackageRequest.Response(
-                            PaymentPictures: submittedPaymentfiles
+                            PaymentPictures: submittedPaymentfiles,
+                            Message: paymentGroup.Message
                         ));
                     }
                     return Problem("Payment group was not updated");

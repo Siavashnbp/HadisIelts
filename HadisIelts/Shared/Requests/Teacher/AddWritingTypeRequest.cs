@@ -7,6 +7,6 @@ namespace HadisIelts.Shared.Requests.Teacher
         : IRequest<AddWritingTypeRequest.Response>
     {
         public const string EndPointUri = "/api/teacher/addWritingType";
-        public record Response(WritingTypeSharedModel WritingType) : ServerResponse;
+        public record Response(WritingTypeSharedModel WritingType);
     }
 }

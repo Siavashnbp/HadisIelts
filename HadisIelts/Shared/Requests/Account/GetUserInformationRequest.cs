@@ -8,7 +8,7 @@ namespace HadisIelts.Shared.Requests.Account
         IRequest<GetUserInformationRequest.Response>
     {
         public const string EndPointUri = "/api/user/getUserInfo";
-        public record Response(UserInformationSharedModel userInformation) : ServerResponse;
+        public record Response(UserInformationSharedModel userInformation);
     }
     public class GetUserInformationRequestValidator : AbstractValidator<GetUserInformationRequest>
     {

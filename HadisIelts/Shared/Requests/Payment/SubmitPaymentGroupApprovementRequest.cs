@@ -7,7 +7,7 @@ namespace HadisIelts.Shared.Requests.Payment
         : IRequest<SubmitPaymentGroupApprovementRequest.Response>
     {
         public const string EndpointUri = "/api/payment/ApprovePaymentGroup";
-        public record Response(bool WasSuccessful) : ServerResponse;
+        public record Response(bool WasSuccessful, string Message);
     }
     public class SubmitPaymentGroupApprovementRequestValidator
         : AbstractValidator<SubmitPaymentGroupApprovementRequest>

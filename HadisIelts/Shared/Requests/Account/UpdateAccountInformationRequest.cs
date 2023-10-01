@@ -8,7 +8,7 @@ namespace HadisIelts.Shared.Requests.Account
         : IRequest<UpdateAccountInformationRequest.Response>
     {
         public const string EndpointUri = "/api/account/updateInformation";
-        public record Response(UserInformationSharedModel UpdatedUserInformation) : ServerResponse;
+        public record Response(UserInformationSharedModel UpdatedUserInformation);
     }
     public class UpdateAccountInformationRequestValidator
         : AbstractValidator<UpdateAccountInformationRequest>
