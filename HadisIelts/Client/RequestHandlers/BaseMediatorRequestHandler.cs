@@ -1,6 +1,7 @@
 ﻿using HadisIelts.Shared.ErrorHandling.HttpResponseHandling;
 using HadisIelts.Shared.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Components;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -9,35 +10,39 @@ namespace HadisIelts.Client.RequestHandlers
     public class BaseMediatorRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
         where TRequest : class, IRequest<TResponse> where TResponse : ServerResponse
     {
-        private readonly IHttpResponseHandler _httpResponseHandler;
-        private readonly HttpClient _httpClient;
+        [Inject]
+        private IHttpResponseHandler _httpResponseHandler { get; set; } = default!;
+        [Inject]
+        private HttpClient _httpClient { get; set; } = default!;
         private readonly string _endpointUri;
-        public BaseMediatorRequestHandler(string endpointUri, HttpClient httpClient, IHttpResponseHandler httpResponseHandler)
+        public BaseMediatorRequestHandler(string endpointUri)
         {
             _endpointUri = endpointUri;
-            _httpClient = httpClient;
-            _httpResponseHandler = httpResponseHandler;
         }
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken)
         {
             var response = await _httpClient.PostAsJsonAsync
                 (_endpointUri, request, cancellationToken);
-            var serverResponse = HandleServerResponse(response);
-            var result = default(TResponse);
-            if (serverResponse.StatusCode == HttpStatusCode.OK)
+            if (response.IsSuccessStatusCode)
             {
-                result = await response.Content.ReadFromJsonAsync<TResponse>();
+                var result = await response.Content.ReadFromJsonAsync<TResponse>();
+                result!.StatusCode = HttpStatusCode.OK;
+                result.Message = "Success";
+                return result;
             }
-            result!.Message = serverResponse.Message;
-            result.StatusCode = serverResponse.StatusCode;
-            return result;
+            else
+            {
+                var error = HandleError(response);
+                var result = Activator.CreateInstance<TResponse>();
+                result.StatusCode = error.StatusCode;
+                result.Message = error.Message;
+                return result;
+            }
         }
-        public virtual ServerResponse HandleServerResponse(HttpResponseMessage response)
+        public virtual ServerResponse HandleError(HttpResponseMessage response)
         {
             switch (response.StatusCode)
             {
-                case HttpStatusCode.OK:
-                    return _httpResponseHandler.HandleOkResponse();
                 case HttpStatusCode.Unauthorized:
                     return _httpResponseHandler.HandleUnAuthorizedResponse();
                 case HttpStatusCode.Forbidden:

@@ -14,10 +14,6 @@ namespace HadisIelts.Shared.ErrorHandling.HttpResponseHandling
         public ServerResponse HandleForbidResponse() =>
          new ServerResponse(httpStatusCode: HttpStatusCode.Forbidden, message: "Your request cannot be fulfilled");
 
-        public ServerResponse HandleOkResponse() =>
-            new ServerResponse(httpStatusCode: HttpStatusCode.OK, message: "Success!");
-
-
         public ServerResponse HandleUnAuthorizedResponse() =>
             new ServerResponse(httpStatusCode: HttpStatusCode.Unauthorized, message: "You don't have permission to access this url");
 
