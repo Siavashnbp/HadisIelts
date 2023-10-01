@@ -2,10 +2,9 @@
 
 namespace HadisIelts.Shared.ErrorHandling.HttpResponseHandling
 {
-    public interface IHttpResponseHandler
+    public interface IExceptionHandler
     {
         public ServerResponse HandleUnAuthorizedResponse();
         public ServerResponse HandleContentNotFound();
-        public ServerResponse HandleForbidResponse();
     }
 }

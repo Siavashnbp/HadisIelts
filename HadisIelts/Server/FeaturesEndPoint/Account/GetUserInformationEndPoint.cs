@@ -41,28 +41,33 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         {
             try
             {
-                var isUserAuthorized = _userServices.IsUserOwnerOrSpecificRoles
-                    (User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, request.UserId);
-                if (isUserAuthorized)
+
+                var user = await _userManager.FindByIdAsync(request.UserId);
+                if (user is not null)
                 {
-                    var requestedUser = await _userManager.FindByIdAsync(request.UserId);
-                    if (requestedUser is not null)
+                    var isUserAuthorized = _userServices.IsUserOwnerOrSpecificRoles
+                        (User.Claims.ToList(), new List<string> { "Administrator", "Teacher" }, request.UserId);
+                    if (isUserAuthorized)
                     {
-                        var response = new UserInformationSharedModel(requestedUser.UserName!, requestedUser.Email!)
+                        var requestedUser = await _userManager.FindByIdAsync(request.UserId);
+                        if (requestedUser is not null)
                         {
-                            FirstName = requestedUser.FirstName,
-                            LastName = requestedUser.LastName,
-                            Skype = requestedUser.Skype,
-                        };
-                        return Ok(new GetUserInformationRequest.Response(response));
+                            var response = new UserInformationSharedModel(requestedUser.UserName!, requestedUser.Email!)
+                            {
+                                FirstName = requestedUser.FirstName,
+                                LastName = requestedUser.LastName,
+                                Skype = requestedUser.Skype,
+                            };
+                            return Ok(new GetUserInformationRequest.Response(response));
+                        }
+                        return Ok(new GetUserInformationRequest.Response(new UserInformationSharedModel(null!, null!)));
                     }
-                    return NoContent();
                 }
                 return Unauthorized();
             }
             catch (Exception)
             {
-                return BadRequest();
+                throw;
             }
 
         }

@@ -25,7 +25,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                 {
                     if (user.LockoutEnd > DateTime.UtcNow)
                     {
-                        return Forbid();
+                        return Ok(new AccountLoginRequest.Response(
+                                LoginSuccess: false
+                            ));
                     }
                     var result = await _signInManager.PasswordSignInAsync(
                     userName: request.LoginRequest.Email!,
@@ -35,10 +37,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                     if (result.Succeeded)
                     {
                         await _signInManager.UserManager.ResetAccessFailedCountAsync(user);
-                        return Ok(new AccountLoginRequest.Response(LoginSuccess: true));
+                        return Ok(new AccountLoginRequest.Response(
+                                LoginSuccess: true
+                            ));
                     }
                 }
-                return NoContent();
+                return Ok(new AccountLoginRequest.Response(
+                    LoginSuccess: false));
             }
             catch (Exception)
             {
