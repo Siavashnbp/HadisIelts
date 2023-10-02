@@ -2,5 +2,9 @@
   {
     "outputFile": "wwwroot/scss/globalStyleSheet.css",
     "inputFile": "wwwroot/scss/globalStyleSheet.scss"
+  },
+  {
+    "outputFile": "Features/Layout/NavBar.razor.css",
+    "inputFile": "Features/Layout/NavBar.razor.scss"
   }
 ]

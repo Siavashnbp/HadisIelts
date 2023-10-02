@@ -60,14 +60,14 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                             };
                             return Ok(new GetUserInformationRequest.Response(response));
                         }
-                        return Ok(new GetUserInformationRequest.Response(new UserInformationSharedModel(null!, null!)));
+                        return NoContent();
                     }
                 }
                 return Unauthorized();
             }
             catch (Exception)
             {
-                throw;
+                return BadRequest();
             }
 
         }

@@ -3,24 +3,38 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavMan;
 @inject IMediator Mediator;
+<div class="container">
+    <div class="row">
+        <AuthorizeView>
+            <Authorized>
+                <a class="nav-link" href="account/profile">Hello, @context.User.Identity?.Name!</a>
+                <button class="nav-link btn btn-link" @onclick="(()=>BeginLogOut())">Log out</button>
+            </Authorized>
+            <NotAuthorized>
+                <div class="col-6">
+                    <a class="nav-link" href="@($"account/login/?ReturnUrl={NavMan.Uri}")">Log in</a>
 
-<AuthorizeView>
-    <Authorized>
-        <a class="nav-link" href="account/profile">Hello, @context.User.Identity?.Name!</a>
-        <button class="nav-link btn btn-link" @onclick="BeginLogOut">Log out</button>
-    </Authorized>
-    <NotAuthorized>
-        <div class="container d-flex" style="justify-content:space-between; margin:auto;">
-            <a class="nav-link" href="account/register">Register</a>
-            <a class="nav-link" href="@($"account/login/?ReturnUrl={NavMan.Uri}")">Log in</a>
-        </div>
-    </NotAuthorized>
-</AuthorizeView>
+                </div>
+                <div class="col-6">
+                    <a class="nav-link" href="account/register">Register</a>
+
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
 
 @code {
     private async Task BeginLogOut()
     {
-        await Mediator.Send(new AccountLogoutRequest());
-        NavMan.NavigateTo("/",true);
-    }   
+        try
+        {
+            await Mediator.Send(new AccountLogoutRequest());
+
+        }
+        finally
+        {
+            NavMan.NavigateTo("/", true);
+        }
+    }
 }

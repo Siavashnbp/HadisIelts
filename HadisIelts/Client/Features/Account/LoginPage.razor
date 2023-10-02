@@ -8,24 +8,39 @@
 <div class="main-form container col-lg-4 col-md-8">
     <EditForm Model="@_loginModel.LoginModel" OnValidSubmit="PostLoginRequest">
         <FluentValidationValidator />
-        <main class="form-signin w-100 m-auto">
+        <main class="form-signin w-100 m-auto container">
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-            <div class="form-floating" style="margin:5px;">
-                <InputText @bind-Value="_loginModel.LoginModel.Email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com" />
-                <label for="floatingInput">Email address</label>
-                <ValidationMessage For="@(()=>_loginModel.LoginModel.Email)"/>
+            <div class="row">
+                <div class="col-11">
+                    <div class="form-floating">
+                        <InputText @bind-Value="_loginModel.LoginModel.Email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com" />
+                        <label for="floatingInput">Email address</label>
+                        <ValidationMessage For="@(()=>_loginModel.LoginModel.Email)" />
+                    </div>
+                </div>
             </div>
-            <div class="form-floating" style="margin:5px;">
-                <InputText @bind-Value="_loginModel.LoginModel.Password" type="password" class="form-control" id="floatingPassword" placeholder="Password" />
-                <label for="floatingPassword">Password</label>
-                <ValidationMessage For="@(()=>_loginModel.LoginModel.Password)" />
+            <div class="row">
+                <div class="col-11">
+                    <div class="form-floating">
+                        <InputText @bind-Value="_loginModel.LoginModel.Password" type="@(_showPassword?"text":"password")" class="form-control" id="floatingPassword" placeholder="Password" />
+                        <label for="floatingPassword">Password</label>
+                        <ValidationMessage For="@(()=>_loginModel.LoginModel.Password)" />
+                    </div>
+                </div>
+                <div class="col-1" style="margin:auto;">
+                    <i class="fa @(_showPassword?"fa-eye":"fa-eye-slash")" style="font-size:15px;cursor:pointer;"
+                       @onclick="(()=>{_showPassword = !_showPassword;})"></i>
+                </div>
             </div>
             <div class="d-flex checkbox mb-3" style="margin:5px; left:0; justify-content:flex-start;">
                 <label>
                     <InputCheckbox @bind-Value="_loginModel.LoginModel.KeepSignedIn" type="checkbox" /> Remember me
                 </label>
             </div>
+            <div class="col-11">
+
             <button class="w-100 btn btn-lg btn-primary" type="submit" style="margin:5px;">Sign in</button>
+            </div>
         </main>
     </EditForm>
     <p style="margin:5px;">Don't have an account? <a class="btn btn-outline-secondary" href="/account/register">Register</a></p>
@@ -44,18 +59,27 @@
     [Parameter, SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
     private LoginClientModel _loginModel { get; set; } = new LoginClientModel();
+    private bool _showPassword = false;
     private async Task PostLoginRequest()
     {
-        var loginRequest = new AccountLoginRequest(LoginRequest: _loginModel.LoginModel);
-        var response = await Mediator.Send(loginRequest);
-        if (response.LoginSuccess)
+        try
         {
-            ReturnUrl = ReturnUrl ?? "/";
-            NavMan.NavigateTo(ReturnUrl, true);
+            var loginRequest = new AccountLoginRequest(LoginRequest: _loginModel.LoginModel);
+            var response = await Mediator.Send(loginRequest);
+            if (response.LoginSuccess)
+            {
+                ReturnUrl = ReturnUrl ?? "/";
+                NavMan.NavigateTo(ReturnUrl, true);
+            }
+            else
+            {
+                _loginModel.LoginMessage = response.Message;
+            }
         }
-        else
+        catch (Exception)
         {
-            _loginModel.LoginMessage = response.Message;
+
+            throw;
         }
     }
 }

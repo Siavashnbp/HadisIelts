@@ -1,11 +1,9 @@
-.nav-item {
-  font-family: "Comic Sans MS";
+﻿.nav-item {
   color: #a9233c;
   margin-left: 10px;
 }
 
 .nav-link {
-  font-family: "Comic Sans MS";
   color: #a9233c;
   width: 120px;
   text-align: center;
@@ -17,7 +15,6 @@
 }
 
 .dropdown-item {
-  font-family: "Comic Sans MS";
   color: #a9233c;
 }
 
@@ -25,10 +22,3 @@
   background-color: #a9233c;
   color: bisque;
 }
-
-.nav-search-input {
-  color: #a9233c;
-  font-family: "Comic Sans MS";
-}
-
-/*# sourceMappingURL=Header.razor.css.map */

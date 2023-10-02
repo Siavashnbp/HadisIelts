@@ -8,7 +8,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
 {
     public class RegisterUserEndPoint : EndpointBaseAsync
         .WithRequest<RegisterAccountRequest>
-        .WithActionResult<int>
+        .WithActionResult<RegisterAccountRequest.Response>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         public RegisterUserEndPoint(UserManager<ApplicationUser> userManager)
@@ -17,15 +17,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         }
 
         [HttpPost(RegisterAccountRequest.EndpointUri)]
-        public override async Task<ActionResult<int>> HandleAsync
-            (RegisterAccountRequest request, CancellationToken cancellationToken = default)
+        public override async Task<ActionResult<RegisterAccountRequest.Response>> HandleAsync(RegisterAccountRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user is null)
                 {
-
                     user = new ApplicationUser
                     {
                         FirstName = string.Empty,
@@ -37,14 +35,14 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                     var result = await _userManager.CreateAsync(user, request.Password);
                     if (result.Succeeded)
                     {
-                        return Ok(true);
+                        return Ok(new RegisterAccountRequest.Response(true));
                     }
                 }
-                return Problem("Failed to create user");
+                return Ok(new RegisterAccountRequest.Response(false));
             }
             catch (Exception)
             {
-                return BadRequest(false);
+                return BadRequest();
             }
         }
     }

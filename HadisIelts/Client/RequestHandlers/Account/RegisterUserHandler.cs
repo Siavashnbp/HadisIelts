@@ -24,11 +24,10 @@ namespace HadisIelts.Client.RequestHandlers.Account
                 (RegisterAccountRequest.EndpointUri, updatedRequest, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<bool>
-                    (cancellationToken: cancellationToken);
-                return new RegisterAccountRequest.Response(result);
+                var result = await response.Content.ReadFromJsonAsync<RegisterAccountRequest.Response>();
+                return result!;
             }
-            return new RegisterAccountRequest.Response(false);
+            return null!;
         }
     }
 }
