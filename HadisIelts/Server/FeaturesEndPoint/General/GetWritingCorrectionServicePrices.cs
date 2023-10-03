@@ -1,6 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
 using AutoMapper;
-using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Shared.Models;
@@ -14,8 +13,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
         .WithActionResult<GetWritingCorrectionPricesRequest.Response>
     {
         private readonly ICustomRepositoryServices<WritingCorrectionServicePrice, int> _writingCorrectionPriceRepository;
-        public GetWritingCorrectionServicePrices(ICustomRepositoryServices<WritingCorrectionServicePrice, int> writingCorrectionRepository
-            , ApplicationDbContext dbContext)
+        public GetWritingCorrectionServicePrices(
+            ICustomRepositoryServices<WritingCorrectionServicePrice, int> writingCorrectionRepository)
         {
             _writingCorrectionPriceRepository = writingCorrectionRepository;
         }
@@ -39,7 +38,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
             }
             catch (Exception)
             {
-                throw;
+                return BadRequest();
             }
         }
 

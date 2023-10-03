@@ -1,9 +1,11 @@
 ﻿@page "/account/login/"
 @using HadisIelts.Client.Features.Account.Models;
+@using HadisIelts.Client.Services.User;
 @using HadisIelts.Shared.Requests.Account;
 @inject IMediator Mediator
 @inject NavigationManager NavMan
 @inject AuthenticationStateProvider AuthProvider;
+@inject IUserServices UserServices; 
 @attribute [AllowAnonymous]
 <div class="main-form container col-lg-4 col-md-8">
     <EditForm Model="@_loginModel.LoginModel" OnValidSubmit="PostLoginRequest">
@@ -39,11 +41,11 @@
             </div>
             <div class="col-11">
 
-            <button class="w-100 btn btn-lg btn-primary" type="submit" style="margin:5px;">Sign in</button>
+                <button class="w-100 btn btn-lg btn-primary" type="submit" style="margin:5px;">Sign in</button>
             </div>
         </main>
     </EditForm>
-    <p style="margin:5px;">Don't have an account? <a class="btn btn-outline-secondary" href="/account/register">Register</a></p>
+    <p style="margin:5px;">Don't have an account? <a class="btn btn-outline-secondary" href="@(RegisterPage.PageUrl)">Register</a></p>
     @if (_loginModel.LoginMessage is not null)
     {
         <div class="alert alert-danger" role="alert">
@@ -56,10 +58,25 @@
 </div>
 
 @code {
+    #region Parameters
     [Parameter, SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
     private LoginClientModel _loginModel { get; set; } = new LoginClientModel();
     private bool _showPassword = false;
+    #endregion
+
+    #region Initializers
+    protected override async Task OnInitializedAsync()
+    {
+        var userID = await UserServices.GetUserIdAsync();
+        if (userID != null)
+        {
+            NavMan.NavigateTo(ProfilePage.PageUrl);
+        }
+    }
+    #endregion
+
+    #region Methods
     private async Task PostLoginRequest()
     {
         try
@@ -82,4 +99,9 @@
             throw;
         }
     }
+    #endregion
+
+    #region Page Details and Information
+    public const string PageUrl = "/account/login";
+    #endregion
 }

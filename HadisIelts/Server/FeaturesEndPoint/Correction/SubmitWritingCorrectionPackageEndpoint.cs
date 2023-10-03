@@ -43,6 +43,7 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
                     });
                 if (writingCorrectionGroup != null)
                 {
+                    _dbContext.SaveChanges();
                     var service = _dbContext.Services.FirstOrDefault(x => x.Name == "Writing Correction");
                     if (service != null)
                     {
@@ -58,7 +59,6 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
                                 PriceName = item.PriceGroup.PriceName,
                                 ApplicationWritingTypeId = item.WritingFile.WritingTypeId,
                                 WritingCorrectionSubmissionGroup = writingCorrectionGroup.Entity,
-                                WritingCorrectionSubmissionGroupId = writingCorrectionGroup.Entity.Id,
                             };
                             writingCorrectionFiles.Add(writingFile);
                             var addedWritingFile = _dbContext.WritingCorrectionFiles.Add(writingFile);

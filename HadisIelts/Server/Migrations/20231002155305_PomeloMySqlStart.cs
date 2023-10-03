@@ -1,53 +1,69 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using MySql.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
 namespace HadisIelts.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class SetupDb : Migration
+    public partial class PomeloMySqlStart : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false),
-                    Name = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NormalizedName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false),
-                    FirstName = table.Column<string>(type: "longtext", nullable: false),
-                    LastName = table.Column<string>(type: "longtext", nullable: false),
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FirstName = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LastName = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    Skype = table.Column<string>(type: "longtext", nullable: true),
-                    UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
+                    Skype = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NormalizedEmail = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    PasswordHash = table.Column<string>(type: "longtext", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "longtext", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "longtext", nullable: true),
+                    PasswordHash = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SecurityStamp = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PhoneNumber = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     PhoneNumberConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
@@ -58,106 +74,130 @@ namespace HadisIelts.Server.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "DeviceCodes",
                 columns: table => new
                 {
-                    UserCode = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    DeviceCode = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    SubjectId = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true),
-                    SessionId = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true),
-                    ClientId = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true),
+                    UserCode = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DeviceCode = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SubjectId = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SessionId = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClientId = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CreationTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Expiration = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Data = table.Column<string>(type: "longtext", maxLength: 50000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DeviceCodes", x => x.UserCode);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Keys",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Version = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Use = table.Column<string>(type: "varchar(255)", nullable: true),
-                    Algorithm = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
+                    Use = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Algorithm = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     IsX509Certificate = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     DataProtected = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     Data = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Keys", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PersistedGrants",
                 columns: table => new
                 {
-                    Key = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    Type = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
-                    SubjectId = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true),
-                    SessionId = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true),
-                    ClientId = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true),
+                    Key = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Type = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SubjectId = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SessionId = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClientId = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CreationTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Expiration = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     ConsumedTime = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     Data = table.Column<string>(type: "longtext", maxLength: 50000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersistedGrants", x => x.Key);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Services",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Services", x => x.ID);
+                    table.PrimaryKey("PK_Services", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "WritingTypes",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WritingTypes", x => x.ID);
+                    table.PrimaryKey("PK_WritingTypes", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false),
-                    ClaimType = table.Column<string>(type: "longtext", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -169,17 +209,20 @@ namespace HadisIelts.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
-                    ClaimType = table.Column<string>(type: "longtext", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -191,16 +234,20 @@ namespace HadisIelts.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true),
+                    LoginProvider = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderKey = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -212,14 +259,16 @@ namespace HadisIelts.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -237,16 +286,20 @@ namespace HadisIelts.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LoginProvider = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Value = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -258,163 +311,184 @@ namespace HadisIelts.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "WritingCorrectionSubmissionGroups",
                 columns: table => new
                 {
-                    ID = table.Column<string>(type: "varchar(255)", nullable: false),
-                    UserID = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     TotalPrice = table.Column<uint>(type: "int unsigned", nullable: false),
-                    PaymentGroupID = table.Column<string>(type: "longtext", nullable: true),
+                    PaymentGroupId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     SubmissionDateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsCorrected = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WritingCorrectionSubmissionGroups", x => x.ID);
+                    table.PrimaryKey("PK_WritingCorrectionSubmissionGroups", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WritingCorrectionSubmissionGroups_AspNetUsers_UserID",
-                        column: x => x.UserID,
+                        name: "FK_WritingCorrectionSubmissionGroups_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PaymentGroups",
                 columns: table => new
                 {
-                    ID = table.Column<string>(type: "varchar(255)", nullable: false),
-                    UserID = table.Column<string>(type: "longtext", nullable: false),
-                    SubmittedServiceID = table.Column<string>(type: "longtext", nullable: false),
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SubmittedServiceId = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     LastUpdateDateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsPaymentApproved = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsPaymentCheckPending = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Message = table.Column<string>(type: "longtext", nullable: false),
-                    ServiceID = table.Column<int>(type: "int", nullable: false)
+                    Message = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ServiceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PaymentGroups", x => x.ID);
+                    table.PrimaryKey("PK_PaymentGroups", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PaymentGroups_Services_ServiceID",
-                        column: x => x.ServiceID,
+                        name: "FK_PaymentGroups_Services_ServiceId",
+                        column: x => x.ServiceId,
                         principalTable: "Services",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "WritingCorrectionServicePrices",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
-                    WritingTypeID = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    WritingTypeId = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<uint>(type: "int unsigned", nullable: false),
                     WordCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WritingCorrectionServicePrices", x => x.ID);
+                    table.PrimaryKey("PK_WritingCorrectionServicePrices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WritingCorrectionServicePrices_WritingTypes_WritingTypeID",
-                        column: x => x.WritingTypeID,
+                        name: "FK_WritingCorrectionServicePrices_WritingTypes_WritingTypeId",
+                        column: x => x.WritingTypeId,
                         principalTable: "WritingTypes",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "CorrectedWritingFiles",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
-                    Data = table.Column<string>(type: "longtext", nullable: false),
-                    WritingCorrectionFileID = table.Column<int>(type: "int", nullable: false),
-                    WritingCorrectionSubmissionGroupID = table.Column<string>(type: "varchar(255)", nullable: false),
-                    CorrectorID = table.Column<string>(type: "longtext", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Data = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    WritingCorrectionFileId = table.Column<int>(type: "int", nullable: false),
+                    WritingCorrectionSubmissionGroupId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CorrectorId = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     UploadDateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CorrectedWritingFiles", x => x.ID);
+                    table.PrimaryKey("PK_CorrectedWritingFiles", x => x.Id);
                     table.ForeignKey(
                         name: "FK_CorrectedWritingFiles_WritingCorrectionSubmissionGroups_Writ~",
-                        column: x => x.WritingCorrectionSubmissionGroupID,
+                        column: x => x.WritingCorrectionSubmissionGroupId,
                         principalTable: "WritingCorrectionSubmissionGroups",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "WritingCorrectionFiles",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
-                    Data = table.Column<string>(type: "longtext", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Data = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     WordCount = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<uint>(type: "int unsigned", nullable: false),
-                    PriceName = table.Column<string>(type: "longtext", nullable: false),
-                    ApplicationWritingTypeID = table.Column<int>(type: "int", nullable: false),
-                    WritingCorrectionSubmissionGroupID = table.Column<string>(type: "varchar(255)", nullable: false),
-                    CorrectedWritingFileID = table.Column<int>(type: "int", nullable: true)
+                    PriceName = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ApplicationWritingTypeId = table.Column<int>(type: "int", nullable: false),
+                    WritingCorrectionSubmissionGroupId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CorrectedWritingFileId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WritingCorrectionFiles", x => x.ID);
+                    table.PrimaryKey("PK_WritingCorrectionFiles", x => x.Id);
                     table.ForeignKey(
                         name: "FK_WritingCorrectionFiles_WritingCorrectionSubmissionGroups_Wri~",
-                        column: x => x.WritingCorrectionSubmissionGroupID,
+                        column: x => x.WritingCorrectionSubmissionGroupId,
                         principalTable: "WritingCorrectionSubmissionGroups",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_WritingCorrectionFiles_WritingTypes_ApplicationWritingTypeID",
-                        column: x => x.ApplicationWritingTypeID,
+                        name: "FK_WritingCorrectionFiles_WritingTypes_ApplicationWritingTypeId",
+                        column: x => x.ApplicationWritingTypeId,
                         principalTable: "WritingTypes",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PaymentPictures",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
-                    Data = table.Column<string>(type: "longtext", nullable: false),
-                    FileSuffix = table.Column<string>(type: "longtext", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Data = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FileSuffix = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     IsVerified = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsVerificationPending = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Message = table.Column<string>(type: "longtext", nullable: false),
+                    Message = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     UploadDateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    PaymentGroupID = table.Column<string>(type: "varchar(255)", nullable: false)
+                    PaymentGroupId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PaymentPictures", x => x.ID);
+                    table.PrimaryKey("PK_PaymentPictures", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PaymentPictures_PaymentGroups_PaymentGroupID",
-                        column: x => x.PaymentGroupID,
+                        name: "FK_PaymentPictures_PaymentGroups_PaymentGroupId",
+                        column: x => x.PaymentGroupId,
                         principalTable: "PaymentGroups",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -454,9 +528,9 @@ namespace HadisIelts.Server.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_CorrectedWritingFiles_WritingCorrectionSubmissionGroupID",
+                name: "IX_CorrectedWritingFiles_WritingCorrectionSubmissionGroupId",
                 table: "CorrectedWritingFiles",
-                column: "WritingCorrectionSubmissionGroupID");
+                column: "WritingCorrectionSubmissionGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_DeviceCode",
@@ -475,14 +549,14 @@ namespace HadisIelts.Server.Migrations
                 column: "Use");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PaymentGroups_ServiceID",
+                name: "IX_PaymentGroups_ServiceId",
                 table: "PaymentGroups",
-                column: "ServiceID");
+                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PaymentPictures_PaymentGroupID",
+                name: "IX_PaymentPictures_PaymentGroupId",
                 table: "PaymentPictures",
-                column: "PaymentGroupID");
+                column: "PaymentGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_ConsumedTime",
@@ -505,24 +579,24 @@ namespace HadisIelts.Server.Migrations
                 columns: new[] { "SubjectId", "SessionId", "Type" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_WritingCorrectionFiles_ApplicationWritingTypeID",
+                name: "IX_WritingCorrectionFiles_ApplicationWritingTypeId",
                 table: "WritingCorrectionFiles",
-                column: "ApplicationWritingTypeID");
+                column: "ApplicationWritingTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WritingCorrectionFiles_WritingCorrectionSubmissionGroupID",
+                name: "IX_WritingCorrectionFiles_WritingCorrectionSubmissionGroupId",
                 table: "WritingCorrectionFiles",
-                column: "WritingCorrectionSubmissionGroupID");
+                column: "WritingCorrectionSubmissionGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WritingCorrectionServicePrices_WritingTypeID",
+                name: "IX_WritingCorrectionServicePrices_WritingTypeId",
                 table: "WritingCorrectionServicePrices",
-                column: "WritingTypeID");
+                column: "WritingTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WritingCorrectionSubmissionGroups_UserID",
+                name: "IX_WritingCorrectionSubmissionGroups_UserId",
                 table: "WritingCorrectionSubmissionGroups",
-                column: "UserID");
+                column: "UserId");
         }
 
         /// <inheritdoc />

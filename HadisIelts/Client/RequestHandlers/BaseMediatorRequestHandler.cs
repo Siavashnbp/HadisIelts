@@ -21,13 +21,13 @@ namespace HadisIelts.Client.RequestHandlers
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<TResponse>();
-                return result;
+                return result!;
             }
             return HandleError(response);
         }
         public virtual TResponse HandleError(HttpResponseMessage response)
         {
-            return default(TResponse);
+            return default(TResponse)!;
         }
     }
 }

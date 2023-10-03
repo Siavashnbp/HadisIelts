@@ -6,6 +6,7 @@ using HadisIelts.Shared.Requests.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Account
 {
@@ -58,7 +59,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                                 LastName = requestedUser.LastName,
                                 Skype = requestedUser.Skype,
                             };
-                            return Ok(new GetUserInformationRequest.Response(response));
+                            return Ok(new GetUserInformationRequest.Response(response, HttpStatusCode.OK));
                         }
                         return NoContent();
                     }

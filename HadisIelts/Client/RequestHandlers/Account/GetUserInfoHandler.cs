@@ -11,12 +11,8 @@ namespace HadisIelts.Client.RequestHandlers.Account
         }
         public override GetUserInformationRequest.Response HandleError(HttpResponseMessage response)
         {
-            switch (response.StatusCode)
-            {
-                default:
-                    return new GetUserInformationRequest.Response(null);
-            }
-
+            var result = new GetUserInformationRequest.Response(null!, response.StatusCode);
+            return result;
         }
     }
 }

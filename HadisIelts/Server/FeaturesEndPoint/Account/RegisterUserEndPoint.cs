@@ -11,9 +11,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         .WithActionResult<RegisterAccountRequest.Response>
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        public RegisterUserEndPoint(UserManager<ApplicationUser> userManager)
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        public RegisterUserEndPoint(UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [HttpPost(RegisterAccountRequest.EndpointUri)]
@@ -35,6 +38,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                     var result = await _userManager.CreateAsync(user, request.Password);
                     if (result.Succeeded)
                     {
+                        await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
                         return Ok(new RegisterAccountRequest.Response(true));
                     }
                 }

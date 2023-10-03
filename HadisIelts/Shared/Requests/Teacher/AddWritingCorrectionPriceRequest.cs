@@ -16,11 +16,16 @@ namespace HadisIelts.Shared.Requests.Teacher
         public WritingCorrectionServicePriceValidator()
         {
             RuleFor(x => x.Id).Null();
-            RuleFor(x => x.Name).NotNull();
-            RuleFor(x => x.Price).NotNull().NotEmpty();
-            RuleFor(x => x.WordCount).NotNull().NotEmpty();
-            RuleFor(x => x.WordCount).GreaterThan(0);
-            RuleFor(x => x.WritingTypeId).NotNull().NotEmpty();
+            RuleFor(x => x.Name).NotNull().NotEmpty()
+                .WithMessage("Name cannot be empty");
+            RuleFor(x => x.Price).NotNull().NotEmpty()
+                .WithMessage("Price cannot be empty");
+            RuleFor(x => x.WordCount).NotNull().NotEmpty()
+                .WithMessage("Word count cannot be empty");
+            RuleFor(x => x.WordCount).GreaterThan(0)
+                .WithMessage("Word count must be greater than 0");
+            RuleFor(x => x.WritingTypeId).NotNull().NotEmpty()
+                .WithMessage("Please select a writing type");
         }
     }
 }

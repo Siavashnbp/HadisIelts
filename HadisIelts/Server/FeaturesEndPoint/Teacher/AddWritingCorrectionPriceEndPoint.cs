@@ -49,12 +49,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                             }));
                     }
                 }
-                return Problem();
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }
