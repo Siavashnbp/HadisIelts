@@ -4,18 +4,17 @@ using MediatR;
 
 namespace HadisIelts.Shared.Requests.Correction
 {
-    public record GetSubmittedWritingCorrectionFilesRequest(string UserId, string SubmissionId)
+    public record GetSubmittedWritingCorrectionFilesRequest(string SubmissionId)
         : IRequest<GetSubmittedWritingCorrectionFilesRequest.Response>
     {
         public const string EndpointUri = "/api/services/writingCorrection/getFiles";
-        public record Response(WritingCorrectionPackageSharedModel WritingCorrectionPackage, string Message);
+        public record Response(WritingCorrectionPackageSharedModel WritingCorrectionPackage);
     }
     public class GetSubmittedWritingCorrectionFilesRequestValidator
         : AbstractValidator<GetSubmittedWritingCorrectionFilesRequest>
     {
         public GetSubmittedWritingCorrectionFilesRequestValidator()
         {
-            RuleFor(x => x.UserId).NotEmpty().NotNull();
             RuleFor(x => x.SubmissionId).NotEmpty().NotNull();
         }
     }

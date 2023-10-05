@@ -1,12 +1,11 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
-using HadisIelts.Server.Models;
 using HadisIelts.Server.Models.Entities;
 using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Correction;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Correction
@@ -17,15 +16,15 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
     {
         private readonly ICustomRepositoryServices<WritingCorrectionSubmissionGroup, string>
             _submittedWritingCorrectionFilesRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
-        public GetSubmittedWritingCorrectionFilesEndpoint(UserManager<ApplicationUser> userManager
+        private readonly IUserServices _userServices;
+        public GetSubmittedWritingCorrectionFilesEndpoint(IUserServices userServices
             , ApplicationDbContext dbContext
             , ICustomRepositoryServices<WritingCorrectionSubmissionGroup, string> submittedWritingCorrectionFilesRepository)
         {
             _submittedWritingCorrectionFilesRepository = submittedWritingCorrectionFilesRepository;
-            _userManager = userManager;
             _dbContext = dbContext;
+            _userServices = userServices;
         }
         /// <summary>
         /// gets submitted writing correction files of a user
@@ -45,20 +44,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
         {
             try
             {
-                var user = await _userManager.FindByIdAsync(request.UserId);
-                if (user != null)
+                var submission = await _submittedWritingCorrectionFilesRepository.FindByIdAsync(request.SubmissionId);
+                if (submission != null)
                 {
-                    var isUserTeacher = await _userManager.IsInRoleAsync(user, "Administrator,Teacher");
-                    var submission = await _submittedWritingCorrectionFilesRepository.FindByIdAsync(request.SubmissionId);
-                    if (submission != null)
+                    var isUserAuthorized = _userServices.IsUserOwnerOrSpecificRoles
+                        (User.Claims.ToList(), new List<string> { "Teacher", "Administrator" }, submission.UserId);
+                    if (isUserAuthorized)
                     {
-                        if (!isUserTeacher)
-                        {
-                            if (submission.UserId != request.UserId)
-                            {
-                                return Unauthorized();
-                            }
-                        }
                         var files = _dbContext.WritingCorrectionFiles.ToList().FindAll
                             (x => x.WritingCorrectionSubmissionGroupId == submission.Id);
                         var correctedFiles = _dbContext.CorrectedWritingFiles.ToList().FindAll
@@ -101,25 +93,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                                     ProcessedWritingFiles = writingFiles,
                                     TotalPrice = submission.TotalPrice,
                                     IsCorrected = submission.IsCorrected,
-                                }
-                                , Message: string.Empty));
+                                }));
                         }
-                        return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(
-                            WritingCorrectionPackage: new WritingCorrectionPackageSharedModel
-                            {
-                                ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>(),
-                                TotalPrice = 0,
-                            },
-                            Message: "No files were found"));
-
+                        return NoContent();
                     }
-                    return Ok(new GetSubmittedWritingCorrectionFilesRequest.Response(
-                        new WritingCorrectionPackageSharedModel
-                        {
-                            ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>(),
-                            TotalPrice = 0,
-                        }
-                    , Message: "Submission request was not found"));
+                    return Conflict();
                 }
                 return Unauthorized();
             }

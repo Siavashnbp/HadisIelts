@@ -5,6 +5,7 @@
 @using HadisIelts.Client.Features.Teacher.SubmittedWritingAndPaymentComponents
 @using HadisIelts.Client.Services.File;
 @using HadisIelts.Client.Services.Writing;
+@using HadisIelts.Shared.Requests.Correction;
 @using HadisIelts.Shared.Requests.Payment;
 @using System.Net;
 @using HadisIelts.Shared.Requests.Teacher;
@@ -101,12 +102,7 @@
         await GetWritingCorrectionPaymentPackage();
         if (_paymentGroup is not null)
         {
-            _paymentGroup.Service = new WritingCorrectionPackageSharedModel();
-            var result = await ClientWritingSevices.GetSubmittedWritingCorrectionFiles(_paymentGroup.SubmittedServiceId);
-            //_paymentGroup.Service.TotalPrice = result.WritingCorrectionPackage.TotalPrice;
-            //_paymentGroup.Service.ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>();
-            //_paymentGroup.Service.ProcessedWritingFiles = result.WritingCorrectionPackage.ProcessedWritingFiles;
-            _paymentGroup.Service = result.WritingCorrectionPackage;
+            await GetSubmittedWritings();
         }
     }
     private async Task GetWritingCorrectionPaymentPackage()
@@ -189,7 +185,15 @@
             throw;
         }
     }
-
+    private async Task GetSubmittedWritings()
+    {
+        var request = new GetSubmittedWritingCorrectionFilesRequest(SubmissionId: _paymentGroup!.SubmittedServiceId);
+        var response = await Mediator.Send(request);
+        if (response?.WritingCorrectionPackage is not null)
+        {
+            _paymentGroup.Service = response.WritingCorrectionPackage;
+        }
+    }
     //Handlers
     private async Task HandleOnCorrectedWritingUpload(WritingFileModel correctedFile)
     {

@@ -1,13 +1,16 @@
-﻿@page "/Payment/WritingCorrection/{PaymentId}"
+﻿@page "/services/writingCorrection/payment/{PaymentId}"
 @using HadisIelts.Client.Features.Correction.Models;
 @using HadisIelts.Client.Features.Correction.WritingCorrectionComponents
+@using HadisIelts.Client.Features.Correction;
 @using HadisIelts.Client.Features.Payment;
 @using HadisIelts.Client.Features.Payment.WritingCorrectionPaymentPageComponents
 @using HadisIelts.Client.Features.Teacher.Models;
 @using HadisIelts.Client.Services.File;
 @using HadisIelts.Client.Services.User;
 @using HadisIelts.Client.Services.Writing;
+@using HadisIelts.Shared.Requests.Correction;
 @using HadisIelts.Shared.Requests.Payment;
+@using System.Net;
 @inject IClientWritingServices ClientWritingSevices;
 @inject IFileServices FileServices;
 @inject IMediator Mediator;
@@ -15,8 +18,9 @@
 @inject NavigationManager NavMan;
 <AuthorizeView>
     <Authorized>
+        <BreadCrumb Pages="_pages"/>
         <div class="container" style="margin-top:10px;">
-            @if (_paymentGroup is not null && _paymentGroup.Service is not null)
+            @if (_paymentGroup?.Service is not null)
             {
                 <div class="row">
                     <div class="col">
@@ -30,10 +34,10 @@
                 </div>
             }
             <div class="row text-center">
-                <h5 class="text-info">@_paymentGroup!.Message</h5>
+                <h5 class="text-info">@_paymentGroup?.Message</h5>
             </div>
             <div class="row">
-                @if (_paymentFiles is not null && _paymentFiles.Count > 0)
+                @if (_paymentFiles?.Count > 0)
                 {
                     <div class="accordion " id="accordionSubmittedPayments">
                         <div class="accordion-item">
@@ -75,7 +79,7 @@
                     }
                 </div>
             </div>
-            @if (_pendingToUploadPaymentFiles is not null && _pendingToUploadPaymentFiles.Count > 0)
+            @if (_pendingToUploadPaymentFiles?.Count > 0)
             {
                 <div class="accordion" id="accordionPendingPayments">
                     <div class="accordion-item">
@@ -95,7 +99,7 @@
                                     {
                                         <div class="col-lg-4">
                                             <PaymenImageCard PaymentFile="item" OnThumbnailIsClicked="HandleOnThumbnailIsClicked"
-                                                     OnRemoveButtonIsClicked="HandleImageRemovebuttonIsClicked" />
+                                                     OnRemoveButtonIsClicked="HandlePendingImageRemovebuttonIsClicked" />
                                         </div>
                                     }
                                 </div>
@@ -124,33 +128,87 @@
     </Authorized>
 </AuthorizeView>
 @code {
+    #region Parameters
     [Parameter]
     public string? PaymentId { get; set; }
-    private PaymentGroupSharedModel<WritingCorrectionPackageSharedModel> _paymentGroup = new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>();
+    private PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>? _paymentGroup;
     private string? _modalImageData;
     private bool _showModal = false;
     private int _paymentFileId = 0;
     private List<PaymentPictureSharedModel> _paymentFiles = new List<PaymentPictureSharedModel>();
     private List<PaymentPictureSharedModel> _pendingToUploadPaymentFiles = new List<PaymentPictureSharedModel>();
+    #endregion
+
+    #region Initializers
     protected override async Task OnInitializedAsync()
     {
-        await GetWritingCorrectionPaymentPackage();
-        if (_paymentGroup.Id != "NotFound")
+        try
         {
-            _paymentGroup.Service = new WritingCorrectionPackageSharedModel();
-            var result = await ClientWritingSevices.GetSubmittedWritingCorrectionFiles(_paymentGroup.SubmittedServiceId);
-            _paymentGroup.Service.TotalPrice = result.WritingCorrectionPackage.TotalPrice;
-            _paymentGroup.Service.ProcessedWritingFiles = new List<ProcessedWritingFileSharedModel>();
-            _paymentGroup.Service.ProcessedWritingFiles = result.WritingCorrectionPackage.ProcessedWritingFiles;
+            await GetWritingCorrectionPaymentPackage();
+            if (_paymentGroup is not null)
+            {
+                await GetSubmittedWritings();
+            }
         }
-        else
+        catch (Exception)
         {
-            NavMan.NavigateTo("Not Found");
 
+            throw;
         }
 
     }
-    //Event Handlers
+    #endregion
+
+    #region Methods
+    private async Task UploadPaymentFiles()
+    {
+        try
+        {
+            if (_pendingToUploadPaymentFiles?.Count > 0 && PaymentId is not null && PaymentId != string.Empty)
+            {
+                var request = new UploadPaymentPackageRequest(_pendingToUploadPaymentFiles, PaymentId);
+                var response = await Mediator.Send(request);
+                _paymentFiles = response.PaymentPictures;
+                _pendingToUploadPaymentFiles.Clear();
+                _paymentGroup!.Message = response.Message;
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    private async Task GetWritingCorrectionPaymentPackage()
+    {
+        if (PaymentId is not null && PaymentId != string.Empty)
+        {
+            var request = new GetPaymentGroupRequest(PaymentId);
+            var result = await Mediator.Send(request);
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                _paymentGroup = new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>();
+                _paymentGroup = result.PaymentGroup;
+                _paymentFiles = _paymentGroup.PaymentPictures;
+            }
+            else if (result.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                NavMan.NavigateTo(NotAuthorizedComponent.PageUrl);
+            }
+        }
+    }
+    private async Task GetSubmittedWritings()
+    {
+        var request = new GetSubmittedWritingCorrectionFilesRequest(SubmissionId: _paymentGroup!.SubmittedServiceId);
+        var response = await Mediator.Send(request);
+        if (response?.WritingCorrectionPackage is not null)
+        {
+            _paymentGroup.Service = response.WritingCorrectionPackage;
+        }
+    }
+    #endregion
+
+    #region Event Handlers
     private async Task HandleInputFileChange(InputFileChangeEventArgs e)
     {
         if (e.FileCount > 0 && e.File.Size < 5E6 && _paymentFiles.Count < 3)
@@ -174,11 +232,6 @@
         _modalImageData = data;
         _showModal = true;
     }
-    private void CloseModal()
-    {
-        _modalImageData = string.Empty;
-        _showModal = false;
-    }
     private async Task HandleImageRemovebuttonIsClicked(int id)
     {
         var file = _paymentFiles.FirstOrDefault(x => x.Id == id);
@@ -191,45 +244,33 @@
                 _paymentFiles.Remove(file);
             }
         }
-        else
-        {
-            file = _pendingToUploadPaymentFiles.FirstOrDefault(x => x.Id == id);
-            if (file is not null)
-            {
-                _pendingToUploadPaymentFiles.Remove(file);
-            }
-        }
     }
-    private async Task UploadPaymentFiles()
+    private void HandlePendingImageRemovebuttonIsClicked(int id)
     {
-        try
+        var file = _pendingToUploadPaymentFiles.FirstOrDefault(x => x.Id == id);
+        if (file is not null)
         {
-            if (_pendingToUploadPaymentFiles is not null && _pendingToUploadPaymentFiles.Count > 0)
-            {
-                var request = new UploadPaymentPackageRequest(_pendingToUploadPaymentFiles, PaymentId);
-                var response = await Mediator.Send(request);
-                _paymentFiles = response.PaymentPictures;
-                _pendingToUploadPaymentFiles.Clear();
-                _paymentGroup.Message = response.Message;
-                StateHasChanged();
-            }
+            _pendingToUploadPaymentFiles.Remove(file);
         }
-        catch (Exception)
-        {
 
-            throw;
-        }
     }
-    private async Task GetWritingCorrectionPaymentPackage()
+    #endregion
+
+    #region Events
+    private void CloseModal()
     {
-        if (PaymentId is not null)
-        {
-            _paymentGroup = new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>();
-            var request = new GetPaymentGroupRequest(PaymentId);
-            var result = await Mediator.Send(request);
-            _paymentGroup = result.PaymentGroup;
-            _paymentFiles = _paymentGroup.PaymentPictures;
-        }
+        _modalImageData = string.Empty;
+        _showModal = false;
     }
+    #endregion
+    #region Page Details and Information
+    public static string PageUrl(string id) => $"/services/writingCorrection/payment/{id}";
+    private List<WebsitePage> _pages = new List<WebsitePage>
+    {
+        new WebsitePage{Id=0,Name="Home",DisplayName="Home",Link="/" },
+        new WebsitePage{Id=1,Name="WritingCorrections",DisplayName="Writing Corrections",Link=UserWritingCorrectionSubmissions.PageUrl },
+        new WebsitePage{Id=2,Name="Submission",DisplayName="Submission"}
+    };
+    #endregion
 
 }

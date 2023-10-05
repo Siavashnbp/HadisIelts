@@ -136,7 +136,7 @@
             }
             else
             {
-                NavigationManager.NavigateTo(UserWritingCorrectionSubmissions.PageAddress);
+                NavigationManager.NavigateTo(UserWritingCorrectionSubmissions.PageUrl);
             }
         }
     }
@@ -186,7 +186,7 @@
     {
         try
         {
-            if (_processedWritingFiles is not null && _processedWritingFiles.Count > 0)
+            if (_processedWritingFiles?.Count > 0)
             {
                 var files = new List<ProcessedWritingFileSharedModel>();
                 foreach (var item in _processedWritingFiles)

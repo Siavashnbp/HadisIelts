@@ -69,12 +69,14 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         {
                             submittedPaymentfiles.Add(new PaymentPictureSharedModel
                             {
+                                Id = payment.Id,
                                 Data = payment.Data,
                                 FileSuffix = payment.FileSuffix,
                                 IsVerified = false,
                                 Message = payment.Message,
                                 Name = payment.Name,
                                 UploadDateTime = payment.UploadDateTime,
+                                IsVerificationPending = payment.IsVerificationPending,
                             });
                         }
                         return Ok(new UploadPaymentPackageRequest.Response(
@@ -88,8 +90,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

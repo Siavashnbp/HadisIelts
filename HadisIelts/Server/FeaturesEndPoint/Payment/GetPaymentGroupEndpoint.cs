@@ -32,7 +32,6 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     if (_userServices.IsUserOwnerOrSpecificRoles(userId: paymentGroup.UserId, claims: User.Claims.ToList(),
                         roles: new List<string> { "Administrator", "Teacher" }))
                     {
-
                         var pictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
                         var payments = new List<PaymentPictureSharedModel>();
                         foreach (var item in pictures)
@@ -59,23 +58,17 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                                 PaymentPictures = payments,
                                 Id = paymentGroup.Id,
                                 SubmittedServiceId = paymentGroup.SubmittedServiceId,
-                            }));
+                            })
+                        { StatusCode = System.Net.HttpStatusCode.OK });
                     }
                     return Unauthorized();
                 }
-                return Ok(new GetPaymentGroupRequest.Response(
-                    new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>
-                    {
-                        Id = "NotFound",
-                        Message = "Payment Group was not found"
-                    }));
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
-            throw new NotImplementedException();
         }
     }
 }

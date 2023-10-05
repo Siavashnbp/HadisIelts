@@ -31,7 +31,7 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
                 var userId = _userServices.GetUserIdFromClaims(User.Claims.ToList());
                 if (_userServices.HasWritingCorrectionPending(_dbContext, userId))
                 {
-                    return Problem("You have another writing correction pending");
+                    return ValidationProblem();
                 }
                 var writingCorrectionGroup = _dbContext.WritingCorrectionSubmissionGroups.Add(
                     new WritingCorrectionSubmissionGroup
@@ -83,16 +83,15 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
                             {
                                 return Ok(new UploadProcessedWritingFilesRequest.Response(
                                     writingCorrectionGroup.Entity.PaymentGroupId));
-
                             }
                         }
                     }
                 }
-                return Problem("Something went wrong");
+                return Conflict();
             }
             catch (Exception)
             {
-                return Problem("Something went wrong");
+                return BadRequest();
             }
         }
     }
