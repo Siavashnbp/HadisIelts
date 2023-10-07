@@ -1,0 +1,40 @@
+﻿<div>
+    <ul class="pagination">
+        <li class="page-item @(CurrentPage==1?"disabled":"")">
+            <a class="page-link" href="#">First</a>
+        </li>
+        @for (int i = 1; i < 3; i++)
+        {
+            @if (CurrentPage - i > 0)
+            {
+                <li class="page-item active">
+                    <a class="page-link" @onclick="(async()=>await OnPageIsSelected.InvokeAsync(CurrentPage - i))">@(CurrentPage - i)</a>
+                </li>
+            }
+        }
+        <li class="page-item disabled">
+            <a class="page-link" href="#">@CurrentPage</a>
+        </li>
+        @for (int i = 1; i < 3; i++)
+        {
+            @if (((CurrentPage + i - 1) * 10) + 1 < ListCount)
+            {
+                <li class="page-item active">
+                    <a class="page-link" @onclick="(async()=>await OnPageIsSelected.InvokeAsync(CurrentPage + i))">@(CurrentPage + i)</a>
+                </li>
+            }
+        }
+        <li class="page-item @(CurrentPage*10>=ListCount?"disabled":"")">
+            <a class="page-link" href="#">Last</a>
+        </li>
+    </ul>
+</div>
+@code {
+    [Parameter, EditorRequired]
+    public int ListCount { get; set; }
+    [Parameter, EditorRequired]
+    public int CurrentPage { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnPageIsSelected { get; set; }
+    
+}

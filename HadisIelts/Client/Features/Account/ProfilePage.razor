@@ -64,7 +64,7 @@
     [Parameter]
     public string UserId { get; set; } = string.Empty;
     private string _currentUserId;
-    private UserInformationSharedModel _userInformation = new UserInformationSharedModel(string.Empty, string.Empty);
+    private UserInformationSharedModel _userInformation = new UserInformationSharedModel(string.Empty, string.Empty, string.Empty);
     private UserInformationSharedModel _defaultInformation;
     private bool _isEditEnabled = false;
     #endregion
@@ -96,6 +96,7 @@
         if (result is not null)
         {
             _userInformation = new UserInformationSharedModel(
+                id: result.UserInformation.Id,
                 username: result.UserInformation.Username,
                 email: result.UserInformation.Email)
                 {
@@ -103,7 +104,9 @@
                     LastName = result.UserInformation.LastName,
                     Skype = result.UserInformation.Skype,
                 };
-            _defaultInformation = new UserInformationSharedModel(username: result.UserInformation.Username,
+            _defaultInformation = new UserInformationSharedModel(
+                id: result.UserInformation.Id,
+                username: result.UserInformation.Username,
             email: result.UserInformation.Email)
                 {
                     FirstName = result.UserInformation.FirstName,

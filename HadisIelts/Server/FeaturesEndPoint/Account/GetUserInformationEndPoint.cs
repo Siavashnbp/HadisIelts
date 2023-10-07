@@ -53,7 +53,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                         var requestedUser = await _userManager.FindByIdAsync(request.UserId);
                         if (requestedUser is not null)
                         {
-                            var response = new UserInformationSharedModel(requestedUser.UserName!, requestedUser.Email!)
+                            var response = new UserInformationSharedModel(request.UserId, requestedUser.UserName!, requestedUser.Email!)
                             {
                                 FirstName = requestedUser.FirstName,
                                 LastName = requestedUser.LastName,

@@ -34,14 +34,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         var changes = _dbContext.SaveChanges();
                         return Ok(new EditPaymentPictureVerificationRequest.Response(changes > 0));
                     }
-                    return Problem("Payment group is already checked");
                 }
-                return Problem("Payment picture was not found");
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

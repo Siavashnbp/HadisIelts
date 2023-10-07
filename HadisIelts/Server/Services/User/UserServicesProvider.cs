@@ -38,7 +38,7 @@ namespace HadisIelts.Server.Services.User
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
-                return new UserInformationSharedModel(username: user.UserName!, email: user.Email!)
+                return new UserInformationSharedModel(id: user.Id, username: user.UserName!, email: user.Email!)
                 {
                     Birthday = DateOnly.FromDateTime(user.DateOfBirth!.Value),
                     FirstName = user.FirstName!,

@@ -25,18 +25,21 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentGroupId);
                 if (paymentGroup != null)
                 {
+                    if (paymentGroup.IsPaymentCheckPending)
+                    {
+                        return Ok(new EditPaymentGroupApprovementRequest.Respone(WasSauccessful: false));
+                    }
                     paymentGroup.Message = "Verification pending";
                     paymentGroup.IsPaymentCheckPending = true;
                     paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
                     _paymentGroupRepository.Update(paymentGroup);
                     return Ok(new EditPaymentGroupApprovementRequest.Respone(WasSauccessful: true));
                 }
-                return Problem("Payment group was not found");
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

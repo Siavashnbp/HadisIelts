@@ -18,9 +18,9 @@ namespace HadisIelts.Client.RequestHandlers.Teacher
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<GetWritingCorrectionPricesRequest.Response>();
-                return result;
+                return result!;
             }
-            return null;
+            return null!;
         }
     }
 }

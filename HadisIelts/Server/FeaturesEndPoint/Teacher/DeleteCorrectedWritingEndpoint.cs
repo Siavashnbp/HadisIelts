@@ -28,12 +28,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                     var wasSuccessful = _correctedWritingRepository.Delete(file);
                     return Ok(new DeleteCorrectedWritingRequest.Response(wasSuccessful));
                 }
-                return Problem("File was not found");
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

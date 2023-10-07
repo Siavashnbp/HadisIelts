@@ -1,5 +1,6 @@
 ﻿using HadisIelts.Shared.Models;
 using MediatR;
+using System.Net;
 
 namespace HadisIelts.Shared.Requests.Correction
 {
@@ -7,6 +8,6 @@ namespace HadisIelts.Shared.Requests.Correction
         : IRequest<GetUserSubmittedWritingCorrectionRequest.Response>
     {
         public const string EndpointUri = "/api/services/writingCorrection/GetUserSubmissions";
-        public record Response(List<SubmittedServiceSummarySharedModel> SubmittedServices);
+        public record Response(List<SubmittedServiceSummarySharedModel> SubmittedServices, HttpStatusCode StatusCode);
     }
 }

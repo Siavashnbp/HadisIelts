@@ -57,15 +57,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                                 WritingFileId = submittedCorrectedFile.Entity.WritingCorrectionFileId
                             }));
                         }
-                        return Problem("File is not saved");
                     }
                 }
-                return Problem("Writing file was not found");
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

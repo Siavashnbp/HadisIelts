@@ -80,10 +80,10 @@
 </div>
 @code {
     [Parameter, EditorRequired]
-    public List<WritingPriceModel> WritingCorrectionPrices { get; set; }
+    public List<WritingPriceModel>? WritingCorrectionPrices { get; set; }
     [Parameter]
-    public List<WritingTypeSharedModel> WritingTypes { get; set; }
-    private WritingPriceModel _editWritingPriceModel;
+    public List<WritingTypeSharedModel>? WritingTypes { get; set; }
+    private WritingPriceModel? _editWritingPriceModel;
     private async Task RemoveWritingCorrectionPrice(int id)
     {
         try
@@ -92,7 +92,7 @@
             var result = await Mediator.Send(request);
             if (result.WasSuccessful)
             {
-                WritingCorrectionPrices.RemoveAll(x => x.Id == id);
+                WritingCorrectionPrices!.RemoveAll(x => x.Id == id);
                 StateHasChanged();
             }
         }
@@ -135,12 +135,12 @@
                 var result = await Mediator.Send(request);
                 if (result.UpdatedWritingCorrectionPrice is not null)
                 {
-                    var updatedItem = WritingCorrectionPrices.FirstOrDefault(x => x.Id == result.UpdatedWritingCorrectionPrice.Id);
-                    updatedItem.Name = result.UpdatedWritingCorrectionPrice.Name;
+                    var updatedItem = WritingCorrectionPrices!.FirstOrDefault(x => x.Id == result.UpdatedWritingCorrectionPrice.Id);
+                    updatedItem!.Name = result.UpdatedWritingCorrectionPrice.Name;
                     updatedItem.Price = (int)result.UpdatedWritingCorrectionPrice.Price;
                     updatedItem.WordCount = result.UpdatedWritingCorrectionPrice.WordCount;
-                    updatedItem.WritingType = WritingTypes.FirstOrDefault(
-                        x => x.Id == result.UpdatedWritingCorrectionPrice.WritingTypeId);
+                    updatedItem.WritingType = WritingTypes!.FirstOrDefault(
+                        x => x.Id == result.UpdatedWritingCorrectionPrice.WritingTypeId)!;
                 }
                 _editWritingPriceModel = new WritingPriceModel();
                 StateHasChanged();

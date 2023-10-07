@@ -11,7 +11,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
 {
     public class GetAllSubmittedWritingCorrectionSummaryEndpoint : EndpointBaseAsync
         .WithRequest<GetAllSubmittedWritingCorrectionsSummaryRequest>
-        .WithResult<GetAllSubmittedWritingCorrectionsSummaryRequest.Response>
+        .WithActionResult<GetAllSubmittedWritingCorrectionsSummaryRequest.Response>
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IUserServices _userServices;
@@ -23,7 +23,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         }
         [Authorize(Roles = "Administrator,Teacher")]
         [HttpPost(GetAllSubmittedWritingCorrectionsSummaryRequest.EndpointUri)]
-        public override async Task<GetAllSubmittedWritingCorrectionsSummaryRequest.Response> HandleAsync(GetAllSubmittedWritingCorrectionsSummaryRequest request, CancellationToken cancellationToken = default)
+        public override async Task<ActionResult<GetAllSubmittedWritingCorrectionsSummaryRequest.Response>> HandleAsync(GetAllSubmittedWritingCorrectionsSummaryRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -55,14 +55,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                         });
                     }
                     submissionSummary.Reverse();
-                    return new GetAllSubmittedWritingCorrectionsSummaryRequest.Response(submissionSummary);
+                    return Ok(new GetAllSubmittedWritingCorrectionsSummaryRequest.Response(submissionSummary));
                 }
-                return new GetAllSubmittedWritingCorrectionsSummaryRequest.Response(new List<SubmittedServiceSummarySharedModel>());
+                return NoContent();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

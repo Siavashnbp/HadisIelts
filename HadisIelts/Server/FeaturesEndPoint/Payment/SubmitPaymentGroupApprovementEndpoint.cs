@@ -26,16 +26,21 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 {
                     if (!paymentGroup.IsPaymentCheckPending)
                     {
-                        return BadRequest(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
+                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
                             Message: "Payment group is already checked"));
                     }
                     var paymentPictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
-                    if (paymentPictures.Any(x => !x.IsVerified && !x.IsVerificationPending))
+                    paymentPictures.Select(x =>
                     {
-                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
-                            Message: "One of payments is rejected"));
-                    }
-                    paymentPictures.Select(x => { x.IsVerified = request.IsApproved; x.IsVerificationPending = false; return x; });
+                        if (x.IsVerificationPending)
+                        {
+                            x.IsVerified = request.IsApproved;
+                            x.IsVerificationPending = false;
+                            x.Message = request.IsApproved ? "Verified" : "Rejected";
+                        }
+                        return x;
+                    });
+
                     _dbContext.PaymentPictures.UpdateRange(paymentPictures);
                     paymentGroup.IsPaymentApproved = request.IsApproved;
                     paymentGroup.IsPaymentCheckPending = false;
@@ -43,15 +48,19 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
                     _dbContext.PaymentGroups.Update(paymentGroup);
                     var changes = _dbContext.SaveChanges();
-                    return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: changes > 0,
-                        Message: paymentGroup.Message));
+                    if (changes > 0)
+                    {
+                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: changes > 0,
+                            Message: paymentGroup.Message));
+                    }
+                    return Conflict();
                 }
-                return Problem("Payment group was not found");
+
+                return NoContent();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

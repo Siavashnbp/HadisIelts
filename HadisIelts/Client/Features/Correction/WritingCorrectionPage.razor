@@ -16,7 +16,7 @@
 @inject IFileServices FileServices;
 @inject IClientWritingServices ClientWritingServices;
 @inject IUserServices UserServices;
-<BreadCrumb Pages=@BreadCrumbs />
+<BreadCrumb Pages=@_breadCrumbs />
 <AuthorizeView>
     <Authorized>
         <div class="container">
@@ -325,10 +325,10 @@
     #region Page Details and Information
     public const string PageUrl = "/services/writingCorrection/uploadFiles";
     //BreadCrumbs
-    public List<WebsitePage> BreadCrumbs { get; set; } = new List<WebsitePage>{
+    private List<WebsitePage> _breadCrumbs { get; set; } = new List<WebsitePage>{
         new WebsitePage{Name="Home",DisplayName="Home",Link="/" },
-        new WebsitePage{Name="Services",DisplayName="Correction Services",Link="/Services" },
-        new WebsitePage{Name="WritingCorrection",DisplayName="Writing Correction",Link="/Services/Correction/Writing" },
+        new WebsitePage{Name="WritingCorrection",DisplayName="Writing Correction Submissions",Link=UserWritingCorrectionSubmissions.PageUrl },
+        new WebsitePage{Name="UploadWritings",DisplayName="Upload Writings" },
     };
     #endregion
 }

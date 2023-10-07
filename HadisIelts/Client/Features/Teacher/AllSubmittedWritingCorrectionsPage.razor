@@ -19,24 +19,42 @@
                     </button>
                 </div>
             </div>
-            <div class="row justify-content-center">
-                <div class="col">
-                    <TeacherWritingCorrectionSubmissionsTable SubmittedServices="_submittedServices" />
-                    @if (_submittedServices is null || _submittedServices.Count == 0)
-                    {
-                        <h5 class="text-warning">No Users Were Found!</h5>
-                    }
+            @if (_submittedServices is not null)
+            {
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <TeacherWritingCorrectionSubmissionsTable SubmittedServices="_submittedServices" />
+                        @if (_submittedServices is null || _submittedServices.Count == 0)
+                        {
+                            <h5 class="text-warning">No Users Were Found!</h5>
+                        }
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </Authorized>
 </AuthorizeView>
 @code {
+    #region Parameters
     private string _searchPhrase = string.Empty;
     private List<SubmittedServiceSummarySharedModel> _submittedServices = new List<SubmittedServiceSummarySharedModel>();
+    #endregion
+
+    #region Methods
     private async Task GetAllSubmittedWritingCorrections()
     {
-        var response = await Mediator.Send(new GetAllSubmittedWritingCorrectionsSummaryRequest(_searchPhrase));
-        _submittedServices = response.SubmittedServices;
+        try
+        {
+            var response = await Mediator.Send(new GetAllSubmittedWritingCorrectionsSummaryRequest(_searchPhrase));
+            if (response.SubmittedServices is not null)
+            {
+                _submittedServices = response.SubmittedServices;
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
+    #endregion
 }

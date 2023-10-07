@@ -33,12 +33,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                     _dbContext.SaveChanges();
                     return Ok(new ChangeWritingGroupCorrectionStatusRequest.Response(writingGroup.IsCorrected));
                 }
-                return Problem("Writing group was not found");
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

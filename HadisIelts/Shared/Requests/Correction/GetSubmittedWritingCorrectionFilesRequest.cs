@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using HadisIelts.Shared.Models;
 using MediatR;
+using System.Net;
 
 namespace HadisIelts.Shared.Requests.Correction
 {
@@ -8,7 +9,7 @@ namespace HadisIelts.Shared.Requests.Correction
         : IRequest<GetSubmittedWritingCorrectionFilesRequest.Response>
     {
         public const string EndpointUri = "/api/services/writingCorrection/getFiles";
-        public record Response(WritingCorrectionPackageSharedModel WritingCorrectionPackage);
+        public record Response(WritingCorrectionPackageSharedModel WritingCorrectionPackage, HttpStatusCode StatusCode);
     }
     public class GetSubmittedWritingCorrectionFilesRequestValidator
         : AbstractValidator<GetSubmittedWritingCorrectionFilesRequest>

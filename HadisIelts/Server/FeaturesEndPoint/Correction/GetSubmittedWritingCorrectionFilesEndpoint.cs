@@ -7,6 +7,7 @@ using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Correction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Correction
 {
@@ -93,7 +94,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                                     ProcessedWritingFiles = writingFiles,
                                     TotalPrice = submission.TotalPrice,
                                     IsCorrected = submission.IsCorrected,
-                                }));
+                                }, HttpStatusCode.OK));
                         }
                         return NoContent();
                     }
