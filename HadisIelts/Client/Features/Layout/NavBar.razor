@@ -1,4 +1,7 @@
-﻿
+﻿@using HadisIelts.Client.Features.Administrator.ChangeUserRole;
+@using HadisIelts.Client.Features.Correction;
+@using HadisIelts.Client.Features.Teacher;
+
 <nav class="navbar navbar-expand-lg sticky-top" style="background-color:bisque">
     <div class="container-fluid">
         <a class="navbar-brand" href=#>
@@ -20,15 +23,15 @@
                     <div class="dropdown-menu">
                         <AuthorizeView>
                             <Authorized>
-                                <a class="dropdown-item" href="#">View Submitted Files</a>
-                                <a class="dropdown-item" href="#">Upload Files</a>
+                                <a class="dropdown-item" href="@(UserWritingCorrectionSubmissions.PageUrl)">View Submitted Files</a>
                             </Authorized>
                         </AuthorizeView>
-                        <a class="dropdown-item" href="#">Prices</a>
+                        <a class="dropdown-item" href="@(WritingCorrectionPage.PageUrl)">Upload Files</a>
+                        <a class="dropdown-item" href="@(WritingCorrectionPricesPage.PageUrl)">Prices</a>
                         <AuthorizeView Roles="Administrator,Teacher">
                             <Authorized>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Users Submitted Files</a>                                
+                                <a class="dropdown-item" href="@(AllSubmittedWritingCorrectionsPage.PageUrl)">Users Submitted Files</a>
                             </Authorized>
                         </AuthorizeView>
                     </div>
@@ -39,12 +42,12 @@
                 <AuthorizeView Roles="Administrator">
                     <Authorized>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Manage Users</a>
+                            <a class="nav-link" href="@(UsersRolesPage.PageUrl)">Manage Users</a>
                         </li>
                     </Authorized>
                 </AuthorizeView>
                 <li class="nav-item">
-                    <a class="nav-link">Contact Information</a>                    
+                    <a class="nav-link">Contact Information</a>
                 </li>
             </ul>
             <div>

@@ -18,7 +18,7 @@
 @inject NavigationManager NavMan;
 <AuthorizeView>
     <Authorized>
-        <BreadCrumb Pages="_pages"/>
+        <BreadCrumb Pages="_pages" />
         <div class="container" style="margin-top:10px;">
             @if (_paymentGroup?.Service is not null)
             {
@@ -168,10 +168,13 @@
             {
                 var request = new UploadPaymentPackageRequest(_pendingToUploadPaymentFiles, PaymentId);
                 var response = await Mediator.Send(request);
-                _paymentFiles = response.PaymentPictures;
-                _pendingToUploadPaymentFiles.Clear();
-                _paymentGroup!.Message = response.Message;
-                StateHasChanged();
+                if (response is not null)
+                {
+                    _paymentFiles = response.PaymentPictures;
+                    _pendingToUploadPaymentFiles.Clear();
+                    _paymentGroup!.Message = response.Message;
+                    StateHasChanged();
+                }
             }
         }
         catch (Exception)

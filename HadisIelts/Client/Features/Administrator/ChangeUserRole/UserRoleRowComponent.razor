@@ -1,30 +1,29 @@
-﻿@using HadisIelts.Shared.Requests.Admin;
-<tr class="table-Default">
-    <th>@Row</th>
-    <td>@UserRoles.FirstName</td>
-    <td>@UserRoles.LastName</td>
-    <td>@UserRoles.Email</td>
-    <td>
-        <div class="container">
-            <div class="row">
-                @foreach (var role in UserRoles.Roles!)
-                {
-                    <div class="col">
-                        <ChangeRoleButton Email="@UserRoles.Email" Role="@role" />
-                    </div>
-                }
+﻿@using HadisIelts.Client.Features.Account;
+@using HadisIelts.Shared.Requests.Admin;
+@if (UserRoles is not null)
+{
+    <tr class="table-Default">
+        <th>@Row</th>
+        <td><a class="btn btn-outline-secondary" href="@(ProfilePage.PageUrlWithId(UserRoles.Id))">@UserRoles.Email</a></td>
+        <td>@UserRoles.FirstName</td>
+        <td>@UserRoles.LastName</td>
+        <td>
+            <div class="container">
+                <div class="row">
+                    @foreach (var role in UserRoles.Roles!)
+                    {
+                        <div class="col">
+                            <ChangeRoleButton Email="@UserRoles.Email" Role="@role" />
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
-    </td>
-</tr>
+        </td>
+    </tr>
+}
 @code {
     [Parameter, EditorRequired]
-    public UserRolesSharedModel UserRoles { get; set; }
-    [Parameter,EditorRequired]
+    public UserRolesSharedModel? UserRoles { get; set; }
+    [Parameter, EditorRequired]
     public int Row { get; set; }
-    //private void HandleRoleChanged(UserRoles userRoles)
-    //{
-    //    UserRoles = userRoles;
-    //    StateHasChanged();
-    //}
 }

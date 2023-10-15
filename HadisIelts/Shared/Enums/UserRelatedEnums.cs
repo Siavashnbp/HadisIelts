@@ -4,7 +4,7 @@
     {
         public enum ApplicationRoles
         {
-            Admin = 0,
+            Administrator = 0,
             Teacher = 1,
             Student = 2,
         }

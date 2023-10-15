@@ -13,38 +13,46 @@
     }
 </button>
 @code {
+    #region Parameters
     [Parameter, EditorRequired]
     public Tuple<ApplicationRoles, bool> Role { get; set; }
     [Parameter, EditorRequired]
     public string Email { get; set; }
-    //[Parameter,EditorRequired]
-    //public EventCallback<UserRoles> OnRoleChanged { get; set; }
     private (ApplicationRoles Role, bool Value) _userRole;
+    #endregion
+
+    #region Initializers
     protected override void OnInitialized()
     {
         _userRole = (Role.Item1, Role.Item2);
-        base.OnInitialized();
     }
-    //private async Task<UserRoles> UpdateUserRole()
-    //{
-    //    var request = new UpdateUserRoleRequest(new UserNewRole
-    //        {
-    //            Email = Email,
-    //            Role = Role.Item1,
-    //            Value = !Role.Item2
-    //        });
-    //    var response = await Mediator.Send(request);
-    //    return response.UpdatedUserRole.UserRoles;
-    //}
+    #endregion
+
+    #region Methods
     private async Task UpdateUserRole()
     {
-        var request = new UpdateUserRoleRequest(
-                Email: Email,
-                Role: _userRole.Role,
-                Value: !_userRole.Value);
-        var response = await Mediator.Send(request);
-        var updatedRole = response.UserRoles.Roles.FirstOrDefault(x => x.Item1 == _userRole.Role);
-        _userRole = (updatedRole.Item1, updatedRole.Item2);
-        StateHasChanged();
+        try
+        {
+            var request = new UpdateUserRoleRequest(
+                    Email: Email,
+                    Role: _userRole.Role,
+                    Value: !_userRole.Value);
+            var response = await Mediator.Send(request);
+            if (response is not null)
+            {
+                var updatedRole = response.UserRoles.Roles?.FirstOrDefault(x => x.Item1 == _userRole.Role);
+                if (updatedRole is not null)
+                {
+                    _userRole = (updatedRole.Item1, updatedRole.Item2);
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
+    #endregion
 }

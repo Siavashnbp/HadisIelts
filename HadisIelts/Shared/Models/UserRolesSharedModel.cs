@@ -4,12 +4,14 @@ namespace HadisIelts.Shared.Models
 {
     public class UserRolesSharedModel
     {
+        public string Id { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string Email { get; init; }
         public List<Tuple<ApplicationRoles, bool>>? Roles { get; set; }
-        public UserRolesSharedModel(string email)
+        public UserRolesSharedModel(string id, string email)
         {
+            Id = id;
             Email = email;
         }
     }

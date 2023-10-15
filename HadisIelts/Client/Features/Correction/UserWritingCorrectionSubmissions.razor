@@ -73,9 +73,11 @@
     {
         if (_submittedServices is not null)
         {
-            var index = (page - 1) * 10;
-            _viewingSubmittedServices = _viewingSubmittedServices?.GetRange
-            (index, (index + 1) * 10 < _submittedServices.Count ? 10 : _submittedServices.Count - (index * 10));
+            var index = (page - 1) * Pagination.ItemPerPage;
+            _viewingSubmittedServices = _submittedServices?.GetRange
+            (index, (index + 1) * Pagination.ItemPerPage <= _submittedServices.Count ?
+            Pagination.ItemPerPage : _submittedServices.Count - (index * Pagination.ItemPerPage));
+            _page = page;
         }
     }
     #endregion

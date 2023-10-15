@@ -1,4 +1,4 @@
-﻿@page "/teacher/allSubmittedWritingCorrections"
+﻿@page "/services/writingCorrection/teacher/viewAll"
 @using HadisIelts.Client.Features.Correction.UserWritingCorrectionSubmissionsComponents
 @using HadisIelts.Client.Features.Teacher.AllSubmittedWritingCorrectionsComponents
 @using HadisIelts.Shared.Requests.Teacher;
@@ -23,10 +23,18 @@
             {
                 <div class="row justify-content-center">
                     <div class="col">
-                        <TeacherWritingCorrectionSubmissionsTable SubmittedServices="_submittedServices" />
                         @if (_submittedServices is null || _submittedServices.Count == 0)
                         {
                             <h5 class="text-warning">No Users Were Found!</h5>
+                        }
+                        else
+                        {
+                            <TeacherWritingCorrectionSubmissionsTable SubmittedServices="_showingServices" />
+                            <div class="row justify-content-center text-center">
+                                <div class="col-lg-4 justify-content-center text-center">
+                                    <Pagination CurrentPage="_page" ListCount="_submittedServices.Count" OnPageIsSelected="HandleOnPageIsSelected" />
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>
@@ -37,7 +45,9 @@
 @code {
     #region Parameters
     private string _searchPhrase = string.Empty;
-    private List<SubmittedServiceSummarySharedModel> _submittedServices = new List<SubmittedServiceSummarySharedModel>();
+    private List<SubmittedServiceSummarySharedModel>? _submittedServices;
+    private List<SubmittedServiceSummarySharedModel>? _showingServices;
+    private int _page = 1;
     #endregion
 
     #region Methods
@@ -46,9 +56,10 @@
         try
         {
             var response = await Mediator.Send(new GetAllSubmittedWritingCorrectionsSummaryRequest(_searchPhrase));
-            if (response.SubmittedServices is not null)
+            if (response?.SubmittedServices is not null)
             {
                 _submittedServices = response.SubmittedServices;
+                HandleOnPageIsSelected(1);
             }
         }
         catch (Exception)
@@ -57,4 +68,23 @@
         }
     }
     #endregion
+
+    #region EventHandler
+    private void HandleOnPageIsSelected(int page)
+    {
+        if (_submittedServices is not null)
+        {
+            var index = (page - 1) * Pagination.ItemPerPage;
+            _showingServices = _submittedServices?.GetRange
+            (index, (index + 1) * Pagination.ItemPerPage <= _submittedServices.Count ?
+            Pagination.ItemPerPage : _submittedServices.Count - (index * Pagination.ItemPerPage));
+            _page = page;
+        }
+    }
+    #endregion
+
+    #region Page Details and Information
+    public const string PageUrl = "/services/writingCorrection/teacher/viewAll";
+    #endregion
+
 }

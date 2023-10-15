@@ -1,5 +1,4 @@
-﻿using HadisIelts.Shared.Models;
-using HadisIelts.Shared.Requests.Payment;
+﻿using HadisIelts.Shared.Requests.Payment;
 
 namespace HadisIelts.Client.RequestHandlers.Payment
 {
@@ -9,13 +8,6 @@ namespace HadisIelts.Client.RequestHandlers.Payment
         public SubmitWritingCorrectionPaymentsHandler(HttpClient httpClient)
             : base(httpClient, UploadPaymentPackageRequest.EndpointUri)
         {
-        }
-        public override UploadPaymentPackageRequest.Response HandleError(HttpResponseMessage response)
-        {
-            return new UploadPaymentPackageRequest.Response(
-                Message: response.ReasonPhrase,
-                PaymentPictures: new List<PaymentPictureSharedModel>()
-            );
         }
     }
 }

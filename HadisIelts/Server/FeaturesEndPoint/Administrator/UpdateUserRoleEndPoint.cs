@@ -40,25 +40,18 @@ namespace HadisIelts.Server.FeaturesEndPoint.Administrator
                     }
                     var userRoles = await _userServices.GetUserRolesAsync(user);
                     return Ok(new UpdateUserRoleRequest.Response(
-
-                        UserRoles: new UserRolesSharedModel(email: user.Email!)
+                        UserRoles: new UserRolesSharedModel(id: user.Id, email: user.Email!)
                         {
                             FirstName = user.FirstName,
                             LastName = user.LastName,
                             Roles = userRoles
-                        },
-                        Message: "Role Updated"));
+                        }));
                 }
-                return Ok(new UpdateUserRoleRequest.Response(
-
-                    UserRoles: null!,
-                    Message: "User was not found"));
-
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

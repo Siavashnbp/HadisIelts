@@ -84,9 +84,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             Message: paymentGroup.Message
                         ));
                     }
-                    return Problem("Payment group was not updated");
                 }
-                return Problem("Payment group was not found");
+                return Conflict();
             }
             catch (Exception)
             {
