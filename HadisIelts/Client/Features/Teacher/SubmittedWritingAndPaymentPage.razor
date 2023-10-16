@@ -15,7 +15,7 @@
 @inject NavigationManager NavMan;
 <AuthorizeView Roles="Administrator,Teacher">
     <Authorized>
-        <div class="container" style="margin-top:10px;">
+        <div class="container main-container" style="margin-top:10px;">
             @if (_paymentGroup is not null && _paymentGroup.Service is not null)
             {
                 <div class="row">

@@ -6,5 +6,13 @@
   {
     "outputFile": "Features/Layout/NavBar.razor.css",
     "inputFile": "Features/Layout/NavBar.razor.scss"
+  },
+  {
+    "outputFile": "Features/Home/AboutMe.razor.css",
+    "inputFile": "Features/Home/AboutMe.razor.scss"
+  },
+  {
+    "outputFile": "Features/Home/AboutMePage.razor.css",
+    "inputFile": "Features/Home/AboutMePage.razor.scss"
   }
 ]

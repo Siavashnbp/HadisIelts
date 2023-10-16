@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Watch Include="**/*.scss" />
+    <Watch Remove="Features\Home\AboutMe.razor.scss" />
     <Watch Remove="Features\Home\HomePage.razor.scss" />
     <None Update="**/*.css" watch="false" />
   </ItemGroup>

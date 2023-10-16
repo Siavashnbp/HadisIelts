@@ -27,7 +27,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     if (!paymentGroup.IsPaymentCheckPending)
                     {
                         return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
-                            Message: "Payment group is already checked"));
+                            Message: "Payment is already checked"));
                     }
                     var paymentPictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
                     paymentPictures.Select(x =>
@@ -44,7 +44,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     _dbContext.PaymentPictures.UpdateRange(paymentPictures);
                     paymentGroup.IsPaymentApproved = request.IsApproved;
                     paymentGroup.IsPaymentCheckPending = false;
-                    paymentGroup.Message = request.IsApproved ? "Payment group is approved" : "Payment group is rejected";
+                    paymentGroup.Message = request.IsApproved ? "Payment is approved" : "Payment is rejected";
                     paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
                     _dbContext.PaymentGroups.Update(paymentGroup);
                     var changes = _dbContext.SaveChanges();
