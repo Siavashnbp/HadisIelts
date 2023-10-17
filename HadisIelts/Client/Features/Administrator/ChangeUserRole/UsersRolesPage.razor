@@ -6,7 +6,7 @@
 
 <AuthorizeView Roles="Administrator">
     <Authorized>
-        <div class="container">
+        <div class="container main-container">
             <table class="table table-hover" style="margin-top:10px;text-align:center;vertical-align:middle;border:solid;border-color:#a9233c;">
                 <thead>
                     <tr class="table-secondary" style="vertical-align:middle;">
@@ -21,7 +21,7 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
-                                        <button class="btn btn-secondary" onclick="@(()=>GetRolesAsync(_pageNumber))">Search</button>
+                                        <button class="btn btn-secondary" onclick="@(()=>GetRolesAsync())">Search</button>
                                     </div>
                                 </div>
                             </div>
@@ -49,11 +49,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (_usersRoles is not null && _usersRoles.Count > 0)
+                    @if (_showingUsers is not null && _showingUsers.Count > 0)
                     {
-                        @for (int i = 0; i < _usersRoles.Count; i++)
+                        @for (int i = 0; i < _showingUsers.Count; i++)
                         {
-                            <UserRoleRowComponent UserRoles="_usersRoles[i]" Row="@(((_pageNumber-1)*10)+i+1)" />
+                            <UserRoleRowComponent UserRoles="_showingUsers[i]" Row="@(((_page-1)*10)+i+1)" />
                         }
                     }
                     else
@@ -68,23 +68,13 @@
             </table>
             @if (_usersRoles is not null && _usersRoles.Count > 0)
             {
-                <div class="row align-items-center justify-content-center">
-                    @if (!_isFirstPage)
-                    {
-                        <button class="btn btn-outline-dark" style="width:80px; margin:5px;" @onclick="(()=>GetRolesAsync(--_pageNumber))"> Previous </button>
-                    }
-                    Page @_pageNumber
-                    @if (!_isLastPage)
-                    {
-                        <button class="btn btn-outline-dark text-center" style="width:80px;margin:5px;" @onclick="(()=>GetRolesAsync(++_pageNumber))"> Next </button>
-                    }
-                </div>
+                <Pagination CurrentPage="_page" ListCount="_usersRoles.Count" OnPageIsSelected="HandleOnPageIsSelected" />
             }
         </div>
     </Authorized>
     <NotAuthorized>
 
-        @if (_authenticationState.User.Identity!.IsAuthenticated)
+        @if (_authenticationState!.User.Identity!.IsAuthenticated)
         {
             <NotAuthorizedComponent />
         }
@@ -95,12 +85,15 @@
     </NotAuthorized>
 </AuthorizeView>
 @code {
-    private AuthenticationState _authenticationState { get; set; }
+    #region Parameters
+    private AuthenticationState? _authenticationState { get; set; }
     private List<UserRolesSharedModel>? _usersRoles { get; set; }
-    public int _pageNumber { get; set; } = 1;
-    private bool _isFirstPage { get; set; } = true;
-    private bool _isLastPage { get; set; }
+    private List<UserRolesSharedModel>? _showingUsers { get; set; }
+    public int _page { get; set; } = 1;
     public string _searchPhrase { get; set; } = string.Empty;
+    #endregion
+
+    #region Initializers
     protected override async Task OnInitializedAsync()
     {
         try
@@ -113,18 +106,47 @@
             throw;
         }
     }
-    private async Task GetRolesAsync(int pageNumber)
+    #endregion
+
+    #region Methods
+    private async Task GetRolesAsync()
     {
-        var request = new GetUsersRolesRequest(UserSearchPhrase : _searchPhrase);
-        var response = await Mediator.Send(request);
-        if (response is not null)
+        try
         {
-            _usersRoles = response.UsersRoles;
-            if (_pageNumber ==1)
+
+            var request = new GetUsersRolesRequest(UserSearchPhrase: _searchPhrase);
+            var response = await Mediator.Send(request);
+            if (response is not null)
             {
-                _isFirstPage = true;
+                _usersRoles = response.UsersRoles;
+                HandleOnPageIsSelected(1);
+                StateHasChanged();
             }
-            StateHasChanged();
         }
-    }    
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    #endregion
+
+    #region EventHandlers
+    private void HandleOnPageIsSelected(int page)
+    {
+        if (_usersRoles is not null)
+        {
+            var index = (page - 1) * Pagination.ItemPerPage;
+            _showingUsers = _usersRoles?.GetRange
+            (index, (index + 1) * Pagination.ItemPerPage <= _usersRoles.Count ?
+            Pagination.ItemPerPage : _usersRoles.Count - (index * Pagination.ItemPerPage));
+            _page = page;
+        }
+    }
+    #endregion
+
+    #region Page Details and Information
+    public const string PageUrl = "/administrator/usersroles";
+    #endregion
+
 }

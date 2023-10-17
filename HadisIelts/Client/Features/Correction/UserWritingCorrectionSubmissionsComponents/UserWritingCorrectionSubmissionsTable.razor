@@ -1,4 +1,5 @@
-﻿<table class="table table-hover">
+﻿@using HadisIelts.Client.Features.Payment;
+<table class="table table-hover">
     <thead>
         <tr>
             <th>Submission Date</th>
@@ -7,7 +8,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in SubmittedServices)
+        @foreach (var item in SubmittedServices!)
         {
             <tr class="@(item.IsCorrected?"table-success":"table-info")">                
                 <td>@item.SubmissionDateTime</td>
@@ -25,7 +26,7 @@
                     }
                 </td>
                 <td>
-                    <a class="btn btn-primary" href=@($"/payment/writingCorrection/{item.PaymentId}")>View</a>
+                    <a class="btn btn-primary" href=@(WritingCorrectionPaymentPage.PageUrl(item.PaymentId!))>View</a>
                 </td>
             </tr>
         }
@@ -33,5 +34,5 @@
 </table>
 @code {
     [Parameter, EditorRequired]
-    public List<SubmittedServiceSummarySharedModel> SubmittedServices { get; set; }
+    public List<SubmittedServiceSummarySharedModel>? SubmittedServices { get; set; }
 }

@@ -18,7 +18,10 @@
             </th>
             <th>
                 <h5>Price</h5>
-            </th>           
+            </th>   
+            <th>
+                <h5>Correction</h5>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -51,7 +54,17 @@
                         <h6>
                             @($"{file.PriceGroup.Price:n0}")
                         </h6>
-                    </td>                    
+                    </td>       
+                    <td>
+                        @if (file.CorrectedWriting is null)
+                        {
+                            <h5>Not Corrected</h5>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary" @onclick="(()=>DownloadFileFromStream(file.CorrectedWriting.Data,file.CorrectedWriting.Name))"> <i class="fa fa-download"> Download</i></button>
+                        }
+                    </td>
                 </tr>
             }
         }
@@ -69,10 +82,17 @@
     private async Task DownloadFileFromStream(WritingFileSharedModel writingFile)
     {
         var fileStream = GetFileStream(writingFile.Data);
-        var fileName = $"{writingFile.Name}.docx";
+        var fileName = $"{writingFile.Name}";
 
         using var streamRef = new DotNetStreamReference(stream: fileStream);
 
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+    private async Task DownloadFileFromStream(string data, string name)
+    {
+        var fileStream = GetFileStream(data);
+        var fileName = $"{name}";
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
         await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
     }
 }

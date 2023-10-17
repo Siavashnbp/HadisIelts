@@ -1,5 +1,5 @@
-﻿@page "/profile"
-@page "/profile/{UserId}"
+﻿@page "/account/profile"
+@page "/account/{UserId}"
 @using HadisIelts.Client.Features.Account.Models;
 @using HadisIelts.Client.Services.User;
 @using HadisIelts.Shared.Requests.Account;
@@ -9,8 +9,8 @@
 <AuthorizeView>
     <Authorized>
         <EditForm Model="_userInformation" OnValidSubmit="UpdateUserInformation" Context="UpdateUserInformation">
-            <div class="container main-form col-lg-6">
-                <div class="row">                    
+            <div class="container main-form col-lg-6 main-container">
+                <div class="row">
                     <div class="d-flex" style="flex-direction:column;">
                         <div class="form-floating">
                             <input class="form-control" value="@(_userInformation.Username)" type="text" Id="floatingUsername" disabled />
@@ -45,7 +45,9 @@
                                     {
                                         <button class="btn btn-success" type="submit" style="margin:2px;">Update</button>
                                         <button class="btn btn-danger" type="button" style="margin:2px;"
-                                        @onclick="(()=>ResetUserInformation())">Cancle</button>
+                                        @onclick="(()=>ResetUserInformation())">
+                                            Cancle
+                                        </button>
                                     }
                                 }
                             </div>
@@ -58,12 +60,16 @@
 </AuthorizeView>
 
 @code {
+    #region Parameter
     [Parameter]
     public string UserId { get; set; } = string.Empty;
-    private string _currentUserId;
-    private UserInformationSharedModel _userInformation = new UserInformationSharedModel(string.Empty, string.Empty);
-    private UserInformationSharedModel _defaultInformation;
+    private string _currentUserId = string.Empty;
+    private UserInformationSharedModel _userInformation = new UserInformationSharedModel(string.Empty, string.Empty, string.Empty);
+    private UserInformationSharedModel _defaultInformation = new UserInformationSharedModel(string.Empty, string.Empty, string.Empty);
     private bool _isEditEnabled = false;
+    #endregion
+
+    #region Initializers
     protected override async Task OnInitializedAsync()
     {
         try
@@ -77,40 +83,38 @@
         }
         catch (Exception)
         {
-
-            throw;
-        }
-    }
-    private async Task GetUserInformation()
-    {
-        try
-        {
-            var userInfoRequest = new GetUserInformationRequest(UserId);
-            var result = await Mediator.Send(userInfoRequest);
-            if (result is not null)
-            {
-                _userInformation = new UserInformationSharedModel(
-                    username: result.userInformation.Username,
-                    email: result.userInformation.Email)
-                    {
-                        FirstName = result.userInformation.FirstName,
-                        LastName = result.userInformation.LastName,
-                        Skype = result.userInformation.Skype,
-                    };
-                _defaultInformation = new UserInformationSharedModel(username: result.userInformation.Username,
-                email: result.userInformation.Email)
-                    {
-                        FirstName = result.userInformation.FirstName,
-                        LastName = result.userInformation.LastName,
-                        Skype = result.userInformation.Skype,
-                    };
-            }
-            StateHasChanged();
-        }
-        catch (NullReferenceException)
-        {
             NavMan.NavigateTo("/BadRequest");
         }
+    }
+    #endregion
+
+    #region Methods
+    private async Task GetUserInformation()
+    {
+        var userInfoRequest = new GetUserInformationRequest(UserId);
+        var result = await Mediator.Send(userInfoRequest);
+        if (result is not null)
+        {
+            _userInformation = new UserInformationSharedModel(
+                id: result.UserInformation.Id,
+                username: result.UserInformation.Username,
+                email: result.UserInformation.Email)
+                {
+                    FirstName = result.UserInformation.FirstName,
+                    LastName = result.UserInformation.LastName,
+                    Skype = result.UserInformation.Skype,
+                };
+            _defaultInformation = new UserInformationSharedModel(
+                id: result.UserInformation.Id,
+                username: result.UserInformation.Username,
+            email: result.UserInformation.Email)
+                {
+                    FirstName = result.UserInformation.FirstName,
+                    LastName = result.UserInformation.LastName,
+                    Skype = result.UserInformation.Skype,
+                };
+        }
+        StateHasChanged();
     }
     private async Task UpdateUserInformation()
     {
@@ -132,6 +136,9 @@
             throw;
         }
     }
+    #endregion
+
+    #region Events
     private void ResetUserInformation()
     {
         _userInformation.FirstName = _defaultInformation.FirstName;
@@ -140,4 +147,11 @@
         _isEditEnabled = false;
         StateHasChanged();
     }
+    #endregion
+
+    #region Page Details and Information
+    public const string PageUrl = "/account/profile";
+    public static string PageUrlWithId(string id) => $"/account/{id}";
+    #endregion
+
 }

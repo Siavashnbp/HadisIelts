@@ -1,5 +1,7 @@
-﻿using HadisIelts.Shared.Requests.Correction;
+﻿using HadisIelts.Shared.Models;
+using HadisIelts.Shared.Requests.Correction;
 using MediatR;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace HadisIelts.Client.RequestHandlers.General
@@ -17,10 +19,14 @@ namespace HadisIelts.Client.RequestHandlers.General
             var response = await _httpClient.GetAsync(GetWritingTypesRequest.EndPointUri, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<GetWritingTypesRequest.Response>();
-                return result;
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<GetWritingTypesRequest.Response>();
+                    return result!;
+                }
+                return new GetWritingTypesRequest.Response(new List<WritingTypeSharedModel>());
             }
-            return null;
+            return null!;
         }
     }
 }

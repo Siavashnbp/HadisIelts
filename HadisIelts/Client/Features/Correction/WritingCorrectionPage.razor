@@ -1,7 +1,6 @@
-﻿@page "/Services/WritingCorrection/UploadFiles"
+﻿@page "/services/writingCorrection/uploadFiles"
 @using HadisIelts.Client.Features.Correction.Models;
 @using HadisIelts.Client.Features.Correction.WritingCorrectionComponents
-@using HadisIelts.Client.Features.Teacher.Models;
 @using HadisIelts.Client.Services.File;
 @using HadisIelts.Client.Services.User;
 @using HadisIelts.Client.Services.Writing;
@@ -9,20 +8,19 @@
 @using HadisIelts.Shared.Requests.Payment;
 @using HadisIelts.Shared.Requests.User;
 @using MediatR;
-@using System.Timers;
 @using Microsoft.AspNetCore.Authorization;
 @inject NavigationManager NavigationManager
 @inject IMediator Mediator;
 @inject IFileServices FileServices;
 @inject IClientWritingServices ClientWritingServices;
 @inject IUserServices UserServices;
-@attribute [Authorize]
-<BreadCrumb Pages=@BreadCrumbs />
+<BreadCrumb Pages=@_breadCrumbs />
 <AuthorizeView>
     <Authorized>
-        <div class="container">
+        <div class="container main-container">
             <div style="margin:35px; justify-content:end;">
                 <button class="btn btn-primary" @onclick="(()=>_showPricesModal=true)">View Prices</button>
+                <button class="btn btn-success" @onclick="(()=>_showWritingFormatModal=true)">Correct Writing Format</button>
             </div>
             <div class="container main-form col-lg-8">
                 <div class="row">
@@ -104,10 +102,15 @@
         {
             <ViewPricesModal WritingCorrectionPrices="_writingCorrectionPrices" OnCloseButtonIsClicked="HandleModalCloesButtonIsClicked" />
         }
+        else if (_showWritingFormatModal)
+        {
+            <WritingFormatModalComponent OnCloseButtonIsClicked="HandleWritingFormatModalCloesButtonIsClicked" />
+        }
     </Authorized>
 </AuthorizeView>
 
 @code {
+    #region Parameter
     private bool _areFilesProcessed;
     private string? _errorMessage = string.Empty;
     private string? _successMessage = string.Empty;
@@ -115,44 +118,51 @@
     private uint _totalPrice = 0;
     private bool _requiresEmailResponse = false;
     private bool _showPricesModal = false;
+    private bool _showWritingFormatModal = false;
     private List<WritingFileModel> _userWritingFiles = new List<WritingFileModel>();
     private ProcessWritingCorrectionFilesModel _processRequest = new ProcessWritingCorrectionFilesModel();
     private List<ProcessedWritingFileSharedModel> _processedWritingFiles = new List<ProcessedWritingFileSharedModel>();
     private List<ProcessedWritingFileSharedModel> _writingFilesWithError = new List<ProcessedWritingFileSharedModel>();
     private List<WritingTypeSharedModel> _writingTypes = new List<WritingTypeSharedModel>();
     private List<PriceGroupSharedModel> _writingCorrectionPrices = new List<PriceGroupSharedModel>();
+    #endregion
+
+    #region Initializers
     protected override async Task OnInitializedAsync()
     {
-        var response = await Mediator.Send(new UploadWritingCorrectionAllowanceRequest());        
-        if (response.IsAllowed)
+        var response = await Mediator.Send(new UploadWritingCorrectionAllowanceRequest());
+        if (response is not null)
         {
-            _writingTypes = await ClientWritingServices.GetWritingTypesAsync();
-            _writingCorrectionPrices = await GetWritingCorrectionPrices();
+            if (response.IsAllowed)
+            {
+                _writingTypes = await ClientWritingServices.GetWritingTypesAsync();
+                _writingCorrectionPrices = await GetWritingCorrectionPrices();
+            }
+            else
+            {
+                NavigationManager.NavigateTo(UserWritingCorrectionSubmissions.PageUrl);
+            }
         }
-        else
-        {
-            NavigationManager.NavigateTo(UserWritingCorrectionSubmissions.PageAddress);
-        }
-
     }
+    #endregion
+
+    #region Methods
     private async Task UploadFilesToProcessAsync()
     {
         try
         {
             _processRequest = new ProcessWritingCorrectionFilesModel();
             if (_userWritingFiles is not null && _userWritingFiles.Count > 0 &&
-                _userWritingFiles.All(x => x.WritingType.Id != 0))
+                _userWritingFiles.All(x => _writingTypes.Exists(y => y.Id == x.WritingType.Id)))
             {
                 _processRequest.WritingFiles = FileServices.ConvertWritingFileModelToWritingFilesAsync(_userWritingFiles);
                 var request = new ProcessWritingFilesRequest(WritingFiles: _processRequest.WritingFiles);
                 var response = await Mediator.Send(request);
                 _processedWritingFiles.Clear();
                 _userWritingFiles.Clear();
-                if (response.ProcessedWritingCorrection is not null
-                    && response.ProcessedWritingCorrection.ProcessedWritingFiles is not null)
+                if (response?.ProcessedWritingCorrection?.ProcessedWritingFiles is not null)
                 {
                     _areFilesProcessed = true;
-                    _successMessage = response.Message;
                     _totalPrice = response.ProcessedWritingCorrection.TotalPrice;
                     _processedWritingFiles = new List<ProcessedWritingFileSharedModel>();
                     _writingFilesWithError = new List<ProcessedWritingFileSharedModel>();
@@ -169,16 +179,10 @@
                     }
                     StateHasChanged();
                 }
-                else
-                {
-                    _errorMessage = response.Message;
-                    StateHasChanged();
-                }
             }
         }
         catch (Exception)
         {
-
             throw;
         }
     }
@@ -186,7 +190,7 @@
     {
         try
         {
-            if (_processedWritingFiles is not null && _processedWritingFiles.Count > 0)
+            if (_processedWritingFiles?.Count > 0)
             {
                 var files = new List<ProcessedWritingFileSharedModel>();
                 foreach (var item in _processedWritingFiles)
@@ -218,7 +222,7 @@
                             RequiresEmailResponse = _requiresEmailResponse,
                             TotalPrice = _totalPrice,
                             IsCorrected = false
-                });
+                        });
                     var result = await Mediator.Send(request);
                     if (result is not null)
                     {
@@ -254,7 +258,9 @@
         }
         return prices;
     }
-    //EventHandlers
+    #endregion
+
+    #region EventHandlers
     private async Task HandleOnFileIsLoadedAsync(InputFileChangeEventArgs e)
     {
         _areFilesProcessed = false;
@@ -303,6 +309,17 @@
             }
         }
     }
+    private void HandleModalCloesButtonIsClicked()
+    {
+        _showPricesModal = false;
+    }
+    private void HandleWritingFormatModalCloesButtonIsClicked()
+    {
+        _showWritingFormatModal = false;
+    }
+    #endregion
+
+    #region Events
     private void ClearFiles()
     {
         _processedWritingFiles.Clear();
@@ -311,14 +328,16 @@
         _areFilesProcessed = false;
         StateHasChanged();
     }
-    private void HandleModalCloesButtonIsClicked()
-    {
-        _showPricesModal = false;
-    }
+
+    #endregion
+
+    #region Page Details and Information
+    public const string PageUrl = "/services/writingCorrection/uploadFiles";
     //BreadCrumbs
-    public List<WebsitePage> BreadCrumbs { get; set; } = new List<WebsitePage>{
+    private List<WebsitePage> _breadCrumbs { get; set; } = new List<WebsitePage>{
         new WebsitePage{Name="Home",DisplayName="Home",Link="/" },
-        new WebsitePage{Name="Services",DisplayName="Correction Services",Link="/Services" },
-        new WebsitePage{Name="WritingCorrection",DisplayName="Writing Correction",Link="/Services/Correction/Writing" },
+        new WebsitePage{Name="WritingCorrection",DisplayName="Writing Correction Submissions",Link=UserWritingCorrectionSubmissions.PageUrl },
+        new WebsitePage{Name="UploadWritings",DisplayName="Upload Writings" },
     };
+    #endregion
 }

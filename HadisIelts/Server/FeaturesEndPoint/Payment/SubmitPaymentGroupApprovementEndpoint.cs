@@ -1,9 +1,10 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
-using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Server.Models;
+using HadisIelts.Server.Services.Email;
 using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Payment
@@ -12,17 +13,16 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         .WithRequest<SubmitPaymentGroupApprovementRequest>
         .WithActionResult<SubmitPaymentGroupApprovementRequest.Response>
     {
-        private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
-        private readonly ICustomRepositoryServices<PaymentPicture, int> _paymentPictureRepository;
         private readonly ApplicationDbContext _dbContext;
-        public SubmitPaymentGroupApprovementEndpoint(ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
-            ApplicationDbContext dbContext,
-            ICustomRepositoryServices<PaymentPicture, int> paymentPictureRepository)
+        private readonly IEmailServices _emailServices;
+        private readonly UserManager<ApplicationUser> _userManager;
+        public SubmitPaymentGroupApprovementEndpoint(ApplicationDbContext dbContext,
+            IEmailServices emailServices,
+            UserManager<ApplicationUser> userManager)
         {
-            _paymentGroupRepository = paymentGroupRepository;
             _dbContext = dbContext;
-            _paymentPictureRepository = paymentPictureRepository;
-
+            _emailServices = emailServices;
+            _userManager = userManager;
         }
         [Authorize(Roles = "Administrator,Teacher")]
         [HttpPost(SubmitPaymentGroupApprovementRequest.EndpointUri)]
@@ -30,41 +30,56 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentGroupId);
+                var paymentGroup = await _dbContext.PaymentGroups.FindAsync(request.PaymentGroupId);
                 if (paymentGroup != null)
                 {
                     if (!paymentGroup.IsPaymentCheckPending)
                     {
-                        return BadRequest(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
-                            Message: "Payment group is already checked"));
+                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
+                            Message: "Payment is already checked"));
                     }
                     var paymentPictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
-                    if (paymentPictures.Any(x => !x.IsVerified && !x.IsVerificationPending))
+                    paymentPictures.Select(x =>
                     {
-                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
-                            Message: "One of payments is rejected"));
-                    }
-                    paymentPictures.Select(x => { x.IsVerified = request.IsApproved; x.IsVerificationPending = false; return x; });
-                    var wasPicturesUpdateSuccessful = _paymentPictureRepository.UpdateAll(paymentPictures);
-                    if (wasPicturesUpdateSuccessful)
+                        if (x.IsVerificationPending)
+                        {
+                            x.IsVerified = request.IsApproved;
+                            x.IsVerificationPending = false;
+                            x.Message = request.IsApproved ? "Verified" : "Rejected";
+                        }
+                        return x;
+                    });
+
+                    _dbContext.PaymentPictures.UpdateRange(paymentPictures);
+                    paymentGroup.IsPaymentApproved = request.IsApproved;
+                    paymentGroup.IsPaymentCheckPending = false;
+                    paymentGroup.Message = request.IsApproved ? "Payment is approved" : "Payment is rejected";
+                    paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
+                    _dbContext.PaymentGroups.Update(paymentGroup);
+                    var changes = _dbContext.SaveChanges();
+                    if (changes > 0)
                     {
-                        paymentGroup.IsPaymentApproved = request.IsApproved;
-                        paymentGroup.IsPaymentCheckPending = false;
-                        paymentGroup.Message = request.IsApproved ? "Payment group is approved" : "Payment group is rejected";
-                        paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
-                        var wasPaymentGroupUpdatSuccessful = _paymentGroupRepository.Update(paymentGroup);
-                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: wasPaymentGroupUpdatSuccessful,
+                        var user = await _userManager.FindByIdAsync(paymentGroup.UserId);
+                        if (user != null)
+                        {
+                            var emailMessage = new EmailMessage(user.Email!);
+                            emailMessage.Subject = "Writing Correction Payment";
+                            emailMessage.Content = $"Your payment has benn checked and " +
+                                $"{(paymentGroup.IsPaymentApproved ? "it is approved. Your writings will be corrected soon."
+                                : "it is rejectd. Please check your submitted payment files.")} ";
+                            _emailServices.SendEmail(emailMessage);
+                        }
+                        return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: changes > 0,
                             Message: paymentGroup.Message));
                     }
-                    return Problem("Payment pictures could not be updated");
-
+                    return Conflict();
                 }
-                return Problem("Payment group was not found");
+
+                return NoContent();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

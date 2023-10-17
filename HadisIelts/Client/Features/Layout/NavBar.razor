@@ -1,0 +1,56 @@
+﻿@using HadisIelts.Client.Features.Administrator.ChangeUserRole;
+@using HadisIelts.Client.Features.Correction;
+@using HadisIelts.Client.Features.Home;
+@using HadisIelts.Client.Features.Teacher;
+
+<nav class="navbar navbar-expand-lg sticky-top" style="background-color:bisque;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href=#>
+            <img src="img/Hadis Rajabi Final Rev.png" style="width:130px; margin-left:15px;" />
+        </a>
+        <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor01" style="margin-left:50px;">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">
+                        Home
+                        <span class="visually-hidden">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Writing<br /> Correction</a>
+                    <div class="dropdown-menu">
+                        <AuthorizeView>
+                            <Authorized>
+                                <a class="dropdown-item" href="@(UserWritingCorrectionSubmissions.PageUrl)">View Submitted Files</a>
+                            </Authorized>
+                        </AuthorizeView>
+                        <a class="dropdown-item" href="@(WritingCorrectionPage.PageUrl)">Upload Files</a>
+                        <a class="dropdown-item" href="@(WritingCorrectionPricesPage.PageUrl)">Prices</a>
+                        <AuthorizeView Roles="Administrator,Teacher">
+                            <Authorized>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="@(AllSubmittedWritingCorrectionsPage.PageUrl)">Users Submitted Files</a>
+                            </Authorized>
+                        </AuthorizeView>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@(AboutMePage.PageUrl)">About Me</a>
+                </li>
+                <AuthorizeView Roles="Administrator">
+                    <Authorized>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@(UsersRolesPage.PageUrl)">Manage Users</a>
+                        </li>
+                    </Authorized>
+                </AuthorizeView>                
+            </ul>
+            <div class="text-center" style="vertical-align:middle;">
+                <LoginDisplay />
+            </div>
+        </div>
+    </div>
+</nav>

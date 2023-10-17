@@ -9,5 +9,9 @@ namespace HadisIelts.Client.RequestHandlers.Correction
             : base(httpClient, GetUserSubmittedWritingCorrectionRequest.EndpointUri)
         {
         }
+        public override GetUserSubmittedWritingCorrectionRequest.Response HandleError(HttpResponseMessage response)
+        {
+            return new GetUserSubmittedWritingCorrectionRequest.Response(null!, response.StatusCode);
+        }
     }
 }

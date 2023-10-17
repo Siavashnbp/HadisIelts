@@ -19,17 +19,25 @@ namespace HadisIelts.Server.FeaturesEndPoint.General
         [HttpGet(GetWritingTypesRequest.EndPointUri)]
         public override ActionResult<GetWritingTypesRequest.Response> Handle()
         {
-            var result = _writingTypeRepository.GetAll();
-            if (result is not null)
+            try
             {
-                var writingTypes = new List<WritingTypeSharedModel>();
-                foreach (var item in result)
+                var result = _writingTypeRepository.GetAll();
+                if (result is not null)
                 {
-                    writingTypes.Add(new WritingTypeSharedModel { Id = item.Id, Name = item.Name });
+                    var writingTypes = new List<WritingTypeSharedModel>();
+                    foreach (var item in result)
+                    {
+                        writingTypes.Add(new WritingTypeSharedModel { Id = item.Id, Name = item.Name });
+                    }
+                    return Ok(new GetWritingTypesRequest.Response(writingTypes));
                 }
-                return Ok(new GetWritingTypesRequest.Response(writingTypes));
+                return NoContent();
             }
-            return Problem(null);
+            catch (Exception)
+            {
+                return BadRequest();
+
+            }
         }
 
     }

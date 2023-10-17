@@ -13,7 +13,7 @@ namespace HadisIelts.Client.Services.User
         {
             var claims = await _authenticationProvider.GetAuthenticationStateAsync();
             var claim = claims.User.Claims.FirstOrDefault(claim => claim.Type == "sub");
-            return claim?.Value;
+            return claim?.Value!;
         }
     }
 }

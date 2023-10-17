@@ -1,7 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Teacher;
@@ -14,18 +13,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         .WithRequest<UploadCorrectedWritingRequest>
         .WithActionResult<UploadCorrectedWritingRequest.Response>
     {
-        private readonly ICustomRepositoryServices<CorrectedWritingFile, int> _correctedWritingRepository;
-        private readonly ICustomRepositoryServices<WritingCorrectionFile, int> _writingCorrectionRepository;
         private readonly IUserServices _userServices;
         private readonly ApplicationDbContext _dbContext;
-        public UploadCorrectedWritingEndpoint(ICustomRepositoryServices<CorrectedWritingFile, int> correctedWritingRepository,
-            IUserServices userServices,
-            ICustomRepositoryServices<WritingCorrectionFile, int> writingCorrectionRepository,
+        public UploadCorrectedWritingEndpoint(IUserServices userServices,
             ApplicationDbContext dbContext)
         {
-            _correctedWritingRepository = correctedWritingRepository;
             _userServices = userServices;
-            _writingCorrectionRepository = writingCorrectionRepository;
             _dbContext = dbContext;
         }
         [Authorize(Roles = "Administrator,Teacher")]
@@ -34,7 +27,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
         {
             try
             {
-                var writingFile = await _writingCorrectionRepository.FindByIdAsync(request.WritingFileId);
+                var writingFile = await _dbContext.WritingCorrectionFiles.FindAsync(request.WritingFileId);
                 if (writingFile != null)
                 {
                     var userId = _userServices.GetUserIdFromClaims(User.Claims.ToList());
@@ -43,6 +36,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                         CorrectorId = userId,
                         Data = request.Data,
                         Name = request.Name,
+                        ContentType = request.ContentType,
                         UploadDateTime = DateTime.UtcNow,
                         WritingCorrectionFileId = writingFile.Id,
                         WritingCorrectionSubmissionGroupId = writingFile.WritingCorrectionSubmissionGroupId
@@ -51,23 +45,26 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                     if (submittedCorrectedFile is not null)
                     {
                         writingFile.CorrectedWritingFileId = submittedCorrectedFile.Entity.Id;
-                        _writingCorrectionRepository.Update(writingFile);
-                        return Ok(new UploadCorrectedWritingRequest.Response(new CorrectedWritingSharedModel
+                        _dbContext.WritingCorrectionFiles.Update(writingFile);
+                        var changes = _dbContext.SaveChanges();
+                        if (changes > 0)
                         {
-                            Id = submittedCorrectedFile.Entity.Id,
-                            Data = submittedCorrectedFile.Entity.Data,
-                            Name = submittedCorrectedFile.Entity.Name,
-                            UploadDateTime = submittedCorrectedFile.Entity.UploadDateTime,
-                            WritingFileId = submittedCorrectedFile.Entity.WritingCorrectionFileId
-                        }));
+                            return Ok(new UploadCorrectedWritingRequest.Response(new CorrectedWritingSharedModel
+                            {
+                                Id = submittedCorrectedFile.Entity.Id,
+                                Data = submittedCorrectedFile.Entity.Data,
+                                Name = submittedCorrectedFile.Entity.Name,
+                                UploadDateTime = submittedCorrectedFile.Entity.UploadDateTime,
+                                WritingFileId = submittedCorrectedFile.Entity.WritingCorrectionFileId
+                            }));
+                        }
                     }
                 }
-                return Problem("Writing file was not found");
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

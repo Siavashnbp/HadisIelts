@@ -9,5 +9,10 @@ namespace HadisIelts.Client.RequestHandlers.Account
             : base(httpClient, GetUserInformationRequest.EndPointUri)
         {
         }
+        public override GetUserInformationRequest.Response HandleError(HttpResponseMessage response)
+        {
+            var result = new GetUserInformationRequest.Response(null!, response.StatusCode);
+            return result;
+        }
     }
 }

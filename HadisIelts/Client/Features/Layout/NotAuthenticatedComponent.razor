@@ -1,4 +1,5 @@
-﻿@inject NavigationManager NavMan;
+﻿@page "/NotAuthenticated"
+@inject NavigationManager NavMan;
 <div class="main-form col-lg-4 col-md-6" style="justify-content:center; text-align:center;">
     <h4>
         You need to login to access this page
@@ -12,5 +13,8 @@
     </div>
 </div>
 @code {
+    #region Page Details and Information
+    public const string PageUrl = "/NotAuthenticated";
+    #endregion
 
 }

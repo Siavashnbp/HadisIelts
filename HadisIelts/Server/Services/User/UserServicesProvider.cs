@@ -38,7 +38,7 @@ namespace HadisIelts.Server.Services.User
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
-                return new UserInformationSharedModel(username: user.UserName!, email: user.Email!)
+                return new UserInformationSharedModel(id: user.Id, username: user.UserName!, email: user.Email!)
                 {
                     Birthday = DateOnly.FromDateTime(user.DateOfBirth!.Value),
                     FirstName = user.FirstName!,
@@ -64,7 +64,7 @@ namespace HadisIelts.Server.Services.User
                 {
                     var roles = await _userManager.GetRolesAsync(user);
                     var applicationRoles = ConvertToApplicationRoles(roles.ToList());
-                    usersRoles.Add(new UserRolesSharedModel(email: user.Email!)
+                    usersRoles.Add(new UserRolesSharedModel(id: user.Id, email: user.Email!)
                     {
                         FirstName = user.FirstName,
                         LastName = user.LastName,
@@ -97,7 +97,7 @@ namespace HadisIelts.Server.Services.User
         {
             var applicationRoles = new List<Tuple<ApplicationRoles, bool>>
             {
-                Tuple.Create(ApplicationRoles.Admin, roles.Contains("Administrator")),
+                Tuple.Create(ApplicationRoles.Administrator, roles.Contains("Administrator")),
                 Tuple.Create(ApplicationRoles.Teacher, roles.Contains("Teacher")),
                 Tuple.Create(ApplicationRoles.Student, roles.Contains("Student"))
             };

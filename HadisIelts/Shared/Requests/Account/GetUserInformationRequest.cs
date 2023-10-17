@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using HadisIelts.Shared.Models;
 using MediatR;
+using System.Net;
 
 namespace HadisIelts.Shared.Requests.Account
 {
@@ -8,7 +9,7 @@ namespace HadisIelts.Shared.Requests.Account
         IRequest<GetUserInformationRequest.Response>
     {
         public const string EndPointUri = "/api/user/getUserInfo";
-        public record Response(UserInformationSharedModel userInformation);
+        public record Response(UserInformationSharedModel UserInformation, HttpStatusCode StatusCode);
     }
     public class GetUserInformationRequestValidator : AbstractValidator<GetUserInformationRequest>
     {

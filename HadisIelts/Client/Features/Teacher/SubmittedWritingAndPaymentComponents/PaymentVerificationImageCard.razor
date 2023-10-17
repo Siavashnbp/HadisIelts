@@ -31,11 +31,13 @@
                             {
                                 <button type="button" class="btn btn-sm btn-outline-success"
                                     @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.Id,true)))">
-                                    <i class="fa fa-check-square">  Approve</i>
+                                    <i class="fa fa-check-square"></i>
+                                    Approve
                                 </button>
                                 <button type="button" class="btn btn-sm btn-outline-danger"
                                     @onclick="(async()=>await OnVerificationButtonIsClicked.InvokeAsync((PaymentFile.Id,false)))">
-                                    <i class="fa fa-remove">  Reject</i>
+                                    <i class="fa fa-remove"></i>
+                                    Reject
                                 </button>
                             }
                             else
@@ -44,7 +46,8 @@
                                 {                                    
                                 <button type="button" class="btn btn-sm btn-outline-warning"
                                     @onclick="(async()=>await OnEditButtonIsClicked.InvokeAsync(PaymentFile.Id))">
-                                    <i class="fa fa-edit">  Edit</i>
+                                    <i class="fa fa-edit"></i>
+                                        Edit
                                 </button>
                                 }
                             }

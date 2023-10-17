@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HadisIelts.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230920083219_SetupDb")]
-    partial class SetupDb
+    [Migration("20231016140508_RequiresEmailResponseField")]
+    partial class RequiresEmailResponseField
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -243,7 +243,7 @@ namespace HadisIelts.Server.Migrations
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.ApplicationWritingType", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
@@ -251,18 +251,18 @@ namespace HadisIelts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("WritingTypes");
                 });
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.CorrectedWritingFile", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("CorrectorID")
+                    b.Property<string>("CorrectorId")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -277,23 +277,23 @@ namespace HadisIelts.Server.Migrations
                     b.Property<DateTime>("UploadDateTime")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("WritingCorrectionFileID")
+                    b.Property<int>("WritingCorrectionFileId")
                         .HasColumnType("int");
 
-                    b.Property<string>("WritingCorrectionSubmissionGroupID")
+                    b.Property<string>("WritingCorrectionSubmissionGroupId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("WritingCorrectionSubmissionGroupID");
+                    b.HasIndex("WritingCorrectionSubmissionGroupId");
 
                     b.ToTable("CorrectedWritingFiles");
                 });
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.PaymentGroup", b =>
                 {
-                    b.Property<string>("ID")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(255)");
 
@@ -310,27 +310,27 @@ namespace HadisIelts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("ServiceID")
+                    b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubmittedServiceID")
+                    b.Property<string>("SubmittedServiceId")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ServiceID");
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("PaymentGroups");
                 });
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.PaymentPicture", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
@@ -356,23 +356,23 @@ namespace HadisIelts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("PaymentGroupID")
+                    b.Property<string>("PaymentGroupId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("UploadDateTime")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("PaymentGroupID");
+                    b.HasIndex("PaymentGroupId");
 
                     b.ToTable("PaymentPictures");
                 });
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.Service", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
@@ -383,21 +383,21 @@ namespace HadisIelts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Services");
                 });
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.WritingCorrectionFile", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("ApplicationWritingTypeID")
+                    b.Property<int>("ApplicationWritingTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CorrectedWritingFileID")
+                    b.Property<int?>("CorrectedWritingFileId")
                         .HasColumnType("int");
 
                     b.Property<string>("Data")
@@ -418,22 +418,22 @@ namespace HadisIelts.Server.Migrations
                     b.Property<int>("WordCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("WritingCorrectionSubmissionGroupID")
+                    b.Property<string>("WritingCorrectionSubmissionGroupId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ApplicationWritingTypeID");
+                    b.HasIndex("ApplicationWritingTypeId");
 
-                    b.HasIndex("WritingCorrectionSubmissionGroupID");
+                    b.HasIndex("WritingCorrectionSubmissionGroupId");
 
                     b.ToTable("WritingCorrectionFiles");
                 });
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.WritingCorrectionServicePrice", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
@@ -449,27 +449,30 @@ namespace HadisIelts.Server.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<int>("WritingTypeID")
+                    b.Property<int>("WritingTypeId")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("WritingTypeID");
+                    b.HasIndex("WritingTypeId");
 
                     b.ToTable("WritingCorrectionServicePrices");
                 });
 
             modelBuilder.Entity("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", b =>
                 {
-                    b.Property<string>("ID")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(255)");
 
                     b.Property<bool>("IsCorrected")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("PaymentGroupID")
+                    b.Property<string>("PaymentGroupId")
                         .HasColumnType("longtext");
+
+                    b.Property<bool>("RequiresEmailResponse")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("SubmissionDateTime")
                         .HasColumnType("datetime(6)");
@@ -477,13 +480,13 @@ namespace HadisIelts.Server.Migrations
                     b.Property<uint>("TotalPrice")
                         .HasColumnType("int unsigned");
 
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserId");
 
                     b.ToTable("WritingCorrectionSubmissionGroups");
                 });
@@ -624,7 +627,7 @@ namespace HadisIelts.Server.Migrations
                 {
                     b.HasOne("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", "WritingCorrectionSubmissionGroup")
                         .WithMany("CorrectedWritingFiles")
-                        .HasForeignKey("WritingCorrectionSubmissionGroupID")
+                        .HasForeignKey("WritingCorrectionSubmissionGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -635,7 +638,7 @@ namespace HadisIelts.Server.Migrations
                 {
                     b.HasOne("HadisIelts.Server.Models.Entities.Service", "Service")
                         .WithMany("PaymentGroups")
-                        .HasForeignKey("ServiceID")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -646,7 +649,7 @@ namespace HadisIelts.Server.Migrations
                 {
                     b.HasOne("HadisIelts.Server.Models.Entities.PaymentGroup", "PaymentGroup")
                         .WithMany("PaymentPictures")
-                        .HasForeignKey("PaymentGroupID")
+                        .HasForeignKey("PaymentGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -657,13 +660,13 @@ namespace HadisIelts.Server.Migrations
                 {
                     b.HasOne("HadisIelts.Server.Models.Entities.ApplicationWritingType", "ApplicationWritingType")
                         .WithMany("WritingCorrectionFiles")
-                        .HasForeignKey("ApplicationWritingTypeID")
+                        .HasForeignKey("ApplicationWritingTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HadisIelts.Server.Models.Entities.WritingCorrectionSubmissionGroup", "WritingCorrectionSubmissionGroup")
                         .WithMany("WritingCorrectionFiles")
-                        .HasForeignKey("WritingCorrectionSubmissionGroupID")
+                        .HasForeignKey("WritingCorrectionSubmissionGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -676,7 +679,7 @@ namespace HadisIelts.Server.Migrations
                 {
                     b.HasOne("HadisIelts.Server.Models.Entities.ApplicationWritingType", "WritingType")
                         .WithMany("WritingCorrectionServicePrices")
-                        .HasForeignKey("WritingTypeID")
+                        .HasForeignKey("WritingTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -687,7 +690,7 @@ namespace HadisIelts.Server.Migrations
                 {
                     b.HasOne("HadisIelts.Server.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserID")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

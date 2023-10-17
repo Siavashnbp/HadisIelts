@@ -4,7 +4,7 @@ using MediatR;
 
 namespace HadisIelts.Shared.Requests.Teacher
 {
-    public record UploadCorrectedWritingRequest(int WritingFileId, string Name, string Data)
+    public record UploadCorrectedWritingRequest(int WritingFileId, string Name, string Data, string ContentType)
         : IRequest<UploadCorrectedWritingRequest.Response>
     {
         public const string EndpointUri = "/api/services/writingCorrection/uploadCorrectedFile";

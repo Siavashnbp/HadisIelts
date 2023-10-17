@@ -32,12 +32,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.User
                     var HasCorrectionPending = _userServices.HasWritingCorrectionPending(_dbContext, userId);
                     return Ok(new UploadWritingCorrectionAllowanceRequest.Response(IsAllowed: !HasCorrectionPending));
                 }
-                return Problem("User was not found");
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

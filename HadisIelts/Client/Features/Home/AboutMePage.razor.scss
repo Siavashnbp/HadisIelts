@@ -1,0 +1,225 @@
+﻿$color-title:hsl(346, 70%, 52%);
+$color-black: hsl(0, 0%, 5%);
+$color-color: hsl(0, 0%, 100%);
+$color-title-background: hsl(0, 61%, 93%);
+
+$color-writing: hsl(164, 95%, 28%);
+$color-speaking: hsl(207, 84%, 54%);
+$color-reading: hsl(24, 87%, 50%);
+$color-listening: hsl(332, 75%, 50%);
+
+$porcent-writing: 100;
+$porcent-speaking: 95;
+$porcent-listening: 100;
+$porcent-reading: 90;
+
+@function strokeDashoffset($num) {
+    @return 440 - (440 * $num) / 100;
+}
+
+.page-title-container{
+    background-color:$color-title-background;    
+    margin-top:10px;
+    width:100%;
+}
+
+.page-title{
+    color:$color-title;
+    font-family: 'Comic Sans MS';
+}
+
+.page-title-description {
+    font-family: 'Comic Sans MS';
+}
+//timeline start
+
+.timeline-container {
+    font-family: "Roboto",sans-serif;
+    width: 50%;
+    margin: auto;
+    display: block;
+    position: relative;
+}
+
+.timeline-container ul.tl {
+    margin: 20px 0;
+    padding: 0;
+    display: inline-block;
+}
+
+.timeline-container ul.tl li {
+    list-style: none;
+    margin: auto;
+    min-height: 50px;
+    border-left: 1px solid #86D6FF;
+    padding: 0 0 50px 30px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.timeline-container ul.tl li.dashed {
+    border-left: 1px dashed #86D6FF;
+}
+
+.timeline-container ul.tl li:last-child {
+    border-left: 0;
+}
+
+.timeline-container ul.tl li .item-icon {
+    position: absolute;
+    left: -18px;
+    top: -5px;
+    content: " ";
+    border: 8px solid rgba(255, 255, 255, 0.74);
+    border-radius: 500%;
+    background: #258CC7;
+    height: 20px;
+    width: 20px;
+}
+
+.timeline-container ul.tl li:hover::before {
+    border-color: #258CC7;
+    transition: all 1000ms ease-in-out;
+}
+
+ul.tl li .item-text {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+ul.tl li .item-title {
+}
+
+ul.tl li .item-detail {
+    color: rgba(0,0,0,0.5);
+    font-size: 12px;
+}
+
+ul.tl li .item-timestamp {
+    color: #8D8D8D;
+    font-size: 12px;
+    text-align: right;
+    padding-left: 20px;
+}
+
+//timeline end
+
+* {
+    box-sizing: border-box;
+}
+
+.container__progressbars {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    min-width: 270px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.progressbar {
+    position: relative;
+    width: 170px;
+    height: 170px;
+    transform: rotate(-90deg);
+}
+
+.progressbar__svg {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.progressbar__svg-circle {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 10;
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+    stroke: hsl(0, 0%, 86%);
+    stroke-linecap: round;
+    transform: translate(5px, 5px); // stroke-width / 2
+}
+
+.shadow {
+
+    &-writing {
+        filter: drop-shadow(0 0 5px $color-writing)
+    }
+
+    &-speaking {
+        filter: drop-shadow(0 0 5px $color-speaking)
+    }
+
+    &-reading {
+        filter: drop-shadow(0 0 5px $color-reading)
+    }
+
+    &-listening {
+        filter: drop-shadow(0 0 5px $color-listening)
+    }
+}
+
+.circle {
+
+    &-writing {
+        animation: anim-circle-writing 1s ease-in forwards;
+    }
+
+    &-speaking {
+        animation: anim-circle-speaking 1s ease-in forwards;
+    }
+
+    &-reading {
+        animation: anim-circle-reading 1s ease-in forwards;
+    }
+
+    &-listening {
+        animation: anim-circle-listening 1s ease-in forwards;
+    }
+}
+
+.progressbar__text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding: 0.25em 0.5em;
+    color: hsl(0, 1%, 22%);
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 0.25em;
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+//  @keyframes
+
+@keyframes anim-circle-writing {
+
+    to {
+        stroke-dashoffset: strokeDashoffset($porcent-writing);
+    }
+}
+
+@keyframes anim-circle-speaking {
+
+    to {
+        stroke-dashoffset: strokeDashoffset($porcent-speaking);
+    }
+}
+
+@keyframes anim-circle-reading {
+
+    to {
+        stroke-dashoffset: strokeDashoffset($porcent-reading);
+    }
+}
+
+@keyframes anim-circle-listening {
+
+    to {
+        stroke-dashoffset: strokeDashoffset($porcent-listening);
+    }
+}

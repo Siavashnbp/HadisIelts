@@ -1,22 +1,22 @@
-﻿@page "/services/writingCorrection/price"
+﻿@page "/services/writingCorrection/prices"
 @using HadisIelts.Client.Features.Teacher.Models;
 @using HadisIelts.Client.Features.Teacher.WritingCorrectionPricesComponents
 @using HadisIelts.Shared.Requests.Correction;
 @using HadisIelts.Shared.Requests.Teacher;
 @inject IMediator Mediator
-<div class="container">
+@attribute [AllowAnonymous]
+<div class="container main-container">
     <div class="row">
         <div class="col">
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <WritingCorrectionPriceTable WritingCorrectionPrices="_writingCorrectionPrices" WritingTypes="_writingTypes"/>
+            <WritingCorrectionPriceTable WritingCorrectionPrices="_writingCorrectionPrices" WritingTypes="_writingTypes" />
         </div>
     </div>
     <AuthorizeView Roles="Teacher,Administrator" Context="Auth">
         <Authorized>
-
             <EditForm Model="_writingPriceModel" OnValidSubmit="AddWritingCorrectionPrice">
                 <FluentValidationValidator />
                 <div class="container text-center list-group-item-light main-form" style="text-align:center;border:dashed;padding:5px;">
@@ -43,7 +43,6 @@
                                     @foreach (var item in _writingTypes)
                                     {
                                         <option value="@(item.Id)">@(item.Name)</option>
-                                        <option value="@(item.Id)">@(item.Name)</option>
                                     }
                                 }
                             </InputSelect>
@@ -66,7 +65,7 @@
                             <div class="row justify-content-center">
                                 <div class="col-lg-10 form-floating">
                                     <InputNumber class="form-control" TValue="int?" @bind-Value="_writingPriceModel.Price"
-                                                 style="text-align:center;" id="floatingPriceInput" placeholder="Price" 
+                                                 style="text-align:center;" id="floatingPriceInput" placeholder="Price"
                                                  EnableMinMax="true" Min="0" />
                                     <label for="floatingPriceInput" style="margin-left:10px;">Price</label>
                                 </div>
@@ -81,6 +80,19 @@
                             </button>
                         </div>
                     </div>
+                    @if (_errorMessage != string.Empty)
+                    {
+                        <div class="row justify-content-center" style="margin-top:15px;">
+                            <div class="col-lg-8">
+                                <div class="alert alert-danger" role="alert">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                                    </svg>
+                                    @_errorMessage
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </EditForm>
             <div class="container secondary-form col-lg-4">
@@ -90,7 +102,7 @@
                 <div class="row justify-content-center">
                     <div class="col">
                         <InputText class="form-control" @bind-Value="_addWritingTypeName" />
-                        <button class="btn btn-warning" @onclick="(()=>AddWritingTypeAsync(_addWritingTypeName))">Add</button>
+                        <button class="btn btn-warning" @onclick="(()=>AddWritingTypeAsync(_addWritingTypeName!))">Add</button>
                     </div>
                 </div>
             </div>
@@ -98,46 +110,79 @@
     </AuthorizeView>
 </div>
 @code {
+    #region Parameters
     private List<WritingPriceModel> _writingCorrectionPrices = new List<WritingPriceModel>();
-    private List<WritingTypeSharedModel> _writingTypes = new();
+    private List<WritingTypeSharedModel>? _writingTypes;
     private WritingPriceModel _writingPriceModel = new WritingPriceModel();
     private string? _addWritingTypeName;
+    private string _errorMessage = string.Empty;
+    #endregion
+
+    #region Initializers
     protected override async Task OnInitializedAsync()
     {
-        await GetWritingTypes();
-        await GetWritingCorrectionPrices();
+        try
+        {
+            await GetWritingTypes();
+            await GetWritingCorrectionPrices();
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
+    #endregion
+
+    #region Methods
     private async Task AddWritingCorrectionPrice()
     {
-        var request = new AddWritingCorrectionPriceRequest(new WritingCorrectionServicePriceSharedModel
-            {
-                Name = _writingPriceModel.Name,
-                Price = (uint)_writingPriceModel.Price!,
-                WordCount = (int)_writingPriceModel.WordCount!,
-                WritingTypeId = _writingPriceModel.WritingType.Id
-            });
-        var result = await Mediator.Send(request);
-        if (result is not null)
+        try
         {
-            var writingType = _writingTypes.FirstOrDefault(x => x.Id == result.AddedWritingCorrectionServicePrice.WritingTypeId);
-            if (writingType is not null)
+            var request = new AddWritingCorrectionPriceRequest(new WritingCorrectionServicePriceSharedModel
+                {
+                    Name = _writingPriceModel.Name,
+                    Price = (uint)_writingPriceModel.Price!,
+                    WordCount = (int)_writingPriceModel.WordCount!,
+                    WritingTypeId = _writingPriceModel.WritingType.Id
+                });
+            var result = await Mediator.Send(request);
+            if (result is not null)
             {
-                _writingCorrectionPrices.Add(new WritingPriceModel
+                if (result.AddedWritingCorrectionServicePrice.Id != -409)
+                {
+                    var writingType = _writingTypes!.FirstOrDefault
+                    (x => x.Id == result.AddedWritingCorrectionServicePrice.WritingTypeId);
+                    if (writingType is not null)
                     {
-                        Id = result.AddedWritingCorrectionServicePrice.Id,
-                        Name = result.AddedWritingCorrectionServicePrice.Name,
-                        Price = (int)result.AddedWritingCorrectionServicePrice.Price,
-                        WordCount = result.AddedWritingCorrectionServicePrice.WordCount,
-                        WritingType = writingType
-                    });
-                    _writingPriceModel = new WritingPriceModel();
+                        _writingCorrectionPrices.Add(new WritingPriceModel
+                            {
+                                Id = result.AddedWritingCorrectionServicePrice.Id,
+                                Name = result.AddedWritingCorrectionServicePrice.Name,
+                                Price = (int)result.AddedWritingCorrectionServicePrice.Price,
+                                WordCount = result.AddedWritingCorrectionServicePrice.WordCount,
+                                WritingType = writingType
+                            });
+                        _writingPriceModel = new WritingPriceModel();
+                        _errorMessage = string.Empty;
+                    }
+                    StateHasChanged();
+                }
+                else
+                {
+                    _errorMessage = "Writing type could not be found";
+                }
             }
-            StateHasChanged();
+        }
+        catch (Exception)
+        {
+
+            throw;
         }
     }
     private async Task GetWritingCorrectionPrices()
     {
-        try
+        if (_writingTypes is not null)
         {
             var result = await Mediator.Send(new GetWritingCorrectionPricesRequest());
             if (result is not null)
@@ -151,16 +196,11 @@
                             Name = item.Name,
                             Price = (int)item.Price,
                             WordCount = item.WordCount,
-                            WritingType = writingType
+                            WritingType = writingType!
                         });
                 }
                 StateHasChanged();
             }
-        }
-        catch (Exception)
-        {
-
-            throw;
         }
     }
     private async Task GetWritingTypes()
@@ -183,16 +223,24 @@
     }
     private async Task AddWritingTypeAsync(string name)
     {
-        var request = new AddWritingTypeRequest(name);
-        var response = await Mediator.Send(request);
-        if (response?.WritingType is not null)
+        if (name != string.Empty)
         {
-            _writingTypes.Add(new WritingTypeSharedModel
-                {
-                    Id = response.WritingType.Id,
-                    Name = response.WritingType.Name
-                });
-            StateHasChanged();
+            var request = new AddWritingTypeRequest(name);
+            var response = await Mediator.Send(request);
+            if (response?.WritingType is not null)
+            {
+                _writingTypes!.Add(new WritingTypeSharedModel
+                    {
+                        Id = response.WritingType.Id,
+                        Name = response.WritingType.Name
+                    });
+                StateHasChanged();
+            }
         }
     }
+    #endregion
+
+    #region Page Details and Information
+    public const string PageUrl = "/services/writingCorrection/prices";
+    #endregion
 }

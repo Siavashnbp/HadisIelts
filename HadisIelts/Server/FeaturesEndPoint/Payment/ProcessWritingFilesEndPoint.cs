@@ -27,7 +27,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
             try
             {
                 uint price = 0;
-                List<ProcessedWritingFileSharedModel> processedWritingFiles = new List<ProcessedWritingFileSharedModel>();
+                var processedWritingFiles = new List<ProcessedWritingFileSharedModel>();
                 foreach (var file in request.WritingFiles)
                 {
                     int wordCount = 0;
@@ -36,7 +36,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     {
                         processedWritingFiles.Add(new ProcessedWritingFileSharedModel
                         {
-                            PriceGroup = null,
+                            PriceGroup = null!,
                             WritingFile = file,
                             Message = "Writing is not in correct format"
                         });
@@ -61,12 +61,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 {
                     ProcessedWritingFiles = processedWritingFiles,
                     TotalPrice = price,
-                },
-                Message: string.Empty));
+                }));
             }
             catch (Exception)
             {
-                return BadRequest("Something went wrong");
+                return BadRequest();
             }
         }
     }

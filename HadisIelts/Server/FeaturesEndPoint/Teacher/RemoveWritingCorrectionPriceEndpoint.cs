@@ -24,12 +24,16 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
             try
             {
                 var item = await _writingCorrectionPriceRepository.FindByIdAsync(request.Id);
-                var result = _writingCorrectionPriceRepository.Delete(item);
-                return Ok(new RemoveWritingCorrectionPriceRequest.Response(result));
+                if (item is not null)
+                {
+                    var result = _writingCorrectionPriceRepository.Delete(item);
+                    return Ok(new RemoveWritingCorrectionPriceRequest.Response(result));
+                }
+                return Conflict();
             }
             catch (Exception)
             {
-                throw;
+                return BadRequest();
             }
         }
     }

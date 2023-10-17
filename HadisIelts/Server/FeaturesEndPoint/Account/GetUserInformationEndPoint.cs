@@ -6,6 +6,7 @@ using HadisIelts.Shared.Requests.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Account
 {
@@ -52,22 +53,22 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                         var requestedUser = await _userManager.FindByIdAsync(request.UserId);
                         if (requestedUser is not null)
                         {
-                            var response = new UserInformationSharedModel(requestedUser.UserName!, requestedUser.Email!)
+                            var response = new UserInformationSharedModel(request.UserId, requestedUser.UserName!, requestedUser.Email!)
                             {
                                 FirstName = requestedUser.FirstName,
                                 LastName = requestedUser.LastName,
                                 Skype = requestedUser.Skype,
                             };
-                            return Ok(new GetUserInformationRequest.Response(response));
+                            return Ok(new GetUserInformationRequest.Response(response, HttpStatusCode.OK));
                         }
-                        return Ok(new GetUserInformationRequest.Response(new UserInformationSharedModel(null!, null!)));
+                        return NoContent();
                     }
                 }
                 return Unauthorized();
             }
             catch (Exception)
             {
-                throw;
+                return BadRequest();
             }
 
         }

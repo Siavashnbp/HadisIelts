@@ -1,0 +1,135 @@
+﻿@page "/aboutMe"
+@attribute [AllowAnonymous]
+<div class="container main-container">
+    <div class="row text-center page-title-container">
+        <div class="col-12">
+            <h2 class="page-title">
+                <strong>I'm Hadis Rajabi</strong>
+            </h2>
+            <p class="page-title-description">
+                Ielts Teacher , Toefl Teacher , Writing Corrector , Speaking Corrector
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="text-center">
+                <h3>Toefl Score</h3>
+                <h4>Overall Score: 114/120</h4>
+                <div class="row" style="margin-bottom:20px;">
+                    <div class="col text-center">
+                        <h4>Listening</h4>
+                        <div class="container__progressbars">
+                            <div class="progressbar">
+                                <svg class="progressbar__svg">
+                                    <circle cx="80" cy="80" r="70" class="progressbar__svg-circle circle-listening shadow-listening"> </circle>
+                                </svg>
+                                <span class="progressbar__text shadow-listening">30/30</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col text-center">
+                        <h4>Reading</h4>
+                        <div class="container__progressbars">
+                            <div class="progressbar">
+                                <svg class="progressbar__svg">
+                                    <circle cx="80" cy="80" r="70" class="progressbar__svg-circle circle-reading shadow-reading"> </circle>
+                                </svg>
+                                <span class="progressbar__text shadow-reading">26/30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-center">
+                        <h4>Speaking</h4>
+                        <div class="container__progressbars">
+                            <div class="progressbar">
+                                <svg class="progressbar__svg">
+                                    <circle cx="80" cy="80" r="70" class="progressbar__svg-circle circle-speaking shadow-speaking"> </circle>
+                                </svg>
+                                <span class="progressbar__text shadow-speaking">28/30</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col text-center">
+                        <h4>Writing</h4>
+                        <div class="container__progressbars">
+                            <div class="progressbar">
+                                <svg class="progressbar__svg">
+                                    <circle cx="80" cy="80" r="70" class="progressbar__svg-circle circle-writing shadow-writing"> </circle>
+                                </svg>
+                                <span class="progressbar__text shadow-writing">30/30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col text-center">
+            <h2>My Work Experience</h2>
+            <div class="timeline-container">
+                <ul class="tl" style="margin-bottom:0px;">
+                    <li>
+                        <div class="item-icon"></div>
+                        <div class="item-text">
+                            <div class="item-title">General English Teacher</div>
+                            <div class="item-detail">DNI Institute</div>
+                        </div>
+                        <div class="item-timestamp">
+                            1390<br> 1391
+                        </div>
+                    </li>
+                    <li class="tl-item">
+                        <div class="item-icon"></div>
+                        <div class="item-text">
+                            <div class="item-title">Ielts and Toefl Teacher</div>
+                            <div class="item-detail">Mahras Institute</div>
+                        </div>
+                        <div class="item-timestamp">
+                            1393<br /> 1395
+                        </div>
+                    </li>
+                    <li class="tl-item  dashed">
+                        <div class="item-icon"></div>
+                        <div class="item-text">
+                            <div class="item-title">Ielts Teacher</div>
+                            <div class="item-detail">Gamma Institute</div>
+                        </div>
+                        <div class="item-timestamp">
+                            1395<br> 1397
+                        </div>
+                    </li>
+                    <li class="tl-item">
+                        <div class="item-icon"></div>
+                        <div class="item-text">
+                            <div class="item-title">Private Teacher</div>
+                            <div class="item-detail">Shiraz, Iran</div>
+                        </div>
+                        <div class="item-timestamp">
+                            1397<br /> present
+                        </div>
+                    </li>
+                </ul>
+                <figure>
+                    <blockquote class="blockquote">
+                        <p class="mb-0 page-title">
+                            I believe I didn't live in vein. I have always had a goal and tried to build something.
+                            I'm a teacher now and always.
+                        </p>
+
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        With Love, Hadis
+                    </figcaption>
+                </figure>                
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    #region Page Details and Information
+    public const string PageUrl = "/aboutMe";
+    #endregion
+}

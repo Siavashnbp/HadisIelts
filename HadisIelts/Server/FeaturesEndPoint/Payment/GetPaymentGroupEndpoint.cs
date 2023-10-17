@@ -1,7 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
-using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Payment;
@@ -14,14 +12,11 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         .WithRequest<GetPaymentGroupRequest>
         .WithActionResult<GetPaymentGroupRequest.Response>
     {
-        private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
         private readonly ApplicationDbContext _dbContext;
         private readonly IUserServices _userServices;
-        public GetPaymentGroupEndpoint(ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
-            ApplicationDbContext dbContext,
+        public GetPaymentGroupEndpoint(ApplicationDbContext dbContext,
             IUserServices userServices)
         {
-            _paymentGroupRepository = paymentGroupRepository;
             _dbContext = dbContext;
             _userServices = userServices;
         }
@@ -31,13 +26,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentId);
+                var paymentGroup = await _dbContext.PaymentGroups.FindAsync(request.PaymentId);
                 if (paymentGroup is not null)
                 {
                     if (_userServices.IsUserOwnerOrSpecificRoles(userId: paymentGroup.UserId, claims: User.Claims.ToList(),
                         roles: new List<string> { "Administrator", "Teacher" }))
                     {
-
                         var pictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
                         var payments = new List<PaymentPictureSharedModel>();
                         foreach (var item in pictures)
@@ -64,23 +58,17 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                                 PaymentPictures = payments,
                                 Id = paymentGroup.Id,
                                 SubmittedServiceId = paymentGroup.SubmittedServiceId,
-                            }));
+                            })
+                        { StatusCode = System.Net.HttpStatusCode.OK });
                     }
                     return Unauthorized();
                 }
-                return Ok(new GetPaymentGroupRequest.Response(
-                    new PaymentGroupSharedModel<WritingCorrectionPackageSharedModel>
-                    {
-                        Id = "NotFound",
-                        Message = "Payment Group wan not found"
-                    }));
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
@@ -13,18 +12,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         .WithRequest<UploadPaymentPackageRequest>
         .WithActionResult<UploadPaymentPackageRequest.Response>
     {
-        private readonly ICustomRepositoryServices<PaymentGroup, string>
-            _paymentGroupRepository;
-        private readonly ICustomRepositoryServices<PaymentPicture, int>
-            _paymentPictureRepository;
         private readonly ApplicationDbContext _dbContext;
-        public SubmitPaymentFilesEndpoint(
-            ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
-            ICustomRepositoryServices<PaymentPicture, int> paymentPictureRepository,
-            ApplicationDbContext dbContext)
+        public SubmitPaymentFilesEndpoint(ApplicationDbContext dbContext)
         {
-            _paymentGroupRepository = paymentGroupRepository;
-            _paymentPictureRepository = paymentPictureRepository;
             _dbContext = dbContext;
         }
         /// <summary>
@@ -46,7 +36,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         {
             try
             {
-                var paymentGroup = await _paymentGroupRepository.FindByIdAsync(request.PaymentId);
+                var paymentGroup = await _dbContext.PaymentGroups.FindAsync(request.PaymentId);
                 if (paymentGroup is not null)
                 {
                     var paymentFiles = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
@@ -63,27 +53,30 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             Message = "Verification pending",
                             UploadDateTime = DateTime.UtcNow,
                         };
-                        var addedPayment = _paymentPictureRepository.Insert(paymentFile);
-                        paymentFile.Id = addedPayment.Id;
+                        var addedPayment = _dbContext.PaymentPictures.Add(paymentFile);
+                        paymentFile.Id = addedPayment.Entity.Id;
                         paymentFiles.Add(paymentFile);
                     }
                     paymentGroup.Message = "Verification Pending";
                     paymentGroup.IsPaymentCheckPending = true;
                     paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
-                    var paymentGroupIsUpdated = _paymentGroupRepository.Update(paymentGroup);
-                    if (paymentGroupIsUpdated)
+                    _dbContext.PaymentGroups.Update(paymentGroup);
+                    var changes = _dbContext.SaveChanges();
+                    if (changes > 0)
                     {
                         var submittedPaymentfiles = new List<PaymentPictureSharedModel>();
                         foreach (var payment in paymentFiles)
                         {
                             submittedPaymentfiles.Add(new PaymentPictureSharedModel
                             {
+                                Id = payment.Id,
                                 Data = payment.Data,
                                 FileSuffix = payment.FileSuffix,
                                 IsVerified = false,
                                 Message = payment.Message,
                                 Name = payment.Name,
                                 UploadDateTime = payment.UploadDateTime,
+                                IsVerificationPending = payment.IsVerificationPending,
                             });
                         }
                         return Ok(new UploadPaymentPackageRequest.Response(
@@ -91,14 +84,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             Message: paymentGroup.Message
                         ));
                     }
-                    return Problem("Payment group was not updated");
                 }
-                return Problem("Payment group was not found");
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

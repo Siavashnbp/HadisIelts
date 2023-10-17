@@ -45,14 +45,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         };
                         return Ok(new SubmitPaymentVerificationRequest.Response(updatedPicture));
                     }
-                    return Problem("Picture could not be updated");
                 }
-                return Problem("Picture was not found");
+                return Conflict();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }

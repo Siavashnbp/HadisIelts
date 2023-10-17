@@ -13,9 +13,9 @@ namespace HadisIelts.Client.Services.File
             {
                 writingFiles.Add(new WritingFileSharedModel
                 {
-                    Data = file.FileData,
-                    Name = file.Name,
-                    WritingTypeId = file.WritingType.Id
+                    Data = file.FileData!,
+                    Name = file.Name!,
+                    WritingTypeId = file.WritingType!.Id
                 });
             }
             return writingFiles;
@@ -34,7 +34,7 @@ namespace HadisIelts.Client.Services.File
                     string bytesString = Convert.ToBase64String(fileBytes);
                     return bytesString;
                 }
-                return null;
+                return null!;
             }
         }
         public string ViewImageData(string imageData)

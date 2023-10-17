@@ -2,6 +2,7 @@ using FluentValidation.AspNetCore;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models;
 using HadisIelts.Server.Services.DbServices;
+using HadisIelts.Server.Services.Email;
 using HadisIelts.Server.Services.Files;
 using HadisIelts.Server.Services.Payment;
 using HadisIelts.Server.Services.User;
@@ -16,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySQL(connectionString));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 33))));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -60,10 +61,15 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
 });
 
+//Email configuration
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+
 builder.Services.AddScoped<IUserServices, UserServicesProvider>();
 builder.Services.AddTransient(typeof(ICustomRepositoryServices<,>), typeof(RepositoryServiceProvider<,>));
 builder.Services.AddScoped<IWordFileServices, WordFileServiceProvider>();
 builder.Services.AddScoped<IWritingCorrectionPayment, WritingCorrectionPaymentServiceProvider>();
+builder.Services.AddSingleton(emailConfig!);
+builder.Services.AddScoped<IEmailServices, EmailServiceProvider>();
 
 var app = builder.Build();
 

@@ -35,14 +35,14 @@ namespace HadisIelts.Server.Models
                 var roleManager = serviceProvider.ServiceProvider.GetService<RoleManager<IdentityRole>>();
                 var userManager = serviceProvider.ServiceProvider.GetService<UserManager<ApplicationUser>>();
                 var dbContext = serviceProvider.ServiceProvider.GetService<ApplicationDbContext>();
-                await CreateRoles(roleManager, _roles);
+                await CreateRoles(roleManager!, _roles);
                 await CreateDefaultUsers(userManager!, _users);
                 var userRoles = new List<(ApplicationUser User, List<string> Roles)>
                 {
                     (_users[0].User , new List<string>{_roles[0],_roles[2]}),
                     (_users[1].User , new List<string>{_roles[0],_roles[1]}),
                 };
-                await AssignRoles(userManager, userRoles);
+                await AssignRoles(userManager!, userRoles);
             }
             catch (Exception)
             {

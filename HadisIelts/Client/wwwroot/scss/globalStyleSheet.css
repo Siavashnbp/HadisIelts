@@ -9830,3 +9830,7 @@ textarea.form-control-lg {
   margin-top: 35px;
   text-align: center;
 }
+
+.main-container {
+  margin-bottom: 60px;
+}

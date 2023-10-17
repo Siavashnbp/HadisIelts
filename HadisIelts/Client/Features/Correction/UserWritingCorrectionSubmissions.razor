@@ -1,24 +1,26 @@
-﻿@page "/user/submissions/writingCorrections"
+﻿@page "/services/writingCorrection/submissions"
 @using HadisIelts.Client.Features.Correction.UserWritingCorrectionSubmissionsComponents
 @using HadisIelts.Client.Services.User;
 @using HadisIelts.Shared.Requests.Correction;
 @using Microsoft.AspNetCore.Authorization;
+@using System.Net;
 @inject IUserServices UserServices;
 @inject IMediator Mediator;
+@inject NavigationManager NavMan;
 
 <AuthorizeView>
     <Authorized>
-        @if (_submittedServices is not null)
+        @if (_submittedServices is not null && _viewingSubmittedServices is not null)
         {
-            <div class="container text-center" style="margin-top:15px;">
+            <div class="container text-center main-container" style="margin-top:15px;">
                 <div class="row justify-content-center">
                     <div class="col-lg-8">
-                        <UserWritingCorrectionSubmissionsTable SubmittedServices="_submittedServices" />
+                        <UserWritingCorrectionSubmissionsTable SubmittedServices="_viewingSubmittedServices" />
                     </div>
                 </div>
                 <div class="row justify-content-center text-center">
                     <div class="col-lg-4 justify-content-center text-center">
-                        <Pagination />
+                        <Pagination CurrentPage="_page" ListCount="_submittedServices.Count" OnPageIsSelected="HandleOnPageIsSelected" />
                     </div>
                 </div>
             </div>
@@ -26,27 +28,65 @@
     </Authorized>
 </AuthorizeView>
 @code {
-    public const string PageAddress = "/user/submissions/writingCorrections";
-    private List<SubmittedServiceSummarySharedModel> _submittedServices = new List<SubmittedServiceSummarySharedModel>();
-    private int _page = 0;
+    #region Parameters
+    private List<SubmittedServiceSummarySharedModel>? _submittedServices;
+    private int _page = 1;
+    private List<SubmittedServiceSummarySharedModel>? _viewingSubmittedServices;
+    #endregion
+
+    #region Initializers
     protected override async Task OnInitializedAsync()
     {
         try
         {
             await GetUserWritingCorrections();
+            _viewingSubmittedServices = _submittedServices;
         }
         catch (Exception)
         {
             throw;
         }
     }
+    #endregion
+
+    #region Methods
     private async Task GetUserWritingCorrections()
     {
         var userId = await UserServices.GetUserIdAsync();
         if (userId is not null)
         {
             var response = await Mediator.Send(new GetUserSubmittedWritingCorrectionRequest(userId));
-            _submittedServices = response.SubmittedServices;
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                _submittedServices = response.SubmittedServices;
+            }
+            else if(response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                NavMan.NavigateTo(NotAuthorizedComponent.PageUrl);
+            }            
         }
     }
+    #endregion
+
+    #region EventHandlers
+    private void HandleOnPageIsSelected(int page)
+    {
+        if (_submittedServices is not null)
+        {
+            var index = (page - 1) * Pagination.ItemPerPage;
+            _viewingSubmittedServices = _submittedServices?.GetRange
+            (index, (index + 1) * Pagination.ItemPerPage <= _submittedServices.Count ?
+            Pagination.ItemPerPage : _submittedServices.Count - (index * Pagination.ItemPerPage));
+            _page = page;
+        }
+    }
+    #endregion
+
+    #region Page Details and Information
+    public const string PageUrl = "/services/writingCorrection/submissions";
+    private List<WebsitePage> _pages = new List<WebsitePage>
+    {
+        new WebsitePage{Id=0,Name="Home",DisplayName="Home",Link="/" },
+    };
+    #endregion
 }

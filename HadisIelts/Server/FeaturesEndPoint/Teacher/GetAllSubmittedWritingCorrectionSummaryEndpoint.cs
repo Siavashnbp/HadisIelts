@@ -1,7 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
 using HadisIelts.Server.Models.Entities;
-using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Server.Services.User;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Teacher;
@@ -12,22 +11,19 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
 {
     public class GetAllSubmittedWritingCorrectionSummaryEndpoint : EndpointBaseAsync
         .WithRequest<GetAllSubmittedWritingCorrectionsSummaryRequest>
-        .WithResult<GetAllSubmittedWritingCorrectionsSummaryRequest.Response>
+        .WithActionResult<GetAllSubmittedWritingCorrectionsSummaryRequest.Response>
     {
-        private readonly ICustomRepositoryServices<PaymentGroup, string> _paymentGroupRepository;
         private readonly ApplicationDbContext _dbContext;
         private readonly IUserServices _userServices;
-        public GetAllSubmittedWritingCorrectionSummaryEndpoint(ICustomRepositoryServices<PaymentGroup, string> paymentGroupRepository,
-            ApplicationDbContext dbContext,
+        public GetAllSubmittedWritingCorrectionSummaryEndpoint(ApplicationDbContext dbContext,
             IUserServices userServices)
         {
-            _paymentGroupRepository = paymentGroupRepository;
             _dbContext = dbContext;
             _userServices = userServices;
         }
         [Authorize(Roles = "Administrator,Teacher")]
         [HttpPost(GetAllSubmittedWritingCorrectionsSummaryRequest.EndpointUri)]
-        public override async Task<GetAllSubmittedWritingCorrectionsSummaryRequest.Response> HandleAsync(GetAllSubmittedWritingCorrectionsSummaryRequest request, CancellationToken cancellationToken = default)
+        public override async Task<ActionResult<GetAllSubmittedWritingCorrectionsSummaryRequest.Response>> HandleAsync(GetAllSubmittedWritingCorrectionsSummaryRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -47,7 +43,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                     var submissionSummary = new List<SubmittedServiceSummarySharedModel>();
                     foreach (var submission in submissions)
                     {
-                        var payment = await _paymentGroupRepository.FindByIdAsync(submission.PaymentGroupId);
+                        var payment = await _dbContext.PaymentGroups.FindAsync(submission.PaymentGroupId);
                         submissionSummary.Add(new SubmittedServiceSummarySharedModel
                         {
                             UserDetails = await _userServices.GetUserInformationAsync(submission.UserId),
@@ -59,14 +55,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                         });
                     }
                     submissionSummary.Reverse();
-                    return new GetAllSubmittedWritingCorrectionsSummaryRequest.Response(submissionSummary);
+                    return Ok(new GetAllSubmittedWritingCorrectionsSummaryRequest.Response(submissionSummary));
                 }
-                return new GetAllSubmittedWritingCorrectionsSummaryRequest.Response(new List<SubmittedServiceSummarySharedModel>());
+                return NoContent();
             }
             catch (Exception)
             {
-
-                throw;
+                return BadRequest();
             }
         }
     }
