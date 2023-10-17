@@ -132,6 +132,7 @@
                 Name = eventArgs.File.Name,
                 FileSize = eventArgs.File.Size,
                 FileData = await FileServices.ReadUploadedFileDataAsync(eventArgs.File),
+                ContentType = eventArgs.File.ContentType,
                 WritingType = new WritingTypeSharedModel()
             };
     }

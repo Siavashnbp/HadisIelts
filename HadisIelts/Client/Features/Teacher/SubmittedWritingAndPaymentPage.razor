@@ -195,28 +195,6 @@
             throw;
         }
     }
-    private async Task UploadCorrectedFile(int writingFileId)
-    {
-        try
-        {
-            if (_correctedWriting is not null)
-            {
-                var request = new UploadCorrectedWritingRequest(WritingFileId: writingFileId,
-                    Name: _correctedWriting.Name, Data: _correctedWriting.Data);
-                var response = await Mediator.Send(request);
-                if (response?.CorrectedFile is not null)
-                {
-                    var processedWritingFile = _paymentGroup!.Service.ProcessedWritingFiles.FirstOrDefault(x => x.WritingFile.Id == writingFileId);
-                    processedWritingFile!.CorrectedWriting = response.CorrectedFile;
-                    StateHasChanged();
-                }
-            }
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-    }
     private async Task GetSubmittedWritings()
     {
         var request = new GetSubmittedWritingCorrectionFilesRequest(SubmissionId: _paymentGroup!.SubmittedServiceId);
@@ -256,16 +234,19 @@
     {
         try
         {
-            var request = new UploadCorrectedWritingRequest(WritingFileId: correctedFile.Id,
-                Name: correctedFile.Name, Data: correctedFile.FileData);
-            var response = await Mediator.Send(request);
-            if (response?.CorrectedFile is not null)
+            if (correctedFile is not null)
             {
-                var writingIndex = _paymentGroup!.Service.ProcessedWritingFiles.FindIndex(x => x.WritingFile.Id == request.WritingFileId);
-                _paymentGroup.Service.ProcessedWritingFiles[writingIndex].CorrectedWriting = response.CorrectedFile;
-                if (!_paymentGroup.Service.ProcessedWritingFiles.Any(x => x.CorrectedWriting == null))
+                var request = new UploadCorrectedWritingRequest(WritingFileId: correctedFile.Id,
+                    Name: correctedFile.Name!, Data: correctedFile.FileData!, ContentType: correctedFile.ContentType!);
+                var response = await Mediator.Send(request);
+                if (response?.CorrectedFile is not null)
                 {
-                    ChangeWritingGroupCorrectionStatus(_paymentGroup.Id);
+                    var writingIndex = _paymentGroup!.Service.ProcessedWritingFiles.FindIndex(x => x.WritingFile.Id == request.WritingFileId);
+                    _paymentGroup.Service.ProcessedWritingFiles[writingIndex].CorrectedWriting = response.CorrectedFile;
+                    if (!_paymentGroup.Service.ProcessedWritingFiles.Any(x => x.CorrectedWriting == null))
+                    {
+                        ChangeWritingGroupCorrectionStatus(_paymentGroup.Id);
+                    }
                 }
             }
         }

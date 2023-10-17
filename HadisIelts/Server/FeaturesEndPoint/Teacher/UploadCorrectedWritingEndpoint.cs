@@ -36,6 +36,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                         CorrectorId = userId,
                         Data = request.Data,
                         Name = request.Name,
+                        ContentType = request.ContentType,
                         UploadDateTime = DateTime.UtcNow,
                         WritingCorrectionFileId = writingFile.Id,
                         WritingCorrectionSubmissionGroupId = writingFile.WritingCorrectionSubmissionGroupId

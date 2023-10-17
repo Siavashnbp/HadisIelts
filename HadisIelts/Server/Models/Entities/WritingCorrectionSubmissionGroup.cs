@@ -12,6 +12,7 @@ namespace HadisIelts.Server.Models.Entities
         public string PaymentGroupId { get; set; }
         public DateTime SubmissionDateTime { get; set; }
         public bool IsCorrected { get; set; }
+        public bool RequiresEmailResponse { get; set; }
         public List<CorrectedWritingFile> CorrectedWritingFiles { get; set; }
     }
 }

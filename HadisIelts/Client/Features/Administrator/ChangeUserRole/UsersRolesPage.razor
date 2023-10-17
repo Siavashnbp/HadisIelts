@@ -74,7 +74,7 @@
     </Authorized>
     <NotAuthorized>
 
-        @if (_authenticationState.User.Identity!.IsAuthenticated)
+        @if (_authenticationState!.User.Identity!.IsAuthenticated)
         {
             <NotAuthorizedComponent />
         }
@@ -86,7 +86,7 @@
 </AuthorizeView>
 @code {
     #region Parameters
-    private AuthenticationState _authenticationState { get; set; }
+    private AuthenticationState? _authenticationState { get; set; }
     private List<UserRolesSharedModel>? _usersRoles { get; set; }
     private List<UserRolesSharedModel>? _showingUsers { get; set; }
     public int _page { get; set; } = 1;

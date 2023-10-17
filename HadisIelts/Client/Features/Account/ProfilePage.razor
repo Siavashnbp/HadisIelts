@@ -63,9 +63,9 @@
     #region Parameter
     [Parameter]
     public string UserId { get; set; } = string.Empty;
-    private string _currentUserId;
+    private string _currentUserId = string.Empty;
     private UserInformationSharedModel _userInformation = new UserInformationSharedModel(string.Empty, string.Empty, string.Empty);
-    private UserInformationSharedModel _defaultInformation;
+    private UserInformationSharedModel _defaultInformation = new UserInformationSharedModel(string.Empty, string.Empty, string.Empty);
     private bool _isEditEnabled = false;
     #endregion
 

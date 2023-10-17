@@ -40,6 +40,7 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
                         TotalPrice = request.WritingCorrectionPackage.TotalPrice,
                         SubmissionDateTime = DateTime.UtcNow,
                         IsCorrected = false,
+                        RequiresEmailResponse = request.WritingCorrectionPackage.RequiresEmailResponse
                     });
                 if (writingCorrectionGroup != null)
                 {

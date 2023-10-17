@@ -7,6 +7,7 @@ namespace HadisIelts.Server.Models.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string Data { get; set; }
+        public string ContentType { get; set; }
         public int WritingCorrectionFileId { get; set; }
         public string WritingCorrectionSubmissionGroupId { get; set; }
         public WritingCorrectionSubmissionGroup WritingCorrectionSubmissionGroup { get; set; }

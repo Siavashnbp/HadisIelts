@@ -1,7 +1,6 @@
 ﻿@page "/services/writingCorrection/uploadFiles"
 @using HadisIelts.Client.Features.Correction.Models;
 @using HadisIelts.Client.Features.Correction.WritingCorrectionComponents
-@using HadisIelts.Client.Features.Teacher.Models;
 @using HadisIelts.Client.Services.File;
 @using HadisIelts.Client.Services.User;
 @using HadisIelts.Client.Services.Writing;
@@ -9,7 +8,6 @@
 @using HadisIelts.Shared.Requests.Payment;
 @using HadisIelts.Shared.Requests.User;
 @using MediatR;
-@using System.Timers;
 @using Microsoft.AspNetCore.Authorization;
 @inject NavigationManager NavigationManager
 @inject IMediator Mediator;
@@ -22,6 +20,7 @@
         <div class="container main-container">
             <div style="margin:35px; justify-content:end;">
                 <button class="btn btn-primary" @onclick="(()=>_showPricesModal=true)">View Prices</button>
+                <button class="btn btn-success" @onclick="(()=>_showWritingFormatModal=true)">Correct Writing Format</button>
             </div>
             <div class="container main-form col-lg-8">
                 <div class="row">
@@ -103,6 +102,10 @@
         {
             <ViewPricesModal WritingCorrectionPrices="_writingCorrectionPrices" OnCloseButtonIsClicked="HandleModalCloesButtonIsClicked" />
         }
+        else if (_showWritingFormatModal)
+        {
+            <WritingFormatModalComponent OnCloseButtonIsClicked="HandleWritingFormatModalCloesButtonIsClicked" />
+        }
     </Authorized>
 </AuthorizeView>
 
@@ -115,6 +118,7 @@
     private uint _totalPrice = 0;
     private bool _requiresEmailResponse = false;
     private bool _showPricesModal = false;
+    private bool _showWritingFormatModal = false;
     private List<WritingFileModel> _userWritingFiles = new List<WritingFileModel>();
     private ProcessWritingCorrectionFilesModel _processRequest = new ProcessWritingCorrectionFilesModel();
     private List<ProcessedWritingFileSharedModel> _processedWritingFiles = new List<ProcessedWritingFileSharedModel>();
@@ -174,7 +178,7 @@
                         }
                     }
                     StateHasChanged();
-                }                
+                }
             }
         }
         catch (Exception)
@@ -309,6 +313,10 @@
     {
         _showPricesModal = false;
     }
+    private void HandleWritingFormatModalCloesButtonIsClicked()
+    {
+        _showWritingFormatModal = false;
+    }
     #endregion
 
     #region Events
@@ -320,6 +328,7 @@
         _areFilesProcessed = false;
         StateHasChanged();
     }
+
     #endregion
 
     #region Page Details and Information

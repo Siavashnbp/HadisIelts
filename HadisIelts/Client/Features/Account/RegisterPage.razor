@@ -98,8 +98,8 @@
         try
         {
             var request = new RegisterAccountRequest(
-                Email: _registerModel.Email,
-                Password: _registerModel.Password);
+                Email: _registerModel.Email!,
+                Password: _registerModel.Password!);
             var response = await Mediator.Send(request);
             if (response is not null)
             {

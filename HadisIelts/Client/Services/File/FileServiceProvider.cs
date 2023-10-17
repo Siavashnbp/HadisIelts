@@ -13,9 +13,9 @@ namespace HadisIelts.Client.Services.File
             {
                 writingFiles.Add(new WritingFileSharedModel
                 {
-                    Data = file.FileData,
-                    Name = file.Name,
-                    WritingTypeId = file.WritingType.Id
+                    Data = file.FileData!,
+                    Name = file.Name!,
+                    WritingTypeId = file.WritingType!.Id
                 });
             }
             return writingFiles;

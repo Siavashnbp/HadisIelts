@@ -13,7 +13,7 @@ namespace HadisIelts.Client.Services.Authorization
         public override async ValueTask<ClaimsPrincipal> CreateUserAsync(RemoteUserAccount account, RemoteAuthenticationUserOptions options)
         {
             var user = await base.CreateUserAsync(account, options);
-            var claimsIdentity = (ClaimsIdentity)user.Identity;
+            var claimsIdentity = (ClaimsIdentity)user.Identity!;
             if (account is not null)
             {
                 MapArrayClaimsToMultipleSeprateClaims(account, claimsIdentity);

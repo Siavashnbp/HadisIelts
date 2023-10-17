@@ -1,0 +1,25 @@
+﻿@inject IJSRuntime JS
+<div class="modal fade show" style="display: block; background-color: rgba(10, 10, 10, 0.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-body p-3">
+                <button class="btn btn-success" @onclick="(()=>DownloadWritingFromatSample())">Download Writing Format Sample</button>
+                <img class="card-img-top" alt="English Class" src="img/Writing Correct format.jpg" style="object-fit:contain;"/>
+                <button type="button" class="btn btn-primary mt-5 w-100" data-bs-dismiss="modal"
+                        @onclick="(()=>OnCloseButtonIsClicked.InvokeAsync())">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {    
+    [Parameter, EditorRequired]
+    public EventCallback OnCloseButtonIsClicked { get; set; }
+    private async Task DownloadWritingFromatSample()
+    {
+        var fileName = "Writing Format.docx";
+        var fileUrl = "https://localhost:7023/files/Writing Format.docx";
+        await JS.InvokeVoidAsync("triggerFileDownload", fileName, fileUrl);
+    }
+}

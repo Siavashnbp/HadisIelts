@@ -17,7 +17,7 @@
         </tr>
     </thead>
     <tbody>
-        @if (WritingFiles is not null)
+        @if (WritingFiles is not null && WritingFiles.Any())
         {
 
             @foreach (var item in WritingFiles)
@@ -25,10 +25,10 @@
                 <tr>
                     <td colspan="2">@item.Name</td>
                     <td>
-                        <InputSelect class="form-select form-control" @bind-Value="item.WritingType.Id"
-                             @onselect="(async()=>await OnWritingTypeIsSelected.InvokeAsync(new(item.WritingType.Id,item.Id)))">
+                        <InputSelect class="form-select form-control" @bind-Value="item.WritingType!.Id"
+                             @onselect="(async()=>await OnWritingTypeIsSelected.InvokeAsync(new(item.WritingType!.Id,item.Id)))">
                             <option value="0">Not Selected</option>
-                            @foreach (var writingType in WritingTypes)
+                            @foreach (var writingType in WritingTypes!)
                             {
                                 <option value="@(writingType.Id)">@(writingType.Name)</option>
                             }
@@ -57,9 +57,9 @@
 
 @code {
     [Parameter, EditorRequired]
-    public List<WritingFileModel> WritingFiles { get; set; }
+    public List<WritingFileModel>? WritingFiles { get; set; }
     [Parameter]
-    public List<WritingTypeSharedModel> WritingTypes { get; set; }
+    public List<WritingTypeSharedModel>? WritingTypes { get; set; }
     [Parameter, EditorRequired]
     public EventCallback<(int WritingTypeId, int WritingId)> OnWritingTypeIsSelected { get; set; }
     [Parameter, EditorRequired]
