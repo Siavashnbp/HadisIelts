@@ -5,6 +5,7 @@
 @using HadisIelts.Shared.Requests.Teacher;
 @inject IMediator Mediator
 @attribute [AllowAnonymous]
+<PageTitle>Writing Correction Prices</PageTitle>
 <div class="container main-container">
     <div class="row">
         <div class="col">
@@ -112,7 +113,7 @@
 @code {
     #region Parameters
     private List<WritingPriceModel> _writingCorrectionPrices = new List<WritingPriceModel>();
-    private List<WritingTypeSharedModel>? _writingTypes;
+    private List<WritingTypeSharedModel>? _writingTypes = new List<WritingTypeSharedModel>();
     private WritingPriceModel _writingPriceModel = new WritingPriceModel();
     private string? _addWritingTypeName;
     private string _errorMessage = string.Empty;

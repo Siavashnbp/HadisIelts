@@ -64,7 +64,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         {
                             var emailMessage = new EmailMessage(user.Email!);
                             emailMessage.Subject = "Writing Correction Payment";
-                            emailMessage.Content = $"Your payment has benn checked and " +
+                            emailMessage.Content = $"Your payment has been checked and " +
                                 $"{(paymentGroup.IsPaymentApproved ? "it is approved. Your writings will be corrected soon."
                                 : "it is rejectd. Please check your submitted payment files.")} ";
                             _emailServices.SendEmail(emailMessage);

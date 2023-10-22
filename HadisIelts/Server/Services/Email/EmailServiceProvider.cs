@@ -21,7 +21,7 @@ namespace HadisIelts.Server.Services.Email
             emailMessage.From.Add(new MailboxAddress(_emailConfig.UserName, _emailConfig.From));
             emailMessage.To.Add(message.Reciever);
             emailMessage.Subject = message.Subject;
-            var bodyBuilder = new BodyBuilder { HtmlBody = string.Format("<h2 style='color:red;'>{0}</h2>", message.Content) };
+            var bodyBuilder = new BodyBuilder { HtmlBody = string.Format("<h3 style='color:red;'>{0}</h2>", message.Content) };
             if (message.AttachmentFiles is not null && message.AttachmentFiles.Any())
             {
                 foreach (var item in message.AttachmentFiles)

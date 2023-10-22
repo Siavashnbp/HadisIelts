@@ -7,6 +7,7 @@
 @inject NavigationManager NavMan;
 @inject IUserServices UserServices;
 @attribute [AllowAnonymous]
+<PageTitle>Sign Up</PageTitle>
 <div class="container col-lg-4 col-md-6 main-form">
     <EditForm Model="@_registerModel" OnValidSubmit="UploadRegisterForm">
         <FluentValidationValidator />
@@ -107,7 +108,7 @@
                 {
                     _submitSuccess = response.registerSuccess;
                     await Task.Delay(2000);
-                    NavMan.NavigateTo("/user/profile", true);
+                    NavMan.NavigateTo(ProfilePage.PageUrl, true);
                 }
                 else
                 {

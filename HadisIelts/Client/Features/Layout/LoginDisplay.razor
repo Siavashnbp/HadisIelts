@@ -1,4 +1,5 @@
-﻿@using HadisIelts.Shared.Requests.Account;
+﻿@using HadisIelts.Client.Features.Account;
+@using HadisIelts.Shared.Requests.Account;
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavMan;
@@ -7,8 +8,16 @@
     <div class="row">
         <AuthorizeView>
             <Authorized>
-                <a class="nav-link" href="account/profile">Hello, @context.User.Identity?.Name!</a>
-                <button class="nav-link btn btn-link" @onclick="(()=>BeginLogOut())">Log out</button>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        Hello, @context.User.Identity?.Name!
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="nav-link" href="account/profile">Profile</a>
+                        <a class="nav-link" href="@(ChangePasswordPage.PageUrl)">Change Password</a>
+                        <button class="nav-link btn btn-link" @onclick="(()=>BeginLogOut())">Log out</button>
+                    </div>
+                </div>
             </Authorized>
             <NotAuthorized>
                 <div class="col-6">

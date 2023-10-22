@@ -62,6 +62,7 @@ namespace HadisIelts.Server.Data
             builder.Entity<Service>().Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Entity<Service>().Property(x => x.Name).IsRequired();
             builder.Entity<Service>().Property(x => x.Description).IsRequired(false);
+            builder.Entity<Service>().HasData(new Service { Id = 1, Name = "Writing Correction" });
             //CorrectedWritingFile
             builder.Entity<CorrectedWritingFile>().HasKey(x => x.Id);
             builder.Entity<CorrectedWritingFile>().Property(x => x.Id).ValueGeneratedOnAdd();

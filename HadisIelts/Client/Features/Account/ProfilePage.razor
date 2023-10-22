@@ -6,6 +6,7 @@
 @inject IMediator Mediator;
 @inject NavigationManager NavMan;
 @inject IUserServices UserServices;
+<PageTitle>User Profile</PageTitle>
 <AuthorizeView>
     <Authorized>
         <EditForm Model="_userInformation" OnValidSubmit="UpdateUserInformation" Context="UpdateUserInformation">

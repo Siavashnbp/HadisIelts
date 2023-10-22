@@ -3,42 +3,45 @@
 @using HadisIelts.Client.Features.Teacher.AllSubmittedWritingCorrectionsComponents
 @using HadisIelts.Shared.Requests.Teacher;
 @inject IMediator Mediator;
+<PageTitle>Users Submitted Writings</PageTitle>
 <AuthorizeView Roles="Administrator,Teacher">
     <Authorized>
-        <div class="container main-form col-lg-10 main-container">
-            <div class="row align-items-center justify-content-center">
-                <div class="col-lg-6">
-                    <div class="form-floating">
-                        <InputText class="form-control" @bind-Value="_searchPhrase" id="userSearchInput" placeholder="Search Users" />
-                        <label for="userSearchInput" style="margin-left:10px;">Search Users</label>
+        <div class="container main-form main-container">
+            <div class="row">
+                <div class=col>
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-6">
+                            <div class="form-floating">
+                                <InputText class="form-control" @bind-Value="_searchPhrase" id="userSearchInput" placeholder="Search Users" />
+                                <label for="userSearchInput" style="margin-left:10px;">Search Users</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <button class="btn btn-secondary" @onclick="(()=>GetAllSubmittedWritingCorrections())">
+                                @(string.IsNullOrEmpty(_searchPhrase) ? "Get All" : "Search")
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-2">
-                    <button class="btn btn-secondary" @onclick="(()=>GetAllSubmittedWritingCorrections())">
-                        @(string.IsNullOrEmpty(_searchPhrase) ? "Get All" : "Search")
-                    </button>
-                </div>
-            </div>
-            @if (_submittedServices is not null)
-            {
-                <div class="row justify-content-center">
-                    <div class="col">
-                        @if (_submittedServices is null || _submittedServices.Count == 0)
-                        {
-                            <h5 class="text-warning">No Users Were Found!</h5>
-                        }
-                        else
-                        {
-                            <TeacherWritingCorrectionSubmissionsTable SubmittedServices="_showingServices" />
-                            <div class="row justify-content-center text-center">
-                                <div class="col-lg-4 justify-content-center text-center">
+                    @if (_submittedServices is not null)
+                    {
+                        <div class="row justify-content-center">
+                            @if (_submittedServices is null || _submittedServices.Count == 0)
+                            {
+                                <h5 class="text-warning">No Users Were Found!</h5>
+                            }
+                            else
+                            {
+                                <div style="overflow-x:auto;">
+                                    <TeacherWritingCorrectionSubmissionsTable SubmittedServices="_showingServices" />
+                                </div>
+                                <div class="col-lg-2 justify-content-center text-center">
                                     <Pagination CurrentPage="_page" ListCount="_submittedServices.Count" OnPageIsSelected="HandleOnPageIsSelected" />
                                 </div>
-                            </div>
-                        }
-                    </div>
+                            }
+                        </div>
+                    }
                 </div>
-            }
+            </div>
         </div>
     </Authorized>
 </AuthorizeView>

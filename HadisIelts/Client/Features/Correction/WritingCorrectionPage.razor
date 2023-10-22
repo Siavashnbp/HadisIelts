@@ -1,6 +1,7 @@
 ﻿@page "/services/writingCorrection/uploadFiles"
 @using HadisIelts.Client.Features.Correction.Models;
 @using HadisIelts.Client.Features.Correction.WritingCorrectionComponents
+@using HadisIelts.Client.Features.Payment;
 @using HadisIelts.Client.Services.File;
 @using HadisIelts.Client.Services.User;
 @using HadisIelts.Client.Services.Writing;
@@ -14,6 +15,7 @@
 @inject IFileServices FileServices;
 @inject IClientWritingServices ClientWritingServices;
 @inject IUserServices UserServices;
+<PageTitle>Writing Correction</PageTitle>
 <BreadCrumb Pages=@_breadCrumbs />
 <AuthorizeView>
     <Authorized>
@@ -229,7 +231,7 @@
                         var paymentId = result.PaymentId;
                         if (paymentId != string.Empty)
                         {
-                            NavigationManager.NavigateTo($"/payment/WritingCorrection/{paymentId}");
+                            NavigationManager.NavigateTo(WritingCorrectionPaymentPage.PageUrl(paymentId));
                         }
                     }
                 }

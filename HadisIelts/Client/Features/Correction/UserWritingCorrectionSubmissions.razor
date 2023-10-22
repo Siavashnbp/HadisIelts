@@ -7,7 +7,7 @@
 @inject IUserServices UserServices;
 @inject IMediator Mediator;
 @inject NavigationManager NavMan;
-
+<PageTitle>Submitted Writings</PageTitle>
 <AuthorizeView>
     <Authorized>
         @if (_submittedServices is not null && _viewingSubmittedServices is not null)
@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div class="row justify-content-center text-center">
-                    <div class="col-lg-4 justify-content-center text-center">
+                    <div class="col-2 justify-content-center text-center">
                         <Pagination CurrentPage="_page" ListCount="_submittedServices.Count" OnPageIsSelected="HandleOnPageIsSelected" />
                     </div>
                 </div>

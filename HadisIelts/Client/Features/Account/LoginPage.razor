@@ -5,9 +5,10 @@
 @inject IMediator Mediator
 @inject NavigationManager NavMan
 @inject AuthenticationStateProvider AuthProvider;
-@inject IUserServices UserServices; 
+@inject IUserServices UserServices;
 @attribute [AllowAnonymous]
-<div class="main-form container main-container col-lg-4 col-md-8">
+<PageTitle>Login</PageTitle>
+<div class="main-form container main-container col-lg-5 col-md-8">
     <EditForm Model="@_loginModel.LoginModel" OnValidSubmit="PostLoginRequest">
         <FluentValidationValidator />
         <main class="form-signin w-100 m-auto container">
@@ -42,6 +43,9 @@
             <div class="col-11">
 
                 <button class="w-100 btn btn-lg btn-primary" type="submit" style="margin:5px;">Sign in</button>
+                <div class="d-flex checkbox mb-3" style="margin:5px; left:0; justify-content:flex-start;">
+                    <a class="text-primary" href="@(ForgotPasswordPage.PageUrl)">Forgot Password?</a>
+                </div>
             </div>
         </main>
     </EditForm>
