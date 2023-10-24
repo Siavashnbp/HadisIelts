@@ -30,6 +30,13 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                                 Message: $"Too many failed attempts. Try in {(user.LockoutEnd - DateTime.UtcNow).Value.Minutes + 1} minutes"
                             ));
                     }
+                    if (!user.EmailConfirmed)
+                    {
+                        return Ok(new AccountLoginRequest.Response(
+                                LoginSuccess: false,
+                                Message: "Email is not confirmed"
+                            ));
+                    }
                     var result = await _signInManager.PasswordSignInAsync(
                     userName: request.LoginRequest.Email!,
                     password: request.LoginRequest.Password!,

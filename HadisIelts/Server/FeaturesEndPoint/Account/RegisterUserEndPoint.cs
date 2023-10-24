@@ -1,6 +1,8 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Models;
+using HadisIelts.Server.Services.Email;
 using HadisIelts.Shared.Requests.Account;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,12 +13,15 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
         .WithActionResult<RegisterAccountRequest.Response>
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IEmailServices _emailServices;
+        private readonly NavigationManager _navigationManager;
         public RegisterUserEndPoint(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            IEmailServices emailServices,
+            NavigationManager navigationManager)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
+            _emailServices = emailServices;
+            _navigationManager = navigationManager;
         }
 
         [HttpPost(RegisterAccountRequest.EndpointUri)]
@@ -33,12 +38,23 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                         LastName = string.Empty,
                         UserName = request.Email,
                         Email = request.Email,
-                        EmailConfirmed = true
+                        EmailConfirmed = false
                     };
                     var result = await _userManager.CreateAsync(user, request.Password);
                     if (result.Succeeded)
                     {
-                        await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
+                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var parameters = new Dictionary<string, object?>
+                        {
+                            { "userId",user.Id },
+                            { "token",token }
+                        };
+                        var link = _navigationManager.GetUriWithQueryParameters
+                            ("http://englishwithhadis.com/account/emailConfirmation", parameters);
+                        var message = new EmailMessage(user.Email);
+                        message.Subject = "Email Confirmation";
+                        message.Content = $"Please click on the link to confirm your email. <a href=\"{link}\">link</a>";
+                        _emailServices.SendEmail(message);
                         return Ok(new RegisterAccountRequest.Response(true));
                     }
                 }

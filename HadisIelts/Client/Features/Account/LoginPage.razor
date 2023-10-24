@@ -57,6 +57,19 @@
                 <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
             </svg>
             @_loginModel.LoginMessage
+            @if (_loginModel.LoginMessage == "Email is not confirmed")
+            {
+                <button class="btn link-dark" @onclick="(()=>PostResendConfirmationLinkRequest())">Resend confirmation link</button>
+            }
+        </div>
+    }
+    @if(_isConfirmationLinkResent)
+    {
+        <div class="container alert alert-success text-center justify-content-center" style="margin-top:20px;" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+            </svg>
+            <span>Please check your email. A confirmation link is sent to your email</span>
         </div>
     }
 </div>
@@ -67,6 +80,7 @@
     public string? ReturnUrl { get; set; }
     private LoginClientModel _loginModel { get; set; } = new LoginClientModel();
     private bool _showPassword = false;
+    private bool _isConfirmationLinkResent = false;
     #endregion
 
     #region Initializers
@@ -95,6 +109,30 @@
             else
             {
                 _loginModel.LoginMessage = response.Message;
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    private async Task PostResendConfirmationLinkRequest()
+    {
+        try
+        {
+            if (_loginModel.LoginModel.Email is not null)
+            {
+                var request = new ResendConfirmationLinkRequest(_loginModel.LoginModel.Email);
+                var response = await Mediator.Send(request);
+                if (response.Succeeded)
+                {
+                    _loginModel.LoginMessage = null;
+                    _isConfirmationLinkResent = true;
+                    StateHasChanged();
+                    await Task.Delay(5000);
+                    _isConfirmationLinkResent = false;
+                }
             }
         }
         catch (Exception)
