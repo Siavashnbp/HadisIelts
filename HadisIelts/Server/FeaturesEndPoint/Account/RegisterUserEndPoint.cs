@@ -34,11 +34,12 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                 {
                     user = new ApplicationUser
                     {
-                        FirstName = string.Empty,
-                        LastName = string.Empty,
+                        FirstName = request.FirstName,
+                        LastName = request.LastName,
                         UserName = request.Email,
                         Email = request.Email,
-                        EmailConfirmed = false
+                        EmailConfirmed = false,
+                        DateOfBirth = request.Birthday
                     };
                     var result = await _userManager.CreateAsync(user, request.Password);
                     if (result.Succeeded)

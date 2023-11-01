@@ -35,7 +35,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         var updatedPicture = new PaymentPictureSharedModel
                         {
                             Name = picture.Name,
-                            Data = picture.Data,
+                            Data = Convert.ToBase64String(picture.Data),
                             FileSuffix = picture.FileSuffix,
                             Id = picture.Id,
                             IsVerified = picture.IsVerified,

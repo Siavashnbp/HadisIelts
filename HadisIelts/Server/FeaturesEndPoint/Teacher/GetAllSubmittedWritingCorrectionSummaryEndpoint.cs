@@ -54,8 +54,8 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                             IsCorrected = submission.IsCorrected,
                         });
                     }
-                    submissionSummary.Reverse();
-                    return Ok(new GetAllSubmittedWritingCorrectionsSummaryRequest.Response(submissionSummary));
+                    var sortedSubmissions = submissionSummary.OrderBy(x => x.IsCorrected).ThenByDescending(x => x.SubmissionDateTime).ToList();
+                    return Ok(new GetAllSubmittedWritingCorrectionsSummaryRequest.Response(sortedSubmissions));
                 }
                 return NoContent();
             }

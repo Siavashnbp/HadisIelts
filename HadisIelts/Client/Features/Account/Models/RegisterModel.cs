@@ -4,6 +4,9 @@ namespace HadisIelts.Client.Features.Account.Models
 {
     public class RegisterModel
     {
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public DateTime? Birthday { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
         public string? ConfirmPassword { get; set; }
@@ -30,6 +33,10 @@ namespace HadisIelts.Client.Features.Account.Models
                 .WithMessage("Please confirm your password");
             RuleFor(x => x.ConfirmPassword).Matches(x => x.Password)
                 .WithMessage("Passwords do not match");
+            RuleFor(x => x.FirstName).NotEmpty()
+                .WithMessage("First Name cannot be empty");
+            RuleFor(x => x.LastName).NotEmpty()
+                .WithMessage("Last Name cannot be empty");
         }
     }
 }

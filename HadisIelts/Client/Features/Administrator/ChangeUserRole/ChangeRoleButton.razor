@@ -1,9 +1,10 @@
-﻿@using HadisIelts.Shared.Requests.Admin;
+﻿@using HadisIelts.Client.Features.Administrator;
+@using HadisIelts.Shared.Requests.Admin;
 @using HadisIelts.Shared.Requests.Administrator;
 @using static HadisIelts.Shared.Enums.UserRelatedEnums;
 @inject IMediator Mediator;
-<button class="btn @(_userRole.Value?"btn-success":"btn-danger")" onclick="@(async ()=>await UpdateUserRole())">
-    @if (_userRole.Value)
+<button class="btn @(Role.Value?"btn-success":"btn-danger")" onclick="@(async ()=>await UpdateUserRole())">
+    @if (Role.Value)
     {
         <h6>Yes</h6>
     }
@@ -15,17 +16,13 @@
 @code {
     #region Parameters
     [Parameter, EditorRequired]
-    public Tuple<ApplicationRoles, bool> Role { get; set; }
+    public UserRoleModel Role { get; set; } = new();
     [Parameter, EditorRequired]
     public string Email { get; set; }
-    private (ApplicationRoles Role, bool Value) _userRole;
     #endregion
 
     #region Initializers
-    protected override void OnInitialized()
-    {
-        _userRole = (Role.Item1, Role.Item2);
-    }
+    
     #endregion
 
     #region Methods
@@ -35,15 +32,15 @@
         {
             var request = new UpdateUserRoleRequest(
                     Email: Email,
-                    Role: _userRole.Role,
-                    Value: !_userRole.Value);
+                    Role: Role.Role,
+                    Value: !Role.Value);
             var response = await Mediator.Send(request);
             if (response is not null)
             {
-                var updatedRole = response.UserRoles.Roles?.FirstOrDefault(x => x.Item1 == _userRole.Role);
+                var updatedRole = response.UserRoles.Roles?.FirstOrDefault(x => x.Role == Role.Role);
                 if (updatedRole is not null)
                 {
-                    _userRole = (updatedRole.Item1, updatedRole.Item2);
+                    Role.Value = updatedRole.Value;
                     StateHasChanged();
                 }
             }

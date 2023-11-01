@@ -3,17 +3,44 @@
 @using HadisIelts.Client.Services.User;
 @using HadisIelts.Shared.Requests.Account;
 @using MediatR;
+@using System.Text;
 @inject IMediator Mediator;
 @inject NavigationManager NavMan;
 @inject IUserServices UserServices;
 @attribute [AllowAnonymous]
 <PageTitle>Sign Up</PageTitle>
-<div class="container col-lg-4 col-md-6 main-form">
+<div class="container col-lg-4 col-md-6 main-form" style="margin-bottom:80px;">
     <EditForm Model="@_registerModel" OnValidSubmit="UploadRegisterForm">
         <FluentValidationValidator />
         <main class="form-signin w-100 m-auto main-container">
             <h1 class="h3 mb-3 fw-normal">Please sign up</h1>
             <div class="container">
+                <div class="row">
+                    <div class="col-11">
+                        <div class="form-floating">
+                            <InputText @bind-Value="_registerModel.FirstName" type="text" class="form-control" id="floatingInput" placeholder="First Name" />
+                            <label for="floatingInput">First Name</label>
+                            <ValidationMessage For="@(()=>_registerModel.FirstName)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-11">
+                        <div class="form-floating">
+                            <InputText @bind-Value="_registerModel.LastName" type="text" class="form-control" id="floatingInput" placeholder="Last Name" />
+                            <label for="floatingInput">Last Name</label>
+                            <ValidationMessage For="@(()=>_registerModel.LastName)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-11">
+                        <div class="form-floating">
+                            <InputDate @bind-Value="_registerModel.Birthday" min="1920-01-01" max="@_maxDate" class="form-control" id="floatingInput" />
+                            <label for="floatingInput">Birthday (optional)</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-11">
                         <div class="form-floating">
@@ -47,8 +74,17 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-11">
-                        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
+                    <div class="col-11" style="margin:5px;">
+                        @if (_showLoading)
+                        {
+                            <div class="container justify-content-center text-center" style="margin-top:15px;">
+                                <img class="card-img" src="/img/Spinner-1.2s-183px.svg" style="height:100px;">
+                            </div>
+                        }
+                        else
+                        {
+                            <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
+                        }
                     </div>
                 </div>
             </div>
@@ -75,12 +111,7 @@
         </div>
     }
 </div>
-@if (_showLoading)
-{
-    <div class="container justify-content-center text-center" style="margin-top:15px;">
-        <img class="card-img" src="/img/Spinner-1.2s-183px.svg" style="height:100px;">
-    </div>
-}
+
 @code {
     #region Parameters
     private RegisterModel _registerModel { get; set; } = new RegisterModel();
@@ -88,11 +119,19 @@
     private string _errorMessage = string.Empty;
     private bool _showPassword = false;
     private bool _showLoading = false;
+    private string _maxDate = string.Empty;
     #endregion
 
     #region Initializers
     protected override async Task OnInitializedAsync()
     {
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append(DateTime.UtcNow.Year);
+        stringBuilder.Append("-");
+        stringBuilder.Append(DateTime.UtcNow.Month >= 10 ? DateTime.UtcNow.Month : $"0{DateTime.UtcNow.Month}");
+        stringBuilder.Append("-");
+        stringBuilder.Append(DateTime.UtcNow.Day >= 10 ? DateTime.UtcNow.Day : $"0{DateTime.UtcNow.Day}");
+        _maxDate = stringBuilder.ToString();
         var userID = await UserServices.GetUserIdAsync();
         if (userID != null)
         {
@@ -108,7 +147,10 @@
         {
             var request = new RegisterAccountRequest(
                 Email: _registerModel.Email!,
-                Password: _registerModel.Password!);
+                Password: _registerModel.Password!,
+            FirstName: _registerModel.FirstName!,
+            LastName: _registerModel.LastName!,
+            Birthday: _registerModel.Birthday);
             _showLoading = true;
             var response = await Mediator.Send(request);
             if (response is not null)

@@ -19,7 +19,7 @@ namespace HadisIelts.Client.RequestHandlers.Account
         public async Task<RegisterAccountRequest.Response> Handle(RegisterAccountRequest request, CancellationToken cancellationToken)
         {
             var hashedPassword = _passwordService.HashPassword(request.Password);
-            var updatedRequest = new RegisterAccountRequest(request.Email, hashedPassword);
+            var updatedRequest = new RegisterAccountRequest(request.Email, hashedPassword, request.FirstName, request.LastName, request.Birthday);
             var response = await _httpClient.PostAsJsonAsync
                 (RegisterAccountRequest.EndpointUri, updatedRequest, cancellationToken);
             if (response.IsSuccessStatusCode)

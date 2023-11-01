@@ -9,7 +9,7 @@
                 <a class="page-link" @onclick="(async()=>await OnPageIsSelected.InvokeAsync(CurrentPage-1))">Previous</a>
             </li>
         }
-        <li class="page-item active">
+        <li class="page-item active" style="z-index:0;">
             <a class="page-link">@CurrentPage</a>
         </li>
         @if ((CurrentPage * ItemPerPage) < ListCount)

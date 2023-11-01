@@ -8,7 +8,7 @@
         public string? LastName { get; set; }
         public string Email { get; init; }
         public string? Skype { get; set; }
-        public DateOnly? Birthday { get; set; }
+        public DateTime? Birthday { get; set; }
         public UserInformationSharedModel(string id, string username, string email)
         {
             Id = id;

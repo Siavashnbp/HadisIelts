@@ -13,6 +13,7 @@
                     @foreach (var role in UserRoles.Roles!)
                     {
                         <div class="col">
+                            <p>@role.Role</p>
                             <ChangeRoleButton Email="@UserRoles.Email" Role="@role" />
                         </div>
                     }

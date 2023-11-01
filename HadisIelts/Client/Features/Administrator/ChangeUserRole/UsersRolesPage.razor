@@ -89,8 +89,8 @@
 @code {
     #region Parameters
     private AuthenticationState? _authenticationState { get; set; }
-    private List<UserRolesSharedModel>? _usersRoles { get; set; }
-    private List<UserRolesSharedModel>? _showingUsers { get; set; }
+    private List<UserRolesSharedModel>? _usersRoles { get; set; } = new List<UserRolesSharedModel>();
+    private List<UserRolesSharedModel>? _showingUsers { get; set; } = new List<UserRolesSharedModel>();
     public int _page { get; set; } = 1;
     public string _searchPhrase { get; set; } = string.Empty;
     #endregion
@@ -140,8 +140,8 @@
         {
             var index = (page - 1) * Pagination.ItemPerPage;
             _showingUsers = _usersRoles?.GetRange
-            (index, (index + 1) * Pagination.ItemPerPage <= _usersRoles.Count ?
-            Pagination.ItemPerPage : _usersRoles.Count - (index * Pagination.ItemPerPage));
+            (index, ((page) * Pagination.ItemPerPage <= _usersRoles.Count ?
+            Pagination.ItemPerPage : _usersRoles.Count - ((page-1) * Pagination.ItemPerPage)));
             _page = page;
         }
     }

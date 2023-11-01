@@ -40,16 +40,16 @@ namespace HadisIelts.Server.Services.User
             {
                 return new UserInformationSharedModel(id: user.Id, username: user.UserName!, email: user.Email!)
                 {
-                    Birthday = DateOnly.FromDateTime(user.DateOfBirth!.Value),
-                    FirstName = user.FirstName!,
-                    LastName = user.LastName!,
+                    Birthday = user.DateOfBirth is not null ? user.DateOfBirth.Value : default,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                     Skype = user.Skype,
                 };
             }
             return null!;
         }
 
-        public async Task<List<Tuple<ApplicationRoles, bool>>> GetUserRolesAsync(ApplicationUser user)
+        public async Task<List<UserRoleModel>> GetUserRolesAsync(ApplicationUser user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
             return ConvertToApplicationRoles(userRoles.ToList());
@@ -93,13 +93,13 @@ namespace HadisIelts.Server.Services.User
             return claims.Any(claim => claim.Type == "role" && roles.Contains(claim.Value));
         }
 
-        private List<Tuple<ApplicationRoles, bool>> ConvertToApplicationRoles(List<string> roles)
+        private List<UserRoleModel> ConvertToApplicationRoles(List<string> roles)
         {
-            var applicationRoles = new List<Tuple<ApplicationRoles, bool>>
+            var applicationRoles = new List<UserRoleModel>
             {
-                Tuple.Create(ApplicationRoles.Administrator, roles.Contains("Administrator")),
-                Tuple.Create(ApplicationRoles.Teacher, roles.Contains("Teacher")),
-                Tuple.Create(ApplicationRoles.Student, roles.Contains("Student"))
+                new UserRoleModel(ApplicationRoles.Administrator, roles.Contains("Administrator")),
+                new UserRoleModel(ApplicationRoles.Teacher, roles.Contains("Teacher")),
+                new UserRoleModel(ApplicationRoles.Student, roles.Contains("Student"))
             };
             return applicationRoles;
         }

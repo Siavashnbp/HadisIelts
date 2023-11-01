@@ -3,6 +3,7 @@
 @using HadisIelts.Client.Features.Account.Models;
 @using HadisIelts.Client.Services.User;
 @using HadisIelts.Shared.Requests.Account;
+@using System.Text;
 @inject IMediator Mediator;
 @inject NavigationManager NavMan;
 @inject IUserServices UserServices;
@@ -28,6 +29,10 @@
                         <div class="form-floating">
                             <InputText class="form-control" @bind-Value="_userInformation.LastName" typeof="text" Id="floatingLastName" disabled="@(!_isEditEnabled)" />
                             <label for="floatingName">Last Name</label>
+                        </div>
+                        <div class="form-floating">
+                            <InputDate class="form-control" @bind-Value="_userInformation.Birthday" Id="floatingBirthday" disabled="@(!_isEditEnabled)" />
+                            <label for="floatingBirthday">Birthday</label>
                         </div>
                         <div class="form-floating">
                             <InputText class="form-control" @bind-Value="_userInformation.Skype" typeof="text" Id="floatingSkype" disabled="@(!_isEditEnabled)" />
@@ -68,6 +73,7 @@
     private UserInformationSharedModel _userInformation = new UserInformationSharedModel(string.Empty, string.Empty, string.Empty);
     private UserInformationSharedModel _defaultInformation = new UserInformationSharedModel(string.Empty, string.Empty, string.Empty);
     private bool _isEditEnabled = false;
+    private string _maxDate = string.Empty;
     #endregion
 
     #region Initializers
@@ -75,6 +81,13 @@
     {
         try
         {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append(DateTime.UtcNow.Year);
+            stringBuilder.Append("-");
+            stringBuilder.Append(DateTime.UtcNow.Month >= 10 ? DateTime.UtcNow.Month : $"0{DateTime.UtcNow.Month}");
+            stringBuilder.Append("-");
+            stringBuilder.Append(DateTime.UtcNow.Day >= 10 ? DateTime.UtcNow.Day : $"0{DateTime.UtcNow.Day}");
+            _maxDate = stringBuilder.ToString();
             _currentUserId = await UserServices.GetUserIdAsync();
             if (UserId is null)
             {
@@ -104,6 +117,7 @@
                     FirstName = result.UserInformation.FirstName,
                     LastName = result.UserInformation.LastName,
                     Skype = result.UserInformation.Skype,
+                    Birthday = result.UserInformation.Birthday
                 };
             _defaultInformation = new UserInformationSharedModel(
                 id: result.UserInformation.Id,

@@ -45,7 +45,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         var paymentFile = new PaymentPicture
                         {
                             Name = payment.Name,
-                            Data = payment.Data,
+                            Data = Convert.FromBase64String(payment.Data),
                             FileSuffix = payment.FileSuffix,
                             PaymentGroupId = request.PaymentId,
                             IsVerified = false,
@@ -70,7 +70,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             submittedPaymentfiles.Add(new PaymentPictureSharedModel
                             {
                                 Id = payment.Id,
-                                Data = payment.Data,
+                                Data = Convert.ToBase64String(payment.Data),
                                 FileSuffix = payment.FileSuffix,
                                 IsVerified = false,
                                 Message = payment.Message,

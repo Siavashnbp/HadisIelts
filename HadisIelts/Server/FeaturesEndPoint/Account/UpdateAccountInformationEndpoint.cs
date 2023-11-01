@@ -32,7 +32,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                     user.FirstName = request.UserInformation.FirstName!;
                     user.LastName = request.UserInformation.LastName!;
                     user.Skype = request.UserInformation.Skype;
-                    user.DateOfBirth = Convert.ToDateTime(request.UserInformation.Birthday);
+                    user.DateOfBirth = request.UserInformation.Birthday;
                     var wasSuccessful = _userRepository.Update(user);
                     if (wasSuccessful)
                     {

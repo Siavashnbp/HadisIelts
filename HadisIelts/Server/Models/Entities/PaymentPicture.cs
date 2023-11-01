@@ -7,7 +7,7 @@ namespace HadisIelts.Server.Models.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Data { get; set; }
+        public byte[] Data { get; set; }
         public string FileSuffix { get; set; }
         public bool IsVerified { get; set; }
         public bool IsVerificationPending { get; set; }

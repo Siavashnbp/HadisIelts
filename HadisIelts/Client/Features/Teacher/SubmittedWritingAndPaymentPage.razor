@@ -20,7 +20,7 @@
             @if (_paymentGroup is not null && _paymentGroup.Service is not null)
             {
                 <div class="row">
-                    <div class="col">
+                    <div class="col" style="overflow-x:auto;">
                         <SubmittedWritingFilesTable ProcessedFiles="_paymentGroup.Service.ProcessedWritingFiles" OnCorrectedWritingUpload="HandleOnCorrectedWritingUpload"
                                                 OnDeleteButtonClick="HandleOnDeleteButtonClick" />
                     </div>

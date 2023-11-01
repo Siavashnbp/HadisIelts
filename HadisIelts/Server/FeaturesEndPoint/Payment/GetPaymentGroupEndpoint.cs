@@ -38,7 +38,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         {
                             payments.Add(new PaymentPictureSharedModel
                             {
-                                Data = item.Data,
+                                Data = Convert.ToBase64String(item.Data),
                                 FileSuffix = item.FileSuffix,
                                 Id = item.Id,
                                 IsVerified = item.IsVerified,

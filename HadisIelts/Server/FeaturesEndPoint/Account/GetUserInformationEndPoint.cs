@@ -58,6 +58,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Account
                                 FirstName = requestedUser.FirstName,
                                 LastName = requestedUser.LastName,
                                 Skype = requestedUser.Skype,
+                                Birthday = requestedUser.DateOfBirth
                             };
                             return Ok(new GetUserInformationRequest.Response(response, HttpStatusCode.OK));
                         }
