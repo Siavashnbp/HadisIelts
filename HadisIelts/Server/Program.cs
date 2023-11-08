@@ -5,6 +5,7 @@ using HadisIelts.Server.Services.DbServices;
 using HadisIelts.Server.Services.Email;
 using HadisIelts.Server.Services.Files;
 using HadisIelts.Server.Services.Payment;
+using HadisIelts.Server.Services.Telegram;
 using HadisIelts.Server.Services.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -64,6 +65,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 //Email configuration
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+//Telegram configuration
+var telegramConfig = builder.Configuration.GetSection("TelegramConfigurations").Get<TelegramConfiguration>();
 
 builder.Services.AddScoped<IUserServices, UserServicesProvider>();
 builder.Services.AddTransient(typeof(ICustomRepositoryServices<,>), typeof(RepositoryServiceProvider<,>));
@@ -71,6 +74,8 @@ builder.Services.AddScoped<IWordFileServices, WordFileServiceProvider>();
 builder.Services.AddScoped<IWritingCorrectionPayment, WritingCorrectionPaymentServiceProvider>();
 builder.Services.AddSingleton(emailConfig!);
 builder.Services.AddScoped<IEmailServices, EmailServiceProvider>();
+builder.Services.AddSingleton(telegramConfig!);
+builder.Services.AddScoped<ITelegramServices, TelegramServiceProvider>();
 
 var app = builder.Build();
 

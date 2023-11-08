@@ -1,9 +1,12 @@
 ﻿using Ardalis.ApiEndpoints;
 using HadisIelts.Server.Data;
+using HadisIelts.Server.Models;
 using HadisIelts.Server.Models.Entities;
+using HadisIelts.Server.Services.Telegram;
 using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Payment
@@ -13,9 +16,15 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
         .WithActionResult<UploadPaymentPackageRequest.Response>
     {
         private readonly ApplicationDbContext _dbContext;
-        public SubmitPaymentFilesEndpoint(ApplicationDbContext dbContext)
+        private readonly ITelegramServices _telegramServices;
+        private readonly UserManager<ApplicationUser> _userManager;
+        public SubmitPaymentFilesEndpoint(ApplicationDbContext dbContext,
+            ITelegramServices telegramServices,
+            UserManager<ApplicationUser> userManager)
         {
             _dbContext = dbContext;
+            _telegramServices = telegramServices;
+            _userManager = userManager;
         }
         /// <summary>
         /// finds the payment group created on submitting writing correction files
@@ -79,8 +88,16 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                                 IsVerificationPending = payment.IsVerificationPending,
                             });
                         }
+                        var user = await _userManager.FindByIdAsync(paymentGroup.UserId);
+                        var submissionGroup = await _dbContext.WritingCorrectionSubmissionGroups.FindAsync(paymentGroup.SubmittedServiceId);
+                        if (user is not null && submissionGroup is not null)
+                        {
+                            await _telegramServices.SendMessage
+                            ($"{user.FirstName} {user.LastName} with email address: {user.Email} " +
+                            $"submitted a payment for writing correction price:{submissionGroup.TotalPrice / 10000} thousend Tomans");
+                        }
                         return Ok(new UploadPaymentPackageRequest.Response(
-                            PaymentPictures: submittedPaymentfiles,
+                        PaymentPictures: submittedPaymentfiles,
                             Message: paymentGroup.Message
                         ));
                     }
