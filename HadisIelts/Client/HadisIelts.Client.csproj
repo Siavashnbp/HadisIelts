@@ -6,33 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <NpmLastInstall>node_modules/.last-install</NpmLastInstall>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Remove="compilerconfig.json" />
-    <Content Remove="wwwroot\js\downloadFileFromStream.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="compilerconfig.json" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\CODEOWNERS" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\CONTRIBUTING.md" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\dependabot.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\ISSUE_TEMPLATE\bug_report.md" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\ISSUE_TEMPLATE\config.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\ISSUE_TEMPLATE\feature_request.md" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\release-drafter.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\SUPPORT.md" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\browserstack.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\bundlewatch.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\codeql.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\css.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\docs.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\js.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\lint.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\node-sass.yml" />
-    <None Include="wwwroot\bootstrap\bootstrap-5.0.2\.github\workflows\release-notes.yml" />
-    <None Include="wwwroot\js\downloadFileFromStream.js" />
-  </ItemGroup>
+ 
+ 
 
   <ItemGroup>
     <PackageReference Include="Blazored.FluentValidation" Version="2.1.0" />
@@ -71,7 +46,8 @@
     </Exec>
     <Error Condition="'$(ErrorCode)'!=''" Text="Npm is required to build this project" />
   </Target>
-  <Target Name="RunNpmInstall" BeforeTargets="ComplieScoped" Inputs="package.json" Outputs="$(NpmLastInstall)">
+  <Target Name="RunNpmInstall" BeforeTargets="ComplieScoped" Inputs="package.json"
+          Outputs="$(NpmLastInstall)">
     <Exec Command="npm install" />
   </Target>
   <Target Name="ComplieScopedScss" BeforeTargets="Complie">

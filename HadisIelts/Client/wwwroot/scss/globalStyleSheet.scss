@@ -20,6 +20,10 @@ $theme-colors: ( primary: $primary, secondary: $secondary, success: $success, in
 @import "dist/journal/_variables.scss";
 @import "../bootstrap/bootstrap-5.0.2/scss/bootstrap.scss";
 @import "dist/journal/_bootswatch.scss";
+ 
+@import "./fontawesome/scss/fontawesome.scss";
+@import "./fontawesome/scss/brands.scss";
+@import "./fontawesome/scss/solid.scss";
 
 .main-form {
     margin: auto;
