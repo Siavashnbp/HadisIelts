@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HadisIelts.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231029175558_PictureDataType")]
-    partial class PictureDataType
+    [Migration("20231112152214_DatabaseSetup")]
+    partial class DatabaseSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

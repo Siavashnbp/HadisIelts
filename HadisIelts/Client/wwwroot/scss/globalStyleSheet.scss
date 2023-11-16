@@ -22,8 +22,6 @@ $theme-colors: ( primary: $primary, secondary: $secondary, success: $success, in
 @import "dist/journal/_bootswatch.scss";
  
 @import "./fontawesome/scss/fontawesome.scss";
-@import "./fontawesome/scss/brands.scss";
-@import "./fontawesome/scss/solid.scss";
 
 .main-form {
     margin: auto;

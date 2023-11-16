@@ -39,7 +39,12 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddAuthentication()
-    .AddIdentityServerJwt();
+    .AddIdentityServerJwt()
+    .AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    });
 
 builder.Services.AddControllers().AddFluentValidation(fv =>
 fv.RegisterValidatorsFromAssembly(Assembly.Load("HadisIelts.Shared")));
@@ -51,9 +56,10 @@ builder.Services.Configure<IdentityOptions>(options =>
 {
     //Pasword settings
     options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 8;
 
     //User Settings
     options.User.RequireUniqueEmail = true;
@@ -71,6 +77,7 @@ builder.Services.AddScoped<IWordFileServices, WordFileServiceProvider>();
 builder.Services.AddScoped<IWritingCorrectionPayment, WritingCorrectionPaymentServiceProvider>();
 builder.Services.AddSingleton(emailConfig!);
 builder.Services.AddScoped<IEmailServices, EmailServiceProvider>();
+
 
 var app = builder.Build();
 
@@ -93,7 +100,6 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseIdentityServer();
 app.UseAuthorization();
 
