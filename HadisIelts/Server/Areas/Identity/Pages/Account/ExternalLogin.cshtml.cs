@@ -121,7 +121,6 @@ namespace HadisIelts.Server.Areas.Identity.Pages.Account
                 ErrorMessage = "Error loading external login information.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
-
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
@@ -135,24 +134,44 @@ namespace HadisIelts.Server.Areas.Identity.Pages.Account
             }
             else
             {
-                // If the user does not have an account, then ask the user to create an account.
-                ReturnUrl = returnUrl;
-                ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    Input = new InputModel
+                    var userEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
+                    var user = await _userManager.FindByEmailAsync(userEmail);
+                    if (user == null)
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    };
-                    if (info.Principal.HasClaim(c => c.Type == ClaimTypes.GivenName))
-                    {
-                        Input.FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+                        // If the user does not have an account, then ask the user to create an account.
+                        ReturnUrl = returnUrl;
+                        ProviderDisplayName = info.ProviderDisplayName;
+                        if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+                        {
+                            Input = new InputModel
+                            {
+                                Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                            };
+                            if (info.Principal.HasClaim(c => c.Type == ClaimTypes.GivenName))
+                            {
+                                Input.FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+                            }
+                            if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Surname))
+                            {
+                                Input.LastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
+                            }
+                        }
                     }
-                    if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Surname))
+                    else
                     {
-                        Input.LastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
+
+                        var externalLoginResult = await _userManager.AddLoginAsync(user, info);
+                        if (externalLoginResult.Succeeded)
+                        {
+                            _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                            await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
+                            return LocalRedirect(returnUrl);
+                        }
                     }
                 }
+
                 return Page();
             }
         }
@@ -177,10 +196,10 @@ namespace HadisIelts.Server.Areas.Identity.Pages.Account
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
                 user.EmailConfirmed = true;
-                var result = await _userManager.CreateAsync(user, Input.Password);
-                if (result.Succeeded)
+                var createResult = await _userManager.CreateAsync(user, Input.Password);
+                if (createResult.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
+                    var result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
@@ -189,7 +208,7 @@ namespace HadisIelts.Server.Areas.Identity.Pages.Account
                         return LocalRedirect(returnUrl);
                     }
                 }
-                foreach (var error in result.Errors)
+                foreach (var error in createResult.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
