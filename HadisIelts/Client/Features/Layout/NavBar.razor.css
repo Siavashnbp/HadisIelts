@@ -22,3 +22,7 @@
   background-color: #a9233c;
   color: bisque;
 }
+
+.navbar {
+  background-image: linear-gradient(to bottom, #FF6F6F, bisque 2%, ghostwhite);
+}
