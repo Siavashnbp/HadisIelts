@@ -6,6 +6,7 @@ using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Teacher;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Teacher
 {
@@ -34,9 +35,9 @@ namespace HadisIelts.Server.FeaturesEndPoint.Teacher
                 }
                 else
                 {
-                    var foundUsersId = _userServices.FindUsers(request.SearchPhrase).Select(x => x.Id);
-                    submissions = _dbContext.WritingCorrectionSubmissionGroups
-                        .Where(x => foundUsersId.Contains(x.UserId)).ToList();
+                    var foundUsersId = (await _userServices.FindUsers(request.SearchPhrase)).Select(x => x.Id);
+                    submissions = await _dbContext.WritingCorrectionSubmissionGroups
+                        .Where(x => foundUsersId.Contains(x.UserId)).ToListAsync();
                 }
                 if (submissions is not null)
                 {

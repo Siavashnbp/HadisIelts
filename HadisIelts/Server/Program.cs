@@ -16,7 +16,7 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("SqlServer") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("WebsiteSqlServer") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -108,7 +108,6 @@ app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
 
-InitializeUsersRoles.Initialize(app.Services.CreateScope()).Wait();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");

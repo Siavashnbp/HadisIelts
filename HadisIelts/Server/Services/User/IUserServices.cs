@@ -7,7 +7,7 @@ namespace HadisIelts.Server.Services.User
 {
     public interface IUserServices
     {
-        public List<ApplicationUser> FindUsers(string searchPhrase);
+        public Task<List<ApplicationUser>> FindUsers(string searchPhrase);
         public Task<List<UserRolesSharedModel>> GetUsersRolesAsync(List<ApplicationUser> users);
         public Task<List<UserRoleModel>> GetUserRolesAsync(ApplicationUser user);
         public bool IsUserOwnerOrSpecificRoles(List<Claim> claims, List<string> roles, string userId);

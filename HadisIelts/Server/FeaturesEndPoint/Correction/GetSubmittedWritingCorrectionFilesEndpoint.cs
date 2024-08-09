@@ -7,6 +7,7 @@ using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Correction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Correction
@@ -52,10 +53,10 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                         (User.Claims.ToList(), new List<string> { "Teacher", "Administrator" }, submission.UserId);
                     if (isUserAuthorized)
                     {
-                        var files = _dbContext.WritingCorrectionFiles.ToList().FindAll
-                            (x => x.WritingCorrectionSubmissionGroupId == submission.Id);
-                        var correctedFiles = _dbContext.CorrectedWritingFiles.ToList().FindAll
-                            (x => x.WritingCorrectionSubmissionGroupId == submission.Id);
+                        var files = await _dbContext.WritingCorrectionFiles.Where
+                            (x => x.WritingCorrectionSubmissionGroupId == submission.Id).ToListAsync();
+                        var correctedFiles = await _dbContext.CorrectedWritingFiles.Where
+                            (x => x.WritingCorrectionSubmissionGroupId == submission.Id).ToListAsync();
                         if (files is not null && files.Count > 0)
                         {
                             var writingFiles = new List<ProcessedWritingFileSharedModel>();

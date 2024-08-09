@@ -8,6 +8,7 @@ using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Payment
 {
@@ -48,7 +49,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                 var paymentGroup = await _dbContext.PaymentGroups.FindAsync(request.PaymentId);
                 if (paymentGroup is not null)
                 {
-                    var paymentFiles = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
+                    var paymentFiles = await _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToListAsync();
                     foreach (var payment in request.PaymentPictures)
                     {
                         var paymentFile = new PaymentPicture
@@ -94,7 +95,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         {
                             await _telegramServices.SendMessage
                             ($"{user.FirstName} {user.LastName} with email address: {user.Email} " +
-                            $"submitted a payment for writing correction price:{submissionGroup.TotalPrice / 10000} thousend Tomans");
+                            $"submitted a payment for writing correction price:{submissionGroup.TotalPrice / 10000} thousand Tomans");
                         }
                         return Ok(new UploadPaymentPackageRequest.Response(
                         PaymentPictures: submittedPaymentfiles,

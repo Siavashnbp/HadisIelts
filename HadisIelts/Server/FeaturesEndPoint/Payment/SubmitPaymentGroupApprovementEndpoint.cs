@@ -6,6 +6,7 @@ using HadisIelts.Shared.Requests.Payment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Payment
 {
@@ -38,7 +39,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                         return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: false,
                             Message: "Payment is already checked"));
                     }
-                    var paymentPictures = _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToList();
+                    var paymentPictures = await _dbContext.PaymentPictures.Where(x => x.PaymentGroupId == paymentGroup.Id).ToListAsync();
                     paymentPictures.Select(x =>
                     {
                         if (x.IsVerificationPending)
@@ -56,7 +57,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                     paymentGroup.Message = request.IsApproved ? "Payment is approved" : "Payment is rejected";
                     paymentGroup.LastUpdateDateTime = DateTime.UtcNow;
                     _dbContext.PaymentGroups.Update(paymentGroup);
-                    var changes = _dbContext.SaveChanges();
+                    var changes = await _dbContext.SaveChangesAsync();
                     if (changes > 0)
                     {
                         var user = await _userManager.FindByIdAsync(paymentGroup.UserId);
@@ -66,7 +67,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Payment
                             emailMessage.Subject = "Writing Correction Payment";
                             emailMessage.Content = $"Your payment has been checked and " +
                                 $"{(paymentGroup.IsPaymentApproved ? "it is approved. Your writings will be corrected soon."
-                                : "it is rejectd. Please check your submitted payment files.")} ";
+                                : "it is rejected. Please check your submitted payment files.")} ";
                             _emailServices.SendEmail(emailMessage);
                         }
                         return Ok(new SubmitPaymentGroupApprovementRequest.Response(WasSuccessful: changes > 0,

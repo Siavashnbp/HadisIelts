@@ -2,6 +2,7 @@
 using HadisIelts.Server.Models;
 using HadisIelts.Shared.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using static HadisIelts.Shared.Enums.UserRelatedEnums;
 
@@ -17,12 +18,12 @@ namespace HadisIelts.Server.Services.User
             _dbContext = dbContext;
         }
 
-        public List<ApplicationUser> FindUsers(string? searchPhrase)
+        public async Task<List<ApplicationUser>> FindUsers(string? searchPhrase)
         {
             if (searchPhrase is not null)
             {
-                var users = _dbContext.Users.ToList().FindAll(x => x.UserName!.Contains(searchPhrase)
-                || x.FirstName.Contains(searchPhrase) || x.LastName.Contains(searchPhrase));
+                var users = await _dbContext.Users.Where(x => x.UserName!.Contains(searchPhrase)
+                || x.FirstName.Contains(searchPhrase) || x.LastName.Contains(searchPhrase)).ToListAsync();
                 return users;
             }
             return _dbContext.Users.ToList();

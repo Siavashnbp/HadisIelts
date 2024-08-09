@@ -5,6 +5,7 @@ using HadisIelts.Shared.Models;
 using HadisIelts.Shared.Requests.Correction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace HadisIelts.Server.FeaturesEndPoint.Correction
@@ -30,7 +31,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Correction
                 if (_userServices.IsUserOwnerOrSpecificRoles
                     (claims: User.Claims.ToList(), roles: new List<string> { "Administrator", "Teacher" }, userId: request.UserId))
                 {
-                    var submissions = _dbContext.WritingCorrectionSubmissionGroups.Where(x => x.UserId == request.UserId).ToList();
+                    var submissions = await _dbContext.WritingCorrectionSubmissionGroups.Where(x => x.UserId == request.UserId).ToListAsync();
                     if (submissions is not null)
                     {
                         var submissionSummary = new List<SubmittedServiceSummarySharedModel>();

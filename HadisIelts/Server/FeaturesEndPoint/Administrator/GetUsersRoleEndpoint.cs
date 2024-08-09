@@ -32,7 +32,7 @@ namespace HadisIelts.Server.FeaturesEndPoint.Admin
         {
             try
             {
-                var searchedUsers = _userServices.FindUsers(request.UserSearchPhrase!);
+                var searchedUsers = await _userServices.FindUsers(request.UserSearchPhrase!);
                 if (searchedUsers is not null)
                 {
                     var usersRoles = await _userServices.GetUsersRolesAsync(searchedUsers);

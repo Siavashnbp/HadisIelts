@@ -70,3 +70,17 @@ $theme-colors: ( primary: $primary, secondary: $secondary, success: $success, in
 .main-container{
     margin-bottom:60px;
 }
+
+.btn-center-icon {
+    align-items: center;
+    justify-content: center;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+td, th {
+    vertical-align: middle !important;
+    justify-content: center;
+    min-width:80px;
+}

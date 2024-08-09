@@ -38,10 +38,7 @@ namespace HadisIelts.Server.FeaturesEndpoint.Correction
             try
             {
                 var userId = _userServices.GetUserIdFromClaims(User.Claims.ToList());
-                if (_userServices.HasWritingCorrectionPending(_dbContext, userId))
-                {
-                    return ValidationProblem();
-                }
+                
                 var writingCorrectionGroup = _dbContext.WritingCorrectionSubmissionGroups.Add(
                     new WritingCorrectionSubmissionGroup
                     {
